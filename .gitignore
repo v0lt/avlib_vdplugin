@@ -4,6 +4,7 @@ bin
 bin64
 obj32
 obj64
+.vs
 *.ncb
 *.suo
 *.aps
