@@ -1,0 +1,7 @@
+EXPORTS
+	VDGetPluginInfo
+	VirtualdubFilterModuleInit2
+	FilterModModuleInit
+	VirtualdubFilterModuleDeinit
+	DriverProc
+	VDDriverProc

@@ -1,0 +1,11 @@
+to rebuild inside autobuild-suite env:
+
+run msys64\msys2_shell.cmd -full-path -mingw32
+paste commands:
+cd E:/work/ffmpeg_build/build/ffmpeg-git/build-static-32bit
+make install
+
+run msys64\msys2_shell.cmd -full-path -mingw64
+paste commands:
+cd E:/work/ffmpeg_build/build/ffmpeg-git/build-static-64bit
+make install

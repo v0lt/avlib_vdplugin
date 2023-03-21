@@ -1,0 +1,12 @@
+Debug
+Release
+bin
+bin64
+obj32
+obj64
+*.ncb
+*.suo
+*.aps
+*.user
+*.log
+*.VC.db

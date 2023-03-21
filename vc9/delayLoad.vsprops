@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="windows-1251"?>
+<VisualStudioPropertySheet
+	ProjectType="Visual C++"
+	Version="8.00"
+	Name="delayLoad"
+	>
+	<Tool
+		Name="VCLinkerTool"
+		DelayLoadDLLs="avcodec-57.dll;avformat-57.dll;avutil-55.dll;swscale-4.dll;swresample-2.dll"
+	/>
+</VisualStudioPropertySheet>
