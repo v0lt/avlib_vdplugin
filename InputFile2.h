@@ -51,12 +51,10 @@ public:
 #pragma pack(push,1)
   struct Data {
     int version;
-    bool skip_native_cfhd;
     bool disable_cache;
-    bool skip_cfhd_am;
 
     Data(){ clear(); }
-    void clear(){ version=opt_version; skip_native_cfhd=false; skip_cfhd_am=false; disable_cache=false; }
+    void clear(){ version=opt_version; disable_cache=false; }
   } data;
 #pragma pack(pop)
 
@@ -65,14 +63,8 @@ public:
     Data* d = (Data*)src;
     if(d->version>opt_version || d->version<1) return false;
     data.clear();
-    if(d->version>=1){
-      data.skip_native_cfhd = d->skip_native_cfhd;
-    }
     if(d->version>=2){
       data.disable_cache = d->disable_cache;
-    }
-    if(d->version>=3){
-      data.skip_cfhd_am = d->skip_cfhd_am;
     }
     return true;
   }
@@ -95,8 +87,6 @@ public:
   bool is_anim_image;
 
   int cfg_frame_buffers;
-  bool cfg_skip_cfhd;
-  bool cfg_skip_cfhd_am;
   bool cfg_disable_cache;
 
   AVFormatContext* m_pFormatCtx;

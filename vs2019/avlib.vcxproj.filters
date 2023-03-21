@@ -317,7 +317,6 @@
     </ClInclude>
     <ClInclude Include="..\a_compress.h" />
     <ClInclude Include="..\AudioSource2.h" />
-    <ClInclude Include="..\cineform.h" />
     <ClInclude Include="..\compress.h" />
     <ClInclude Include="..\export.h" />
     <ClInclude Include="..\FileInfo2.h" />
@@ -528,8 +527,6 @@
     </ClCompile>
     <ClCompile Include="..\a_compress.cpp" />
     <ClCompile Include="..\AudioSource2.cpp" />
-    <ClCompile Include="..\cineform.cpp" />
-    <ClCompile Include="..\cineform_enc.cpp" />
     <ClCompile Include="..\compress.cpp" />
     <ClCompile Include="..\export.cpp" />
     <ClCompile Include="..\FileInfo2.cpp" />
@@ -565,7 +562,6 @@
     <ResourceCompile Include="..\avlib.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\cineform.bmp" />
     <Image Include="..\ffmpeg.bmp" />
   </ItemGroup>
 </Project>

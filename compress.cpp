@@ -12,7 +12,6 @@ extern "C" {
 }
 #include "resource.h"
 #include "compress.h"
-#include "cineform.h"
 
 #pragma warning(disable:4996) // silence deprecated stuff
 
@@ -2236,7 +2235,6 @@ void ConfigVP9::change_format(int sel)
 extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
   CodecClass* cs = (CodecClass*)dwDriverId;
-  if(cs && cs->class_id==1) return DriverProc_CF(dwDriverId, hDriver, uMsg, lParam1, lParam2);
 
   CodecBase* codec = (CodecBase*)dwDriverId;
 
@@ -2263,7 +2261,6 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
       if(icopen->fccHandler==CodecH265::id_tag) codec = new CodecH265;
       if(icopen->fccHandler==CodecH265LS::id_tag) codec = new CodecH265LS;
       if(icopen->fccHandler==CodecH264::tag) codec = new CodecH264;
-      if(icopen->fccHandler==CFHD_TAG) return DriverProc_CF(dwDriverId, hDriver, uMsg, lParam1, lParam2);
       if(codec){
         if(!codec->init()){
           delete codec;
@@ -2333,7 +2330,6 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
   CodecClass* cs = (CodecClass*)dwDriverId;
-  if(cs && cs->class_id==1) return VDDriverProc_CF(dwDriverId, hDriver, uMsg, lParam1, lParam2);
 
   CodecBase* codec = (CodecBase*)dwDriverId;
 
@@ -2346,8 +2342,7 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
     if(lParam1==CodecVP8::tag) return CodecVP9::tag;
     if(lParam1==CodecVP9::tag) return CodecH265::id_tag;
     if(lParam1==CodecH265::id_tag) return CodecH265LS::id_tag;
-    if(lParam1==CodecH265LS::id_tag) return CFHD_TAG;
-    //if(lParam1==CFHD_TAG) return CodecH264::tag;
+    if(lParam1==CodecH265LS::id_tag) return CodecH264::tag;
     return 0;
 
   case VDICM_GETHANDLER:

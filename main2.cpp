@@ -8,7 +8,6 @@
 #include <string>
 #include "InputFile2.h"
 #include "export.h"
-#include "cineform.h"
 #include "a_compress.h"
 #include "resource.h"
 
@@ -27,7 +26,6 @@
 HINSTANCE hInstance;
 bool config_decode_raw = false;
 bool config_decode_magic = false;
-bool config_decode_cfhd = false;
 bool config_force_thread = false;
 bool config_disable_cache = false;
 float config_cache_size = 0.5;
@@ -61,7 +59,6 @@ void init_av()
     av_initialized = 1;
     av_register_all();
     avcodec_register_all();
-    av_register_cfhd();
 
     #ifdef FFDEBUG
     //av_log_set_callback(av_log_func);
@@ -113,7 +110,6 @@ INT_PTR ConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
   case WM_INITDIALOG:
     CheckDlgButton(mhdlg,IDC_DECODE_RAW, config_decode_raw ? BST_CHECKED:BST_UNCHECKED);
     CheckDlgButton(mhdlg,IDC_DECODE_MAGIC, config_decode_magic ? BST_CHECKED:BST_UNCHECKED);
-    CheckDlgButton(mhdlg,IDC_DECODE_CFHD, config_decode_cfhd ? BST_CHECKED:BST_UNCHECKED);
     CheckDlgButton(mhdlg,IDC_FORCE_THREAD, config_force_thread ? BST_CHECKED:BST_UNCHECKED);
     CheckDlgButton(mhdlg,IDC_DISABLE_CACHE2, config_disable_cache ? BST_CHECKED:BST_UNCHECKED);
     init_cache();
@@ -123,7 +119,6 @@ INT_PTR ConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
     case IDOK:
       config_decode_raw = IsDlgButtonChecked(mhdlg,IDC_DECODE_RAW)!=0;
       config_decode_magic = IsDlgButtonChecked(mhdlg,IDC_DECODE_MAGIC)!=0;
-      config_decode_cfhd = IsDlgButtonChecked(mhdlg,IDC_DECODE_CFHD)!=0;
       config_force_thread = IsDlgButtonChecked(mhdlg,IDC_FORCE_THREAD)!=0;
       config_disable_cache = IsDlgButtonChecked(mhdlg,IDC_DISABLE_CACHE2)!=0;
       config_cache_size = GetDlgItemFloat(mhdlg,IDC_CACHE_SIZE,0.5);
@@ -263,7 +258,6 @@ void saveConfig()
 
   WritePrivateProfileStringW(L"force_ffmpeg",L"raw",config_decode_raw ? L"1":L"0",buf);
   WritePrivateProfileStringW(L"force_ffmpeg",L"MagicYUV",config_decode_magic ? L"1":L"0",buf);
-  WritePrivateProfileStringW(L"force_ffmpeg",L"CineformHD",config_decode_cfhd ? L"1":L"0",buf);
   WritePrivateProfileStringW(L"decode_model",L"force_frame_thread",config_force_thread ? L"1":L"0",buf);
   WritePrivateProfileStringW(L"decode_model",L"disable_cache",config_disable_cache ? L"1":L"0",buf);
 
@@ -291,7 +285,6 @@ void loadConfig()
 
   config_decode_raw = GetPrivateProfileIntW(L"force_ffmpeg",L"raw",0,buf)!=0;
   config_decode_magic = GetPrivateProfileIntW(L"force_ffmpeg",L"MagicYUV",0,buf)!=0;
-  config_decode_cfhd = GetPrivateProfileIntW(L"force_ffmpeg",L"CineformHD",0,buf)!=0;
   config_force_thread = GetPrivateProfileIntW(L"decode_model",L"force_frame_thread",0,buf)!=0;
   config_disable_cache = GetPrivateProfileIntW(L"decode_model",L"disable_cache",0,buf)!=0;
 

@@ -221,7 +221,6 @@
   <ItemGroup>
     <ClInclude Include="..\AudioSource2.h" />
     <ClInclude Include="..\a_compress.h" />
-    <ClInclude Include="..\cineform.h" />
     <ClInclude Include="..\cineform\Codec\allocator.h" />
     <ClInclude Include="..\cineform\Codec\bayer.h" />
     <ClInclude Include="..\cineform\Codec\bitstream.h" />
@@ -330,7 +329,6 @@
   <ItemGroup>
     <ClCompile Include="..\AudioSource2.cpp" />
     <ClCompile Include="..\a_compress.cpp" />
-    <ClCompile Include="..\cineform.cpp" />
     <ClCompile Include="..\cineform\Codec\allocator.c" />
     <ClCompile Include="..\cineform\Codec\bayer.c" />
     <ClCompile Include="..\cineform\Codec\bitstream.c" />
@@ -391,7 +389,6 @@
     <ClCompile Include="..\cineform\EncoderSDK\MetadataWriter.cpp" />
     <ClCompile Include="..\cineform\EncoderSDK\SampleEncoder.cpp" />
     <ClCompile Include="..\cineform\EncoderSDK\VideoBuffers.cpp" />
-    <ClCompile Include="..\cineform_enc.cpp" />
     <ClCompile Include="..\compress.cpp" />
     <ClCompile Include="..\export.cpp" />
     <ClCompile Include="..\fflayer.cpp" />

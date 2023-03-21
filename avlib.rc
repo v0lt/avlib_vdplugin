@@ -120,14 +120,6 @@ BEGIN
         BOTTOMMARGIN, 115
     END
 
-    IDD_ENC_CINEFORM, DIALOG
-    BEGIN
-        LEFTMARGIN, 7
-        RIGHTMARGIN, 356
-        TOPMARGIN, 7
-        BOTTOMMARGIN, 114
-    END
-
     IDD_ENC_X265LS, DIALOG
     BEGIN
         LEFTMARGIN, 7
@@ -338,8 +330,6 @@ BEGIN
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,20,179,10
     CONTROL         "MagicYUV - default off, pass to official codec",IDC_DECODE_MAGIC,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,33,159,10
-    CONTROL         "Cineform HD - default off, pass to native codec",IDC_DECODE_CFHD,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,46,167,10
     CONTROL         "Always use frame threading - default off, auto",IDC_FORCE_THREAD,
                     "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,69,165,10
     CONTROL         "Disable cache",IDC_DISABLE_CACHE2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,82,59,10
@@ -423,9 +413,6 @@ FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,77,101,50,14
     CONTROL         "Disable cache",IDC_DISABLE_CACHE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,14,59,10
-    CONTROL         "Use native decoder for Cineform HD",IDC_DECODE_CFHD,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,37,131,10
-    CONTROL         "Enable Active Metadata",IDC_DECODE_CFHD_AM,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,25,53,92,10
     PUSHBUTTON      "System options",IDC_SYS_OPTIONS,7,76,59,14
     LTEXT           "System options are not associated with specific files.",IDC_STATIC,73,74,130,19
 END
@@ -453,30 +440,6 @@ BEGIN
     COMBOBOX        IDC_TUNE,35,67,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Tune",IDC_STATIC,7,70,17,8
     CONTROL         "About presets: <a HREF=""https://x265.readthedocs.io/en/default/presets.html"">x265.readthedocs.io</a>",IDC_LINK,
-                    "SysLink",WS_TABSTOP,165,83,144,11
-END
-
-IDD_ENC_CINEFORM DIALOGEX 0, 0, 363, 121
-STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_MINIMIZEBOX | WS_POPUP | WS_CAPTION | WS_SYSMENU
-CAPTION "CineForm configuration"
-FONT 8, "MS Shell Dlg", 400, 0, 0x1
-BEGIN
-    DEFPUSHBUTTON   "OK",IDOK,240,100,50,14
-    PUSHBUTTON      "Cancel",IDCANCEL,306,100,50,14
-    GROUPBOX        "Encoder",IDC_STATIC,152,3,204,75
-    CONTROL         112,IDC_STATIC,"Static",SS_BITMAP,162,16,185,25,WS_EX_CLIENTEDGE
-    CTEXT           "Built using:",IDC_ENCODER_LABEL2,160,49,189,8
-    CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,189,8
-    COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Intermediate Bit depth:",IDC_STATIC,7,31,92,10
-    CONTROL         "8",IDC_8_BIT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,16,46,20,10
-    CONTROL         "10",IDC_10_BIT,"Button",BS_AUTORADIOBUTTON,43,46,24,10
-    CONTROL         "16",IDC_16_BIT,"Button",BS_AUTORADIOBUTTON | WS_DISABLED,70,46,24,10
-    CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,63,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,77,58,8
-    LTEXT           "Filmscan 3",IDC_QUALITY_VALUE,103,77,39,11
-    CONTROL         "Enable Multithreading",IDC_THREADING,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,98,85,10
-    CONTROL         "About this codec: <a HREF=""https://sourceforge.net/p/vdfiltermod/wiki/cineform/"">wiki/cineform</a>",IDC_LINK,
                     "SysLink",WS_TABSTOP,165,83,144,11
 END
 
@@ -626,7 +589,6 @@ END
 //
 
 IDB_FFMPEG              BITMAP                  "ffmpeg.bmp"
-IDB_CINEFORM            BITMAP                  "cineform.bmp"
 #endif    // English (U.S.) resources
 /////////////////////////////////////////////////////////////////////////////
 

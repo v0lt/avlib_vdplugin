@@ -16,9 +16,7 @@
 #define IDD_ENC_AAC                     110
 #define IDD_ENC_VP8                     111
 #define IDD_INPUT_OPTIONS               112
-#define IDB_CINEFORM                    112
 #define IDD_ENC_X265                    113
-#define IDD_ENC_CINEFORM                114
 #define IDD_ENC_X265LS                  115
 #define IDD_ENC_VP9                     116
 #define IDD_ENC_FLAC                    117
@@ -90,14 +88,12 @@
 #define IDC_14_BIT                      1044
 #define IDC_DECODE_MAGIC                1044
 #define IDC_16_BIT                      1045
-#define IDC_DECODE_CFHD                 1045
 #define IDC_PROFILE                     1046
 #define IDC_FORCE_THREAD                1046
 #define IDC_DISABLE_CACHE               1046
 #define IDC_QUALITY                     1047
 #define IDC_FORCE_THREAD2               1047
 #define IDC_DISABLE_CACHE2              1047
-#define IDC_DECODE_CFHD_AM              1047
 #define IDC_QUALITY_VALUE               1048
 #define IDC_STEREO                      1049
 #define IDC_TUNE                        1049

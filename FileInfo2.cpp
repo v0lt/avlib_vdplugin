@@ -4,7 +4,6 @@
 #include "VideoSource2.h"
 #include "AudioSource2.h"
 #include "resource.h"
-#include "cineform.h"
 #include "gopro.h"
 
 #include <string>
@@ -197,12 +196,6 @@ void VDFFInputFileInfoDialog::print_video()
     strncpy(buf, av_get_pix_fmt_name(pVideoCtx->pix_fmt), 128);
     const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get(pVideoCtx->pix_fmt);
     bool is_rgb = (desc->flags & AV_PIX_FMT_FLAG_RGB)!=0;
-
-    if(segment->video_source->direct_cfhd){
-      std::string name = cfhd_format_name(pVideoCtx);
-      strcpy(buf, name.c_str());
-      is_rgb = false;
-    }
 
     if(!is_rgb){
       const char* spc = "?";

@@ -170,7 +170,6 @@ public:
   bool has_vfr;
   bool average_fr;
   bool direct_buffer;
-  bool direct_cfhd;
   bool is_image_list;
   bool copy_mode;
   bool decode_mode;

@@ -440,7 +440,6 @@ void LogoFilter::update_file()
   driver.CreateInputFile(0,&ff);
   file = dynamic_cast<VDFFInputFile*>(ff);
   file->cfg_frame_buffers = 0;
-  file->cfg_skip_cfhd = false;
   file->Init(param.path,0);
   IVDXVideoSource* vs;
   file->GetVideoSource(0,&vs);

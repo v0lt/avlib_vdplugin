@@ -1,6 +1,5 @@
 #include "InputFile2.h"
 #include "VideoSource2.h"
-#include "cineform.h"
 #include "export.h"
 
 extern "C" {
@@ -43,7 +42,6 @@ VDFFVideoSource::VDFFVideoSource(const VDXInputDriverContext& context)
   frame_type = 0;
   flip_image = false;
   direct_buffer = false;
-  direct_cfhd = false;
   is_image_list = false;
   avi_drop_index = false;
   copy_mode = false;
@@ -190,13 +188,6 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   has_vfr = false;
   average_fr = false;
 
-  if(m_pStreamCtx->codecpar->codec_tag==CFHD_TAG && !pSource->cfg_skip_cfhd){
-    // use our native thunk instead of internal decoder
-    if(avcodec_find_decoder(CFHD_ID)){
-      m_pStreamCtx->codecpar->codec_id = CFHD_ID;
-      direct_cfhd = true;
-    }
-  }
   AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
   if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP8){
     // on2 vp8 does not extract alpha
@@ -362,12 +353,6 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   if(avcodec_open2(m_pCodecCtx, pDecoder, 0)<0){
     mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
     return -1;
-  }
-
-  if(direct_cfhd){
-    flip_image = true;
-    if(trust_index) direct_buffer = true;
-    cfhd_set_use_am(m_pCodecCtx, !pSource->cfg_skip_cfhd_am);
   }
 
   frame = av_frame_alloc();
@@ -556,8 +541,6 @@ bool VDFFVideoSource::is_intra()
     return true;
   }
 
-  if(codec_id==CFHD_ID) return true;
-
   const AVCodecDescriptor* desc = avcodec_descriptor_get(codec_id);
   if(desc && (desc->props & AV_CODEC_PROP_INTRA_ONLY)) return true;
 
@@ -572,9 +555,6 @@ bool VDFFVideoSource::allow_copy()
 
 void VDFFVideoSource::init_format()
 {
-  if(direct_cfhd){
-    cfhd_set_format(m_pCodecCtx,convertInfo.ext_format);
-  }
   frame_fmt = m_pCodecCtx->pix_fmt;
   frame_width = m_pCodecCtx->width;
   frame_height = m_pCodecCtx->height;
@@ -1217,95 +1197,6 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
       convertInfo.direct_copy = perfect_bitexact;
     }
 
-  } else if(direct_cfhd){
-    switch(opt_format){
-    case kPixFormat_RGB888:
-      if(cfhd_test_format(m_pCodecCtx,opt_format)){
-        base_format = kPixFormat_RGB888;
-        ext_format = kPixFormat_RGB888;
-        convertInfo.av_fmt = AV_PIX_FMT_BGR24;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_XRGB8888:
-      if(cfhd_test_format(m_pCodecCtx,opt_format)){
-        base_format = kPixFormat_XRGB8888;
-        ext_format = kPixFormat_XRGB8888;
-        convertInfo.av_fmt = AV_PIX_FMT_BGRA;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_YUV422_YUYV:
-    case kPixFormat_YUV422_UYVY:
-    case kPixFormat_YUV422_Planar:
-      if(cfhd_test_format(m_pCodecCtx,kPixFormat_YUV422_YUYV)){
-        base_format = kPixFormat_YUV422_YUYV;
-        ext_format = kPixFormat_YUV422_YUYV;
-        convertInfo.av_fmt = AV_PIX_FMT_YUYV422;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_YUV422_V210:
-      if(cfhd_test_format(m_pCodecCtx,kPixFormat_YUV422_V210)){
-        base_format = kPixFormat_YUV422_V210;
-        ext_format = kPixFormat_YUV422_V210;
-        convertInfo.av_fmt = AV_PIX_FMT_BGR24;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_YUV422_Planar16:
-      if(cfhd_test_format(m_pCodecCtx,kPixFormat_YUV422_YU64)){
-        base_format = kPixFormat_YUV422_YU64;
-        ext_format = kPixFormat_YUV422_YU64;
-        convertInfo.av_fmt = AV_PIX_FMT_BGR32;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_R210:
-      if(cfhd_test_format(m_pCodecCtx,opt_format)){
-        base_format = kPixFormat_R210;
-        ext_format = kPixFormat_R210;
-        convertInfo.av_fmt = AV_PIX_FMT_BGRA;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_XRGB64:
-      if(cfhd_test_format(m_pCodecCtx,opt_format)){
-        base_format = kPixFormat_XRGB64;
-        ext_format = kPixFormat_XRGB64;
-        convertInfo.av_fmt = AV_PIX_FMT_BGRA64;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    case kPixFormat_Y8:
-    case kPixFormat_Y8_FR:
-    case kPixFormat_Y16:
-      if(cfhd_test_format(m_pCodecCtx,kPixFormat_Y16)){
-        base_format = kPixFormat_Y16;
-        ext_format = kPixFormat_Y16;
-        convertInfo.av_fmt = AV_PIX_FMT_GRAY16;
-        convertInfo.direct_copy = true;
-        break;
-      }
-      return false;
-
-    default:
-      return false;
-    }
   } else {
     switch(opt_format){
     case kPixFormat_YUV420_Planar:
@@ -1573,7 +1464,6 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
       break;
     }
   }
-  if(direct_cfhd) cfhd_get_info(m_pCodecCtx,m_pixmap_info);
 
   if(convertInfo.direct_copy || convertInfo.out_garbage){
     free(m_pixmap_data);
@@ -2173,7 +2063,6 @@ void VDFFVideoSource::alloc_direct_buffer()
   if(!frame_array[pos]) alloc_page(pos);
   BufferPage* page = frame_array[pos];
   open_write(page);
-  if(direct_cfhd) cfhd_set_buffer(m_pCodecCtx,align_buf(page->p));
 }
 
 void VDFFVideoSource::free_buffers()
