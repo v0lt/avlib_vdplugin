@@ -118,13 +118,12 @@ int	VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
   m_streamInfo.mPixelAspectRatio.mNumerator = 0;
   m_streamInfo.mPixelAspectRatio.mDenominator = 0;
 
-  if(m_pCodecCtx->channels>32){
-    mContext.mpCallbacks->SetError("FFMPEG: Unsupported number of channels (%d)", m_pCodecCtx->channels);
+  if(m_pCodecCtx->ch_layout.nb_channels>32){
+    mContext.mpCallbacks->SetError("FFMPEG: Unsupported number of channels (%d)", m_pCodecCtx->ch_layout.nb_channels);
     return -1;
   }
-  uint64_t in_layout = m_pCodecCtx->channel_layout;
-  if(!in_layout) in_layout = av_get_default_channel_layout(m_pCodecCtx->channels);
-  if(!in_layout){
+
+  if(m_pCodecCtx->ch_layout.order != AV_CHANNEL_ORDER_NATIVE){
     mContext.mpCallbacks->SetError("FFMPEG: Unsupported channel layout.");
     return -1;
   }
@@ -147,9 +146,17 @@ int	VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 {
-  uint64_t in_layout = m_pCodecCtx->channel_layout;
-  if(!in_layout) in_layout = av_get_default_channel_layout(m_pCodecCtx->channels);
-  
+  uint64_t in_layout = 0;
+  if (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
+    in_layout = m_pCodecCtx->ch_layout.u.mask;
+  }
+  else {
+    // hmmm
+    AVChannelLayout ch_layout_def = {};
+    av_channel_layout_default(&ch_layout_def, m_pCodecCtx->ch_layout.nb_channels);
+    in_layout = ch_layout_def.u.mask;
+  }
+
   uint64 layout = in_layout;
   AVSampleFormat fmt; 
   switch(m_pCodecCtx->sample_fmt){
@@ -191,10 +198,10 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
     out_fmt = a0->out_fmt;
   }
 
-  av_samples_get_buffer_size(&src_linesize,m_pCodecCtx->channels,1,m_pCodecCtx->sample_fmt,1);
+  av_samples_get_buffer_size(&src_linesize,m_pCodecCtx->ch_layout.nb_channels,1,m_pCodecCtx->sample_fmt,1);
 
   mRawFormat.Format.wFormatTag = WAVE_FORMAT_PCM;
-  mRawFormat.Format.nChannels = av_get_channel_layout_nb_channels(out_layout);
+  mRawFormat.Format.nChannels = av_popcount64(out_layout);
   mRawFormat.Format.nSamplesPerSec = m_pCodecCtx->sample_rate;
   mRawFormat.Format.wBitsPerSample = av_get_bytes_per_sample(out_fmt)*8;
   mRawFormat.Format.nAvgBytesPerSec = mRawFormat.Format.nSamplesPerSec*mRawFormat.Format.nChannels*mRawFormat.Format.wBitsPerSample/8;
@@ -222,8 +229,16 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 
 void VDFFAudioSource::reset_swr()
 {
-  uint64_t in_layout = m_pCodecCtx->channel_layout;
-  if(!in_layout) in_layout = av_get_default_channel_layout(m_pCodecCtx->channels);
+  uint64_t in_layout = 0;
+  if (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
+    in_layout = m_pCodecCtx->ch_layout.u.mask;
+  }
+  else {
+    // hmmm
+    AVChannelLayout ch_layout_def = {};
+    av_channel_layout_default(&ch_layout_def, m_pCodecCtx->ch_layout.nb_channels);
+    in_layout = ch_layout_def.u.mask;
+  }
 
   if(in_layout==swr_layout && m_pCodecCtx->sample_rate==swr_rate && m_pCodecCtx->sample_fmt==swr_fmt) return;
 
@@ -561,7 +576,7 @@ int VDFFAudioSource::read_packet(AVPacket& pkt, ReadInfo& ri)
       if(changed){
         uint8_t* dst = bp.p + s0*mRawFormat.Format.nBlockAlign;
         const uint8_t* src[32];
-        {for(int i=0; i<frame->channels; i++) src[i] = frame->extended_data[i] + src_pos*src_linesize; }
+        {for(int i=0; i<frame->ch_layout.nb_channels; i++) src[i] = frame->extended_data[i] + src_pos*src_linesize; }
         swr_convert(swr, &dst, n, src, n);
       }
 

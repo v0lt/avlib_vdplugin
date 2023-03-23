@@ -792,7 +792,7 @@ bool VDFFInputFile::GetAudioSource(int index, IVDXAudioSource **ppAS)
       AVStream* st = m_pFormatCtx->streams[i];
       if(i==s_index) continue;
       if(st->codecpar->codec_type!=AVMEDIA_TYPE_AUDIO) continue;
-      if(!st->codecpar->channels) continue;
+      if(!st->codecpar->ch_layout.nb_channels) continue;
       if(!st->codecpar->sample_rate) continue;
       n++;
       if(n==index){ s_index=i; break; }

@@ -274,11 +274,8 @@ void VDFFInputFileInfoDialog::print_audio()
   sprintf(buf, "%u Hz", pAudioCtx->sample_rate);
   SetDlgItemText(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
 
-  uint64_t in_layout = pAudioCtx->channel_layout;
-  if(!in_layout) in_layout = av_get_default_channel_layout(pAudioCtx->channels);
-  av_get_channel_layout_string(buf2, sizeof buf2, pAudioCtx->channels, in_layout);
-  int nch = av_get_channel_layout_nb_channels(in_layout);
-  sprintf(buf, "%s (%u), ", buf2, nch);
+  av_channel_layout_describe(&pAudioCtx->ch_layout, buf2, sizeof(buf2));
+  sprintf(buf, "%s (%u), ", buf2, pAudioCtx->ch_layout.nb_channels);
   if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE){
     strcat(buf, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
   } else {
@@ -287,7 +284,7 @@ void VDFFInputFileInfoDialog::print_audio()
   SetDlgItemText(mhdlg, IDC_AUDIO_CHANNELS, buf);
 
   int bits_per_sample = av_get_bits_per_sample(pAudioCtx->codec_id);
-  int64_t bit_rate = bits_per_sample ? pAudioCtx->sample_rate * pAudioCtx->channels * bits_per_sample : pAudioCtx->bit_rate;
+  int64_t bit_rate = bits_per_sample ? pAudioCtx->sample_rate * pAudioCtx->ch_layout.nb_channels * bits_per_sample : pAudioCtx->bit_rate;
   if ( bit_rate ){
     sprintf(buf, "%I64d kb/sec", bit_rate/1000);
     SetDlgItemText(mhdlg, IDC_AUDIO_BITRATE, buf);
