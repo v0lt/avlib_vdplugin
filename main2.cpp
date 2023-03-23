@@ -386,80 +386,15 @@ void loadConfig()
 
 #ifdef _MSC_VER
 
-HINSTANCE module_base[5];
-
-bool loadModules()
-{
-  wchar_t buf[MAX_PATH+128];
-  size_t n = GetModuleFileNameW(hInstance, buf, MAX_PATH);
-  if(n<=0) return false;
-  buf[n] = 0;
-
-  wchar_t* p1 = wcsrchr(buf,'\\');
-  wchar_t* p2 = wcsrchr(buf,'/');
-  if(p2>p1) p1=p2;
-  if(!p1) return false;
-
-  *p1 = 0;
-  wcscat(buf,L"\\ffdlls\\");
-  p1+=8;
-
-  wchar_t* module_name[5] = {
-    L"avutil-58.dll",
-    L"swresample-4.dll",
-    L"swscale-7.dll",
-    L"avcodec-60.dll",
-    L"avformat-60.dll",
-  };
-
-  {for(int i=0; i<5; i++){
-    *p1 = 0;
-    wcscat(buf,module_name[i]);
-    HINSTANCE h = LoadLibraryW(buf);
-    if(!h){
-      wchar_t buf2[MAX_PATH+128];
-      wcscpy(buf2,L"Module failed to load correctly:\n");
-      wcscat(buf2,buf);
-      MessageBoxW(0,buf2,L"FFMpeg input driver",MB_OK|MB_ICONSTOP);
-      return false;
-    }
-    module_base[i] = h;
-  }}
-
-  return true;
-}
-
-void unloadModules()
-{
-  char* module_name[5] = {
-    "avutil-58.dll",
-    "swresample-4.dll",
-    "swscale-7.dll",
-    "avcodec-60.dll",
-    "avformat-60.dll",
-  };
-
-  {for(int i=4; i>=0; i--){
-    __FUnloadDelayLoadedDLL2(module_name[i]);
-  }}
-
-  {for(int i=4; i>=0; i--){
-    HINSTANCE h = module_base[i];
-    if(h) FreeLibrary(h);
-  }}
-}
-
 BOOLEAN WINAPI DllMain( IN HINSTANCE hDllHandle, IN DWORD nReason, IN LPVOID Reserved )
 {
   switch ( nReason ){
   case DLL_PROCESS_ATTACH:
     hInstance = hDllHandle;
-    if(!loadModules()) return false;
     loadConfig();
     return true;
 
   case DLL_PROCESS_DETACH:
-    if(Reserved==0) unloadModules();
     return true;
   }
 
