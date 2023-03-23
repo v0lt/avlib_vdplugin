@@ -310,7 +310,7 @@ void loadConfig()
 
   {
     option_video = option_video_init;
-    int mp = option_video.rfind('|');
+    size_t mp = option_video.rfind('|');
     wchar_t mask[2048];
     GetPrivateProfileStringW(L"file_mask",L"video",&option_video[mp+1],mask,2048,buf);
     option_video.resize(mp+1);
@@ -335,7 +335,7 @@ void loadConfig()
 
   {
     option_image = option_image_init;
-    int mp = option_image.rfind('|');
+    size_t mp = option_image.rfind('|');
     wchar_t mask[2048];
     GetPrivateProfileStringW(L"file_mask",L"images",&option_image[mp+1],mask,2048,buf);
     option_image.resize(mp+1);
@@ -360,7 +360,7 @@ void loadConfig()
 
   {
     option_audio = option_audio_init;
-    int mp = option_audio.rfind('|');
+    size_t mp = option_audio.rfind('|');
     wchar_t mask[2048];
     GetPrivateProfileStringW(L"file_mask",L"audio",&option_audio[mp+1],mask,2048,buf);
     option_audio.resize(mp+1);

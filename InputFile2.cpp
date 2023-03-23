@@ -692,7 +692,7 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
     if(c=='\\' || c=='/') break;
     if(c>='0' && c<='9'){
       if(digit0==-1){
-        digit0 = p-path;
+        digit0 = int(p-path);
         digit1 = digit0;
       } else digit0--;
     } else if(digit0!=-1) break;

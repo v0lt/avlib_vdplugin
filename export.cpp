@@ -550,10 +550,10 @@ void FFOutputFile::Init(const wchar_t *path, const char* format)
 
 uint32 FFOutputFile::CreateStream(int type)
 {
-  uint32 index = stream.size();
+  size_t index = stream.size();
   stream.resize(index+1);
   StreamInfo& s = stream[index];
-  return index;
+  return (uint32)index;
 }
 
 typedef struct AVCodecTag {
@@ -835,12 +835,12 @@ void FFOutputFile::import_wav(AVStream *st, const void *pFormat, int cbFormat)
   dwHeader[0] = mmioFOURCC('d', 'a', 't', 'a');
   dwHeader[1] = 0;
 
-  int p = wav.size();
+  size_t p = wav.size();
   wav.resize(p+8);
   memcpy(&wav[p], dwHeader, 8);
 
   IOBuffer buf;
-  buf.copy(&wav[0],wav.size());
+  buf.copy(&wav[0],(int)wav.size());
   AVIOContext* avio_ctx = avio_alloc_context(0,0,0,&buf,&IOBuffer::Read,0,0);
 
   AVFormatContext* fmt_ctx = avformat_alloc_context();

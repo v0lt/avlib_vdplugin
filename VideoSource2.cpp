@@ -754,7 +754,7 @@ bool VDFFVideoSource::IsKey(int64_t sample)
   if(is_image_list) return true;
 
   if(trust_index){
-    return (avformat_index_get_entry(m_pStreamCtx, sample)->flags & AVINDEX_KEYFRAME)!=0;
+    return (avformat_index_get_entry(m_pStreamCtx, (int)sample)->flags & AVINDEX_KEYFRAME)!=0;
   }
   if(sparse_index){
     int64_t pos;

@@ -138,7 +138,7 @@ cleanup:
     out_format->Format.nAvgBytesPerSec = (DWORD)(ctx->bit_rate/8);
     out_format->Format.nBlockAlign = ctx->block_align;
     out_format->Format.wBitsPerSample = ctx->bits_per_coded_sample;
-    out_format->Format.cbSize = out_format_size-sizeof(WAVEFORMATEX);
+    out_format->Format.cbSize = WORD(out_format_size-sizeof(WAVEFORMATEX));
     out_format->Samples.wSamplesPerBlock = ctx->frame_size;
     out_format->dwChannelMask = 0;
     out_format->SubFormat = KSDATAFORMAT_SUBTYPE_VDFF;
@@ -382,7 +382,7 @@ public:
   void Show(HWND parent, VDFFAudio* codec)
   {
     this->codec = codec;
-    int rsize = codec->GetConfigSize();
+    size_t rsize = codec->GetConfigSize();
     old_param = malloc(rsize);
     memcpy(old_param,codec->config,rsize);
     VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCE(dialog_id), parent);
@@ -461,7 +461,7 @@ void AConfigAAC::init_quality()
 
 void AConfigAAC::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   codec_config->bitrate = x & ~15;
   char buf[80];
   sprintf(buf,"%d k",codec_config->bitrate);
@@ -587,7 +587,7 @@ void AConfigMp3::init_quality()
 
 void AConfigMp3::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   if(codec_config->flags & VDFFAudio::flag_constant_rate){
     codec_config->bitrate = mp3_bitrate[x];
     char buf[80];
@@ -753,7 +753,7 @@ void AConfigFlac::init_quality()
 
 void AConfigFlac::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   codec_config->quality = x;
   SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
 }
@@ -869,7 +869,7 @@ void AConfigAlac::init_quality()
 
 void AConfigAlac::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   codec_config->quality = x;
   SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
 }
@@ -974,7 +974,7 @@ void AConfigVorbis::init_quality()
 
 void AConfigVorbis::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   if(codec_config->flags & VDFFAudio::flag_constant_rate){
     codec_config->bitrate = x;
     char buf[80];
@@ -1112,14 +1112,14 @@ void AConfigOpus::init_quality()
 
 void AConfigOpus::change_quality()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
   codec_config->quality = x;
   SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 void AConfigOpus::change_bitrate()
 {
-  int x = SendDlgItemMessage(mhdlg, IDC_BITRATE, TBM_GETPOS, 0, 0);
+  int x = (int)SendDlgItemMessage(mhdlg, IDC_BITRATE, TBM_GETPOS, 0, 0);
   codec_config->bitrate = x;
   SetDlgItemInt(mhdlg, IDC_BITRATE_VALUE, codec_config->bitrate, false);
 }

@@ -54,11 +54,11 @@ bool logoOpenImage(HWND hwnd, wchar_t* path, int max_path) {
   ofn.hwndOwner = hwnd;
   std::wstring image = option_image;
   image.resize(image.length()+1,0);
-  int x1 = image.find('|');
+  size_t x1 = image.find('|');
   image[x1] = 0;
   std::wstring video = option_video;
   video.resize(video.length()+1,0);
-  int x2 = video.find('|');
+  size_t x2 = video.find('|');
   video[x2] = 0;
   std::wstring all = L"All files (*.*)";
   all.resize(all.length()+1,0);
