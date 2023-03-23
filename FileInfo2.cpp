@@ -127,7 +127,7 @@ INT_PTR VDFFInputFileInfoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 void VDFFInputFileInfoDialog::print_format()
 {
   AVFormatContext* pFormatCtx = segment->getContext();
-  AVInputFormat* pInputFormat = pFormatCtx->iformat;
+  const AVInputFormat* pInputFormat = pFormatCtx->iformat;
 
   SetDlgItemTextA(mhdlg, IDC_STATICVerNumber, vsnstr);
   char buf[128];
@@ -183,7 +183,7 @@ void VDFFInputFileInfoDialog::print_video()
 
   char buf[256];
 
-  AVCodec* pCodec = avcodec_find_decoder(codecpar->codec_id);
+  const AVCodec* pCodec = avcodec_find_decoder(codecpar->codec_id);
   const char* codec_name = "N/A";
   if (pCodec) codec_name = pCodec->name; else {
     if (codecpar->codec_id == AV_CODEC_ID_MPEG2TS) codec_name = "mpeg2ts";
@@ -265,7 +265,7 @@ void VDFFInputFileInfoDialog::print_audio()
   char buf[128];
   char buf2[128];
 
-  AVCodec* pCodec = avcodec_find_decoder(pAudioCtx->codec_id);
+  const AVCodec* pCodec = avcodec_find_decoder(pAudioCtx->codec_id);
   const char *codec_name = "N/A";
   if (pCodec) codec_name = pCodec->name;
 

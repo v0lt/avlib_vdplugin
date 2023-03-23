@@ -3,8 +3,8 @@
 #include "export.h"
 
 extern "C" {
+#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libswscale/swscale.h>
 #include <libavutil/imgutils.h>
 }
 
@@ -139,7 +139,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
       //! above idea fails on Hilary.0000.ts
 
       bool mts = false;
-      AVInputFormat* mts_format = av_find_input_format("mpegts");
+      const AVInputFormat* mts_format = av_find_input_format("mpegts");
       if(m_pFormatCtx->iformat==mts_format) mts = true;
 
       if(mts || duration<=0){
@@ -153,7 +153,8 @@ int VDFFVideoSource::init_duration(const AVRational fr)
       if(e>sample_count_error) sample_count_error = e;
 
       // found in some mp4 produced with GPAC 0.5.1
-      if(m_pStreamCtx->nb_index_entries>0 && (m_pStreamCtx->index_entries[0].flags & AVINDEX_DISCARD_FRAME)!=0) sample_count_error++;
+      const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+      if(nb_index_entries>0 && (avformat_index_get_entry(m_pStreamCtx, 0)->flags & AVINDEX_DISCARD_FRAME)!=0) sample_count_error++;
 
     } else {
       if(m_pSource->is_image){
@@ -167,7 +168,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 
   if(sample_count==0){
     // found in 1-frame nut
-    AVInputFormat* nut_format = av_find_input_format("nut");
+    const AVInputFormat* nut_format = av_find_input_format("nut");
     if(m_pFormatCtx->iformat==nut_format) sample_count = 1;
   }
 
@@ -188,15 +189,15 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   has_vfr = false;
   average_fr = false;
 
-  AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
+  const AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
   if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP8){
     // on2 vp8 does not extract alpha
-    AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx");
+    const AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx");
     if(pDecoder2) pDecoder = pDecoder2;
   }
   if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP9){
     // on2 vp9 does not extract alpha
-    AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx-vp9");
+    const AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx-vp9");
     if(pDecoder2) pDecoder = pDecoder2;
   }
   if(!pDecoder){
@@ -212,7 +213,7 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   m_pCodecCtx->flags2 = AV_CODEC_FLAG2_SHOW_ALL;
   avcodec_parameters_to_context(m_pCodecCtx,m_pStreamCtx->codecpar);
 
-  AVRational r_fr = av_stream_get_r_frame_rate(m_pStreamCtx);
+  AVRational r_fr = m_pStreamCtx->r_frame_rate;
   if(m_pStreamCtx->codecpar->field_order>AV_FIELD_PROGRESSIVE){
     // interlaced seems to double r_framerate
     // example: 00005.MTS
@@ -233,7 +234,9 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
     fw_seek_threshold = 1;
 
   } else {
-    if(m_pStreamCtx->nb_index_entries<2){
+    const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+
+    if(nb_index_entries<2){
       // try to force loading index
       // works for 2017-04-07 08-53-48.flv
       int64_t pos = m_pStreamCtx->duration;
@@ -244,15 +247,15 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
     trust_index = false;
     sparse_index = false;
 
-    if(m_pStreamCtx->nb_index_entries>2){
+    if(nb_index_entries>2){
       // when avi has dropped frames ffmpeg removes these entries from index - find way to avoid this?
-      AVInputFormat* avi_format = av_find_input_format("avi");
+      const AVInputFormat* avi_format = av_find_input_format("avi");
       if(m_pFormatCtx->iformat==avi_format){
         //sample_count = m_pStreamCtx->nb_index_entries;
         //trust_index = true;
-        trust_index = (sample_count==m_pStreamCtx->nb_index_entries);
-      } else if(abs(m_pStreamCtx->nb_index_entries - sample_count)<=sample_count_error){
-        sample_count = m_pStreamCtx->nb_index_entries;
+        trust_index = (sample_count== nb_index_entries);
+      } else if(abs(nb_index_entries - sample_count)<=sample_count_error){
+        sample_count = nb_index_entries;
         trust_index = true;
       } else {
         // maybe vfr
@@ -262,8 +265,8 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
         // 0 found in some wmv
         if(avg_fr.num!=0){
           sample_count_error = init_duration(avg_fr);
-          if(abs(m_pStreamCtx->nb_index_entries - sample_count)<=sample_count_error){
-            sample_count = m_pStreamCtx->nb_index_entries;
+          if(abs(nb_index_entries - sample_count)<=sample_count_error){
+            sample_count = nb_index_entries;
             trust_index = true;
             average_fr = true;
           } else {
@@ -277,12 +280,12 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
     if(trust_index){
       int64_t exp_dt = time_base.den/time_base.num;
       int64_t min_dt = exp_dt;
-      {for(int i=1; i<m_pStreamCtx->nb_index_entries; i++){
-        AVIndexEntry& i0 = m_pStreamCtx->index_entries[i-1];
-        AVIndexEntry& i1 = m_pStreamCtx->index_entries[i];
-        if(i0.flags & AVINDEX_DISCARD_FRAME) continue;
-        if(i1.flags & AVINDEX_DISCARD_FRAME) continue;
-        int64_t dt = i1.timestamp - i0.timestamp;
+      {for(int i=1; i< nb_index_entries; i++){
+        const AVIndexEntry* i0 = avformat_index_get_entry(m_pStreamCtx, i-1);
+        const AVIndexEntry* i1 = avformat_index_get_entry(m_pStreamCtx, i);
+        if(i0->flags & AVINDEX_DISCARD_FRAME) continue;
+        if(i1->flags & AVINDEX_DISCARD_FRAME) continue;
+        int64_t dt = i1->timestamp - i0->timestamp;
         if(dt<(exp_dt-1) || dt>(exp_dt+1)){
           has_vfr = true;
         }
@@ -307,19 +310,20 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
     keyframe_gap = 0;
     if(trust_index){
       int d = 1;
-      {for(int i=0; i<m_pStreamCtx->nb_index_entries; i++){
-        if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){
+      {for(int i=0; i<nb_index_entries; i++){
+        if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){
           if(d>keyframe_gap) keyframe_gap = d;
           d = 1;
         } else d++;
       }}
       if(d>keyframe_gap) keyframe_gap = d;
-    } else if(m_pStreamCtx->nb_index_entries>1){
+    } else if(nb_index_entries>1){
       sparse_index = true;
       int p0 = 0;
-      {for(int i=0; i<m_pStreamCtx->nb_index_entries; i++){
-        if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){
-          int64_t ts = m_pStreamCtx->index_entries[i].timestamp;
+      {for(int i=0; i<nb_index_entries; i++){
+        const auto index_entry = avformat_index_get_entry(m_pStreamCtx, i);
+        if(index_entry->flags & AVINDEX_KEYFRAME){
+          int64_t ts = index_entry->timestamp;
           ts -= m_pStreamCtx->start_time;
           int rndd = time_base.den/2;
           int pos = int((ts*time_base.num + rndd) / time_base.den);
@@ -348,7 +352,7 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   fw_seek_threshold = 10;
   if(keyframe_gap==1) fw_seek_threshold = 0; // assume seek is free with all-keyframe
 
-  m_pCodecCtx->refcounted_frames = 1;
+  //?/m_pCodecCtx->refcounted_frames = 1;
 
   if(avcodec_open2(m_pCodecCtx, pDecoder, 0)<0){
     mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
@@ -460,13 +464,15 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
     memcpy(((uint8*)direct_format)+sizeof(BITMAPINFOHEADER),m_pCodecCtx->extradata,m_pCodecCtx->extradata_size);
   }
 
-  AVInputFormat* avi_format = av_find_input_format("avi");
+  const AVInputFormat* avi_format = av_find_input_format("avi");
   if(m_pFormatCtx->iformat==avi_format){
     avi_drop_index = true;
     memset(frame_type,'D',ft_size);
 
-    {for(int i=0; i<m_pStreamCtx->nb_index_entries; i++){
-      int64_t ts = m_pStreamCtx->index_entries[i].timestamp;
+    const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+
+    {for(int i=0; i< nb_index_entries; i++){
+      int64_t ts = avformat_index_get_entry(m_pStreamCtx, i)->timestamp;
       ts -= m_pStreamCtx->start_time;
       int rndd = time_base.den/2;
       int pos = int((ts*time_base.num + rndd) / time_base.den);
@@ -748,7 +754,7 @@ bool VDFFVideoSource::IsKey(int64_t sample)
   if(is_image_list) return true;
 
   if(trust_index){
-    return (m_pStreamCtx->index_entries[sample].flags & AVINDEX_KEYFRAME)!=0;
+    return (avformat_index_get_entry(m_pStreamCtx, sample)->flags & AVINDEX_KEYFRAME)!=0;
   }
   if(sparse_index){
     int64_t pos;
@@ -1642,10 +1648,11 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 {
   if(trust_index){
     int next_key = -1;
-    {for(int i=(int)start; i<m_pStreamCtx->nb_index_entries; i++)
-      if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){ next_key=i; break; } }
+    const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+    {for(int i=(int)start; i<nb_index_entries; i++)
+      if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){ next_key=i; break; } }
     if(next_key==-1) return -1;
-    int64_t pos = m_pStreamCtx->index_entries[next_key].timestamp;
+    int64_t pos = avformat_index_get_entry(m_pStreamCtx, next_key)->timestamp;
     return pos;
   } else {
     int64_t pos = start*time_base.den / time_base.num + start_time;
@@ -1664,7 +1671,7 @@ int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
   int64_t pos1 = (sample*time_base.den + rd) / time_base.num;
   int x = av_index_search_timestamp(m_pStreamCtx,pos1,AVSEEK_FLAG_BACKWARD);
   if(x==-1) return -1;
-  pos = m_pStreamCtx->index_entries[x].timestamp;
+  pos = avformat_index_get_entry(m_pStreamCtx, x)->timestamp;
   int frame = int((pos*time_base.num + rd) / time_base.den);
   return frame;
 }
@@ -1682,11 +1689,11 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
   if(trust_index && jump>next_frame){
     int next_key = -1;
     {for(int i=jump; i>next_frame; i--)
-      if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){ next_key=i; break; } }
+      if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){ next_key=i; break; } }
 
     if(next_key!=-1 && (next_frame==-1 || next_key>next_frame+fw_seek_threshold)){
       // required to seek forward
-      pos = m_pStreamCtx->index_entries[next_key].timestamp;
+      pos = avformat_index_get_entry(m_pStreamCtx, next_key)->timestamp;
       return next_key;
     }
   }
@@ -1695,8 +1702,8 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
     // required to seek backward
     int prev_key = 0;
     {for(int i=jump; i>=0; i--)
-      if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){ prev_key=i; break; } }
-    pos = m_pStreamCtx->index_entries[prev_key].timestamp;
+      if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){ prev_key=i; break; } }
+    pos = avformat_index_get_entry(m_pStreamCtx, prev_key)->timestamp;
     return prev_key;
   }
 
@@ -1758,7 +1765,7 @@ int VDFFVideoSource::calc_prefetch(int jump)
   int prev_key = 0;
   if(trust_index){
     {for(int i=x; i>=0; i--)
-      if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){ prev_key=i; break; } }
+      if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){ prev_key=i; break; } }
   }
   if(sparse_index){
     int64_t pos;

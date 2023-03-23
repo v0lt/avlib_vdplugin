@@ -6,6 +6,7 @@
 #include <commctrl.h>
 #include "vd2\plugin\vdinputdriver.h"
 extern "C" {
+#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
@@ -222,7 +223,7 @@ struct CodecBase: public CodecClass{
   AVCodecID codec_id;
   const char* codec_name;
   int codec_tag;
-  AVCodec* codec;
+  const AVCodec* codec;
   AVCodecContext* ctx;
   AVFrame* frame;
   VDLogProc logProc;
@@ -846,8 +847,7 @@ struct CodecBase: public CodecClass{
     pkt.data = 0;
     pkt.size = 0;
 
-    int got_output;
-    int ret;
+    int ret = 0;
 
     const VDXPixmapLayout* layout = pc->px;
 
@@ -888,14 +888,17 @@ struct CodecBase: public CodecClass{
         break;
       }
 
-      ret = avcodec_encode_video2(ctx, &pkt, frame, &got_output);
-    } else {
-      ret = avcodec_encode_video2(ctx, &pkt, 0, &got_output);
+      ret = avcodec_send_frame(ctx, frame);
+    }
+    else if (icc->lFrameNum == frame_total) {
+      ret = avcodec_send_frame(ctx, nullptr);
     }
 
-    if(ret<0){ compress_end(); return ICERR_MEMORY; }
+    if (ret == 0) {
+      ret = avcodec_receive_packet(ctx, &pkt);
+    }
 
-    if(got_output){
+    if(ret == 0){
       if(pkt.size>(int)icc->lpbiOutput->biSizeImage){
         av_packet_unref(&pkt);
         return ICERR_MEMORY;
@@ -911,9 +914,18 @@ struct CodecBase: public CodecClass{
       pc->dts = pkt.dts;
       pc->duration = pkt.duration;
       av_packet_unref(&pkt);
-    } else {
+    }
+    else if (ret == AVERROR(EAGAIN)) {
       icc->lpbiOutput->biSizeImage = 0;
       *icc->lpdwFlags = VDCOMPRESS_WAIT;
+    }
+    else if (ret == AVERROR_EOF) {
+      icc->lpbiOutput->biSizeImage = 0;
+      *icc->lpdwFlags = 0;
+    }
+    else if (ret < 0) {
+      compress_end();
+      return ICERR_MEMORY;
     }
 
     return ICERR_OK;

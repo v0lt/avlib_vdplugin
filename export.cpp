@@ -18,7 +18,7 @@ extern HINSTANCE hInstance;
 void utf8_to_widechar(wchar_t *dst, int max_dst, const char *src);
 void widechar_to_utf8(char *dst, int max_dst, const wchar_t *src);
 
-void adjust_codec_tag2(const char* src_format, AVOutputFormat* format, AVStream* st)
+void adjust_codec_tag2(const char* src_format, const AVOutputFormat* format, AVStream* st)
 {
   if(src_format && strcmp(src_format,format->name)==0) return;
   AVCodecID codec_id = st->codecpar->codec_id;
@@ -31,29 +31,29 @@ void adjust_codec_tag2(const char* src_format, AVOutputFormat* format, AVStream*
     st->codecpar->codec_tag = tag;
 }
 
-void adjust_codec_tag(const char* src_format, AVOutputFormat* format, AVStream* st)
+void adjust_codec_tag(const char* src_format, const AVOutputFormat* format, AVStream* st)
 {
   if(src_format && strcmp(src_format,format->name)==0) return;
-  AVCodecID codec_id = st->codec->codec_id;
-  unsigned int tag = st->codec->codec_tag;
-  st->codec->codec_tag = 0;
+  AVCodecID codec_id = st->codecpar->codec_id;
+  unsigned int tag = st->codecpar->codec_tag;
+  st->codecpar->codec_tag = 0;
   AVCodecID codec_id1 = av_codec_get_id(format->codec_tag, tag);
   unsigned int codec_tag2;
   int have_codec_tag2 = av_codec_get_tag2(format->codec_tag, codec_id, &codec_tag2);
   if(!format->codec_tag || codec_id1==codec_id || !have_codec_tag2)
-    st->codec->codec_tag = tag;
+    st->codecpar->codec_tag = tag;
 }
 
 uint32 export_avi_fcc(AVStream* src)
 {
   AVFormatContext* ctx = avformat_alloc_context();
   AVStream* st = avformat_new_stream(ctx,0);
-  avcodec_copy_context(st->codec, src->codec);
-  AVOutputFormat* format = av_guess_format("avi", 0, 0);
+  avcodec_parameters_copy(st->codecpar, src->codecpar);
+  const AVOutputFormat* format = av_guess_format("avi", 0, 0);
   adjust_codec_tag(0,format,st);
-  uint32 r = st->codec->codec_tag;
+  uint32 r = st->codecpar->codec_tag;
   // missing tag in type1 avi
-  if(!r) r = av_codec_get_tag(format->codec_tag, src->codec->codec_id);
+  if(!r) r = av_codec_get_tag(format->codec_tag, src->codecpar->codec_id);
   avformat_free_context(ctx);
   return r;
 }
@@ -275,7 +275,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
     char out_ff_path[ff_path_size];
     widechar_to_utf8(out_ff_path, ff_path_size, path2);
 
-    AVOutputFormat* oformat = av_guess_format(0, out_ff_path, 0);
+    const AVOutputFormat* oformat = av_guess_format(0, out_ff_path, 0);
     if(!oformat){
       MessageBox((HWND)parent,"Unable to find a suitable output format","Stream copy",MB_ICONSTOP|MB_OK);
       return false;
@@ -331,8 +331,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
       err = avformat_transfer_internal_stream_timing_info(ofmt->oformat, out_stream, in_stream, AVFMT_TBCF_AUTO);
       if(err<0) goto end;
 
-      AVRational r = av_stream_get_r_frame_rate(in_stream);
-      av_stream_set_r_frame_rate(out_stream,r);
+      out_stream->r_frame_rate = in_stream->r_frame_rate;
       out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 
       if(i==video) out_video = out_stream;
@@ -490,7 +489,7 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t *path, con
   widechar_to_utf8(out_ff_path, ff_path_size, path);
 
   int err = 0; 
-  AVOutputFormat* oformat = 0;
+  const AVOutputFormat* oformat = nullptr;
   if(format && format[0]) oformat = av_guess_format(format, 0, 0);
   if(strcmp(format,"mov+faststart")==0) oformat = av_guess_format("mov", 0, 0);
   if(strcmp(format,"mp4+faststart")==0) oformat = av_guess_format("mp4", 0, 0);
@@ -528,7 +527,7 @@ void FFOutputFile::Init(const wchar_t *path, const char* format)
   this->out_ff_path = out_ff_path;
 
   int err = 0; 
-  AVOutputFormat* oformat = 0;
+  const AVOutputFormat* oformat = nullptr;
   if(format && format[0]) oformat = av_guess_format(format, 0, 0);
   if(strcmp(format,"mov+faststart")==0){ oformat = av_guess_format("mov", 0, 0); mp4_faststart=true; }
   if(strcmp(format,"mp4+faststart")==0){ oformat = av_guess_format("mp4", 0, 0); mp4_faststart=true; }
@@ -573,36 +572,44 @@ void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void *p
   }
 
   AVStream *st = avformat_new_stream(ofmt, 0);
-  st->codec->codec_type = AVMEDIA_TYPE_VIDEO;
+  st->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
 
   import_bmp(st,pFormat,cbFormat);
   adjust_codec_tag(st);
 
-  st->codec->pix_fmt = (AVPixelFormat)si.format;
-  st->codec->bit_rate = si.bit_rate;
-  st->codec->bits_per_coded_sample = si.bits_per_coded_sample;
-  st->codec->bits_per_raw_sample = si.bits_per_raw_sample;
-  st->codec->profile = si.profile;
-  st->codec->level = si.level;
-  st->codec->sample_aspect_ratio.num = si.sar_width;
-  st->codec->sample_aspect_ratio.den = si.sar_height;
-  st->codec->field_order = (AVFieldOrder)si.field_order;
-  st->codec->color_range = (AVColorRange)si.color_range;
-  st->codec->color_primaries = (AVColorPrimaries)si.color_primaries;
-  st->codec->color_trc = (AVColorTransferCharacteristic)si.color_trc;
-  st->codec->colorspace = (AVColorSpace)si.color_space;
-  st->codec->chroma_sample_location = (AVChromaLocation)si.chroma_location;
-  st->codec->has_b_frames = si.video_delay;
-  avcodec_parameters_from_context(st->codecpar,st->codec);
-  st->sample_aspect_ratio = st->codec->sample_aspect_ratio;
+  st->codecpar->format = (AVPixelFormat)si.format;
+  st->codecpar->bit_rate = si.bit_rate;
+  st->codecpar->bits_per_coded_sample = si.bits_per_coded_sample;
+  st->codecpar->bits_per_raw_sample = si.bits_per_raw_sample;
+  st->codecpar->profile = si.profile;
+  st->codecpar->level = si.level;
+  st->codecpar->sample_aspect_ratio.num = si.sar_width;
+  st->codecpar->sample_aspect_ratio.den = si.sar_height;
+  st->codecpar->field_order = (AVFieldOrder)si.field_order;
+  st->codecpar->color_range = (AVColorRange)si.color_range;
+  st->codecpar->color_primaries = (AVColorPrimaries)si.color_primaries;
+  st->codecpar->color_trc = (AVColorTransferCharacteristic)si.color_trc;
+  st->codecpar->color_space = (AVColorSpace)si.color_space;
+  st->codecpar->chroma_location = (AVChromaLocation)si.chroma_location;
+  st->codecpar->video_delay = si.video_delay;
+  //?/avcodec_parameters_from_context(st->codecpar,st->codec);
+  st->sample_aspect_ratio = st->codecpar->sample_aspect_ratio;
 
   st->avg_frame_rate = av_make_q(asi.dwRate,asi.dwScale);
-  av_stream_set_r_frame_rate(st,st->avg_frame_rate);
+  st->r_frame_rate = st->avg_frame_rate;
 
   st->time_base = av_make_q(asi.dwScale,asi.dwRate);
 
   s.st = st;
   s.time_base = st->time_base;
+}
+
+uint8_t* copy_extradata(AVCodecParameters* p)
+{
+    if (!p->extradata_size) return 0;
+    uint8_t* data = (uint8_t*)av_mallocz(p->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
+    memcpy(data, p->extradata, p->extradata_size);
+    return data;
 }
 
 uint8_t* copy_extradata(AVCodecContext* c)
@@ -629,11 +636,8 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void *p
     AVStream *st1 = avformat_new_stream(ofmt1, 0);
     import_wav(st1,pFormat,cbFormat);
     if(s.st->codecpar->extradata_size) av_freep(&s.st->codecpar->extradata);
-    if(s.st->codec->extradata_size) av_freep(&s.st->codec->extradata);
-    s.st->codecpar->extradata_size = st1->codec->extradata_size;
-    s.st->codec->extradata_size = st1->codec->extradata_size;
-    s.st->codecpar->extradata = copy_extradata(st1->codec);
-    s.st->codec->extradata = copy_extradata(st1->codec);
+    s.st->codecpar->extradata_size = st1->codecpar->extradata_size;
+    s.st->codecpar->extradata = copy_extradata(st1->codecpar);
     avformat_free_context(ofmt1);
 
     // workaround for vorbis delay
@@ -646,17 +650,17 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void *p
   }
 
   AVStream *st = avformat_new_stream(ofmt, 0);
-  st->codec->codec_type = AVMEDIA_TYPE_AUDIO;
+  st->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 
   import_wav(st,pFormat,cbFormat);
 
   if(ofmt->oformat==av_guess_format("aiff", 0, 0)){
-    if(st->codec->codec_id==AV_CODEC_ID_PCM_S16LE){
-      st->codec->codec_id = AV_CODEC_ID_PCM_S16BE;
+    if(st->codecpar->codec_id==AV_CODEC_ID_PCM_S16LE){
+      st->codecpar->codec_id = AV_CODEC_ID_PCM_S16BE;
       s.bswap_pcm = true;
     }
-    if(st->codec->codec_id==AV_CODEC_ID_PCM_F32LE){
-      st->codec->codec_id = AV_CODEC_ID_PCM_F32BE;
+    if(st->codecpar->codec_id==AV_CODEC_ID_PCM_F32LE){
+      st->codecpar->codec_id = AV_CODEC_ID_PCM_F32BE;
       s.bswap_pcm = true;
     }
   }
@@ -664,13 +668,13 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void *p
   adjust_codec_tag(st);
 
   if(si.avcodec_version){
-    st->codec->block_align = si.block_align;
-    st->codec->frame_size = si.frame_size;
-    st->codec->initial_padding = si.initial_padding;
-    st->codec->trailing_padding = si.trailing_padding;
+    st->codecpar->block_align = si.block_align;
+    st->codecpar->frame_size = si.frame_size;
+    st->codecpar->initial_padding = si.initial_padding;
+    st->codecpar->trailing_padding = si.trailing_padding;
   }
 
-  avcodec_parameters_from_context(st->codecpar,st->codec);
+  //?/avcodec_parameters_from_context(st->codecpar,st->codec);
 
   st->time_base = av_make_q(asi.dwScale,asi.dwRate);
 
@@ -691,7 +695,7 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void *pBuffer, uint32 cbBuffer
   }
 
   StreamInfo& s = stream[index];
-  switch(s.st->codec->codec_id){
+  switch(s.st->codecpar->codec_id){
   case AV_CODEC_ID_PCM_S16LE:
   case AV_CODEC_ID_PCM_S16BE:
   case AV_CODEC_ID_PCM_U16LE:
@@ -777,15 +781,15 @@ void FFOutputFile::import_bmp(AVStream *st, const void *pFormat, int cbFormat)
     }
   }
 
-  st->codec->codec_id = codec_id;
-  st->codec->codec_tag = tag;
-  st->codec->width = bm->biWidth;
-  st->codec->height = bm->biHeight;
+  st->codecpar->codec_id = codec_id;
+  st->codecpar->codec_tag = tag;
+  st->codecpar->width = bm->biWidth;
+  st->codecpar->height = bm->biHeight;
 
   if(cbFormat>sizeof(BITMAPINFOHEADER)){
-    st->codec->extradata_size = cbFormat-sizeof(BITMAPINFOHEADER);
-    st->codec->extradata = (uint8_t*)av_mallocz(st->codec->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
-    memcpy(st->codec->extradata, ((char*)pFormat)+sizeof(BITMAPINFOHEADER), st->codec->extradata_size);
+    st->codecpar->extradata_size = cbFormat-sizeof(BITMAPINFOHEADER);
+    st->codecpar->extradata = (uint8_t*)av_mallocz(st->codecpar->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
+    memcpy(st->codecpar->extradata, ((char*)pFormat)+sizeof(BITMAPINFOHEADER), st->codecpar->extradata_size);
   }
 }
 
@@ -794,22 +798,22 @@ void FFOutputFile::import_wav(AVStream *st, const void *pFormat, int cbFormat)
   if(cbFormat>=sizeof(WAVEFORMATEX_VDFF)){
     const WAVEFORMATEX_VDFF* ff = (const WAVEFORMATEX_VDFF*)pFormat;
     if(ff->Format.wFormatTag==WAVE_FORMAT_EXTENSIBLE && ff->SubFormat==KSDATAFORMAT_SUBTYPE_VDFF){
-      st->codec->codec_id = ff->codec_id;
-      st->codec->codec_tag = 0;
-      st->codec->channels = ff->Format.nChannels;
-      st->codec->channel_layout = 0;
-      st->codec->sample_rate = ff->Format.nSamplesPerSec;
-      st->codec->block_align = ff->Format.nBlockAlign;
-      st->codec->frame_size = ff->Samples.wSamplesPerBlock;
-      st->codec->sample_fmt = AV_SAMPLE_FMT_NONE;
-      st->codec->bits_per_coded_sample = ff->Format.wBitsPerSample;
-      st->codec->bit_rate = ff->Format.nAvgBytesPerSec*8;
+      st->codecpar->codec_id = ff->codec_id;
+      st->codecpar->codec_tag = 0;
+      st->codecpar->channels = ff->Format.nChannels;
+      st->codecpar->channel_layout = 0;
+      st->codecpar->sample_rate = ff->Format.nSamplesPerSec;
+      st->codecpar->block_align = ff->Format.nBlockAlign;
+      st->codecpar->frame_size = ff->Samples.wSamplesPerBlock;
+      st->codecpar->format = AV_SAMPLE_FMT_NONE;
+      st->codecpar->bits_per_coded_sample = ff->Format.wBitsPerSample;
+      st->codecpar->bit_rate = ff->Format.nAvgBytesPerSec*8;
 
       if(cbFormat>sizeof(WAVEFORMATEX_VDFF)){
         int size = cbFormat-sizeof(WAVEFORMATEX_VDFF);
-        st->codec->extradata_size = size;
-        st->codec->extradata = (uint8_t*)av_mallocz(size + AV_INPUT_BUFFER_PADDING_SIZE);
-        memcpy(st->codec->extradata, ff+1, size);
+        st->codecpar->extradata_size = size;
+        st->codecpar->extradata = (uint8_t*)av_mallocz(size + AV_INPUT_BUFFER_PADDING_SIZE);
+        memcpy(st->codecpar->extradata, ff+1, size);
       }
       return;
     }
@@ -849,19 +853,19 @@ void FFOutputFile::import_wav(AVStream *st, const void *pFormat, int cbFormat)
   {
     AVStream *fs = fmt_ctx->streams[0];
 
-    st->codec->codec_id = fs->codec->codec_id;
-    st->codec->codec_tag = fs->codec->codec_tag;
-    st->codec->channels = fs->codec->channels;
-    st->codec->channel_layout = fs->codec->channel_layout;
-    st->codec->sample_rate = fs->codec->sample_rate;
-    st->codec->block_align = fs->codec->block_align;
-    st->codec->frame_size = fs->codec->frame_size;
-    st->codec->sample_fmt = fs->codec->sample_fmt;
-    st->codec->bits_per_coded_sample = fs->codec->bits_per_coded_sample;
-    st->codec->bit_rate = fs->codec->bit_rate;
+    st->codecpar->codec_id              = fs->codecpar->codec_id;
+    st->codecpar->codec_tag             = fs->codecpar->codec_tag;
+    st->codecpar->channels              = fs->codecpar->channels;
+    st->codecpar->channel_layout        = fs->codecpar->channel_layout;
+    st->codecpar->sample_rate           = fs->codecpar->sample_rate;
+    st->codecpar->block_align           = fs->codecpar->block_align;
+    st->codecpar->frame_size            = fs->codecpar->frame_size;
+    st->codecpar->format                = fs->codecpar->format;
+    st->codecpar->bits_per_coded_sample = fs->codecpar->bits_per_coded_sample;
+    st->codecpar->bit_rate              = fs->codecpar->bit_rate;
 
-    st->codec->extradata_size = fs->codec->extradata_size;
-    st->codec->extradata = copy_extradata(fs->codec);
+    st->codecpar->extradata_size        = fs->codecpar->extradata_size;
+    st->codecpar->extradata             = copy_extradata(fs->codecpar);
   }
 
   fail:
@@ -900,7 +904,7 @@ bool FFOutputFile::test_streams()
     avcodec_parameters_copy(st->codecpar, si.st->codecpar);
     st->sample_aspect_ratio = si.st->sample_aspect_ratio;
     st->avg_frame_rate = si.st->avg_frame_rate;
-    av_stream_set_r_frame_rate(st,st->avg_frame_rate);
+    st->r_frame_rate = st->avg_frame_rate;
     st->time_base = si.st->time_base;
 
     if(st->codecpar->codec_type==AVMEDIA_TYPE_AUDIO){
@@ -1012,7 +1016,7 @@ void FFOutputFile::Write(uint32 index, const void *pBuffer, uint32 cbBuffer, Pac
   int64_t samples = info.samples;
   if(info.pcm_samples!=-1){
     samples = info.pcm_samples;
-    s.time_base = av_make_q(1,s.st->codec->sample_rate);
+    s.time_base = av_make_q(1,s.st->codecpar->sample_rate);
   }
   pkt.duration = samples;
   av_packet_rescale_ts(&pkt, s.time_base, s.st->time_base);

@@ -216,7 +216,7 @@ int detect_ff(VDXMediaInfo& info, const void *pHeader, int32_t nHeaderSize, cons
   pd.buf_size = (int)buf.size;
 
   int score=0;
-  AVInputFormat* fmt = av_probe_input_format3(&pd,true,&score);
+  const AVInputFormat* fmt = av_probe_input_format3(&pd,true,&score);
   if(fmt){
     for(int i=0; i<100; i++){
       int c = fmt->name[i];
@@ -624,10 +624,10 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
   if(strcmp(fmt->iformat->name,"gif")==0){ is_image=true; single_file_mode=true; }
   if(strcmp(fmt->iformat->name,"fits")==0){ is_image=true; single_file_mode=true; }
 
-  AVInputFormat* fmt_image2 = av_find_input_format("image2");
+  const AVInputFormat* fmt_image2 = av_find_input_format("image2");
 
   if(is_image && fmt_image2 && !single_file_mode){
-    AVRational r_fr = av_stream_get_r_frame_rate(fmt->streams[0]);
+    AVRational r_fr = fmt->streams[0]->r_frame_rate;
     wchar_t list_path[MAX_PATH];
     int start,count;
     if(detect_image_list(list_path,MAX_PATH,&start,&count)){
@@ -671,7 +671,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 
       // this is HUGE if streams are not evenly interleaved (like VD does by default)
       // this fix is hack, I dont know if it will work for other format
-      if(is_avi) fmt->streams[i]->nb_index_entries = 0;
+      //?/if(is_avi) fmt->streams[i]->nb_index_entries = 0;
     }}
   }
 
@@ -840,7 +840,7 @@ int seek_frame(AVFormatContext *s, int stream_index, int64_t timestamp, int flag
   int r = av_seek_frame(s,stream_index,timestamp,flags);
   if(r==-1 && timestamp==AV_SEEK_START){
     AVStream* st = s->streams[stream_index];
-    if(st->nb_index_entries) timestamp = st->index_entries[0].timestamp;
+    if(avformat_index_get_entries_count(st)>0) timestamp = avformat_index_get_entry(st, 0)->timestamp;
     r = av_seek_frame(s,stream_index,timestamp,flags);
   }
   return r;

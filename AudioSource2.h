@@ -8,6 +8,7 @@
 
 extern "C"
 {
+#include <libavcodec/avcodec.h>
 #include <libavutil/frame.h>
 #include <libavutil/opt.h>
 #include <libavformat/avformat.h>

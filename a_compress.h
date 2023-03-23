@@ -4,10 +4,9 @@
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
 extern "C" {
+#include <libavcodec/avcodec.h>
 #include <libavformat/avformat.h>
-#include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
-#include "libavutil/audio_fifo.h"
 #include <libswresample/swresample.h>
 }
 #include <windows.h>
@@ -35,7 +34,7 @@ public:
     void clear(){ version=0; quality=0; bitrate=0; flags=0; }
   }* config;
 
-  AVCodec* codec;
+  const AVCodec* codec;
   AVCodecContext* ctx;
   AVFrame* frame;
   SwrContext* swr;

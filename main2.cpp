@@ -13,11 +13,11 @@
 
 #ifdef _MSC_VER
 #include <delayimp.h>
-#pragma comment(lib, "avcodec-57")
-#pragma comment(lib, "avformat-57")
-#pragma comment(lib, "avutil-55")
-#pragma comment(lib, "swscale-4")
-#pragma comment(lib, "swresample-2")
+#pragma comment(lib, "avcodec")
+#pragma comment(lib, "avformat")
+#pragma comment(lib, "avutil")
+#pragma comment(lib, "swscale")
+#pragma comment(lib, "swresample")
 #pragma comment(lib, "delayimp")
 #endif
 
@@ -57,8 +57,6 @@ void init_av()
 {
   if(!av_initialized){
     av_initialized = 1;
-    av_register_all();
-    avcodec_register_all();
 
     #ifdef FFDEBUG
     //av_log_set_callback(av_log_func);
@@ -407,11 +405,11 @@ bool loadModules()
   p1+=8;
 
   wchar_t* module_name[5] = {
-    L"avutil-55.dll",
-    L"swresample-2.dll",
-    L"swscale-4.dll",
-    L"avcodec-57.dll",
-    L"avformat-57.dll",
+    L"avutil-58.dll",
+    L"swresample-4.dll",
+    L"swscale-7.dll",
+    L"avcodec-60.dll",
+    L"avformat-60.dll",
   };
 
   {for(int i=0; i<5; i++){
@@ -434,11 +432,11 @@ bool loadModules()
 void unloadModules()
 {
   char* module_name[5] = {
-    "avutil-55.dll",
-    "swresample-2.dll",
-    "swscale-4.dll",
-    "avcodec-57.dll",
-    "avformat-57.dll",
+    "avutil-58.dll",
+    "swresample-4.dll",
+    "swscale-7.dll",
+    "avcodec-60.dll",
+    "avformat-60.dll",
   };
 
   {for(int i=4; i>=0; i--){

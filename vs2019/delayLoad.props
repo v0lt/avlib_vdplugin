@@ -8,7 +8,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <Link>
-      <DelayLoadDLLs>avcodec-57.dll;avformat-57.dll;avutil-55.dll;swscale-4.dll;swresample-2.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
+      <DelayLoadDLLs>avcodec-60.dll;avformat-60.dll;avutil-58.dll;swscale-7.dll;swresample-4.dll;%(DelayLoadDLLs)</DelayLoadDLLs>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup />

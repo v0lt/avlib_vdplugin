@@ -59,7 +59,7 @@ int	VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
   m_streamIndex = streamIndex;
   m_pStreamCtx = m_pFormatCtx->streams[m_streamIndex];
 
-  AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
+  const AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
   if(!pDecoder){
     mContext.mpCallbacks->SetError("FFMPEG: Unsupported codec (%d)", m_pStreamCtx->codecpar->codec_id);
     return -1;
@@ -82,8 +82,9 @@ int	VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
   trust_sample_pos = false;
   if(time_base.den==1) trust_sample_pos = true; // works for mp4
   use_keys = false;
-  {for(int i=0; i<m_pStreamCtx->nb_index_entries; i++)
-    if(m_pStreamCtx->index_entries[i].flags & AVINDEX_KEYFRAME){ use_keys=true; break; } }
+  const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+  {for(int i=0; i< nb_index_entries; i++)
+    if(avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME){ use_keys=true; break; } }
 
   if(m_pStreamCtx->duration == AV_NOPTS_VALUE){
     /*
@@ -285,7 +286,7 @@ void VDFFAudioSource::init_start_time()
 int64_t VDFFAudioSource::frame_to_pts(sint64 frame, AVStream* video)
 {
   AVRational rate;
-  AVRational fr = av_stream_get_r_frame_rate(video);
+  AVRational fr = video->r_frame_rate;
   av_reduce(&rate.num,&rate.den,m_pCodecCtx->sample_rate*fr.den,fr.num,INT_MAX);
   int64 start = frame*rate.num/rate.den;
   int64_t pos = start * time_base.den / time_base.num - time_adjust;
