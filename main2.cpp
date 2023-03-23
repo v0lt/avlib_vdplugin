@@ -315,11 +315,11 @@ void loadConfig()
     GetPrivateProfileStringW(L"file_mask",L"video",&option_video[mp+1],mask,2048,buf);
     option_video.resize(mp+1);
 
-    int p = 0;
-    int n = wcslen(mask);
+    ptrdiff_t p = 0;
+    const ptrdiff_t n = wcslen(mask);
     int count1 = 0;
     while(p<n){
-      int p1 = n;
+      ptrdiff_t p1 = n;
       wchar_t* p2 = wcschr(mask+p,';');
       if(p2 && p2-mask<p1) p1 = p2-mask;
 
@@ -340,11 +340,11 @@ void loadConfig()
     GetPrivateProfileStringW(L"file_mask",L"images",&option_image[mp+1],mask,2048,buf);
     option_image.resize(mp+1);
 
-    int p = 0;
-    int n = wcslen(mask);
+    ptrdiff_t p = 0;
+    const ptrdiff_t n = wcslen(mask);
     int count1 = 0;
     while(p<n){
-      int p1 = n;
+      ptrdiff_t p1 = n;
       wchar_t* p2 = wcschr(mask+p,';');
       if(p2 && p2-mask<p1) p1 = p2-mask;
 
@@ -365,11 +365,11 @@ void loadConfig()
     GetPrivateProfileStringW(L"file_mask",L"audio",&option_audio[mp+1],mask,2048,buf);
     option_audio.resize(mp+1);
 
-    int p = 0;
-    int n = wcslen(mask);
+    ptrdiff_t p = 0;
+    const ptrdiff_t n = wcslen(mask);
     int count1 = 0;
     while(p<n){
-      int p1 = n;
+      ptrdiff_t p1 = n;
       wchar_t* p2 = wcschr(mask+p,';');
       if(p2 && p2-mask<p1) p1 = p2-mask;
 
