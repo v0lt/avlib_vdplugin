@@ -800,8 +800,7 @@ void FFOutputFile::import_wav(AVStream *st, const void *pFormat, int cbFormat)
     if(ff->Format.wFormatTag==WAVE_FORMAT_EXTENSIBLE && ff->SubFormat==KSDATAFORMAT_SUBTYPE_VDFF){
       st->codecpar->codec_id = ff->codec_id;
       st->codecpar->codec_tag = 0;
-      st->codecpar->channels = ff->Format.nChannels;
-      st->codecpar->channel_layout = 0;
+      av_channel_layout_default(&st->codecpar->ch_layout, ff->Format.nChannels);
       st->codecpar->sample_rate = ff->Format.nSamplesPerSec;
       st->codecpar->block_align = ff->Format.nBlockAlign;
       st->codecpar->frame_size = ff->Samples.wSamplesPerBlock;
@@ -855,8 +854,7 @@ void FFOutputFile::import_wav(AVStream *st, const void *pFormat, int cbFormat)
 
     st->codecpar->codec_id              = fs->codecpar->codec_id;
     st->codecpar->codec_tag             = fs->codecpar->codec_tag;
-    st->codecpar->channels              = fs->codecpar->channels;
-    st->codecpar->channel_layout        = fs->codecpar->channel_layout;
+    av_channel_layout_copy(&st->codecpar->ch_layout, &fs->codecpar->ch_layout);
     st->codecpar->sample_rate           = fs->codecpar->sample_rate;
     st->codecpar->block_align           = fs->codecpar->block_align;
     st->codecpar->frame_size            = fs->codecpar->frame_size;
