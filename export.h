@@ -32,12 +32,15 @@ struct IOBuffer{
     size = n;
   }
 
-  static int Read(void* obj, uint8_t* buf, int buf_size){
+  static int Read(void* obj, uint8_t* buf, int buf_size) {
     IOBuffer* t = (IOBuffer*)obj;
-    int64_t n = t->pos+buf_size<t->size ? buf_size : t->size-t->pos;
-    memcpy(buf,t->data+t->pos,int(n));
-    t->pos += n;
-    return int(n);
+    const int64_t n = (t->pos + buf_size < t->size) ? buf_size : t->size - t->pos;
+    if (n > 0) {
+      memcpy(buf, t->data + t->pos, (size_t)n);
+      t->pos += n;
+      return int(n);
+    }
+    return AVERROR_EOF;
   }
 
   static int64_t Seek(void* obj, int64_t offset, int whence){
