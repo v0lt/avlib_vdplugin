@@ -1,4 +1,3 @@
-#include <tchar.h>
 #include "FileInfo2.h"
 #include "InputFile2.h"
 #include "VideoSource2.h"
@@ -331,7 +330,7 @@ void VDFFInputFileInfoDialog::print_metadata()
         s += "File:";
         header = false;
       }
-      _stprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+      sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
       s += buf;
     }
   }
@@ -344,7 +343,7 @@ void VDFFInputFileInfoDialog::print_metadata()
         s += "Video:";
         header = false;
       }
-      _stprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+      sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
       s += buf;
     }
   }
@@ -357,7 +356,7 @@ void VDFFInputFileInfoDialog::print_metadata()
         s += "Audio:";
         header = false;
       }
-      _stprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+      sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
       s += buf;
     }
   }
@@ -366,11 +365,11 @@ void VDFFInputFileInfoDialog::print_metadata()
   gi.find_info(segment->path);
 
   if(gi.type){
-    _stprintf_s(buf, buf_size, "GoPro info:\t%s\r\n", gi.type->Name);
+    sprintf_s(buf, buf_size, "GoPro info:\t%s\r\n", gi.type->Name);
     s += buf;
-    _stprintf_s(buf, buf_size, "\tfirmware = %s\r\n", gi.firmware);
+    sprintf_s(buf, buf_size, "\tfirmware = %s\r\n", gi.firmware);
     s += buf;
-    _stprintf_s(buf, buf_size, "\tserial# = %s\r\n", gi.cam_serial);
+    sprintf_s(buf, buf_size, "\tserial# = %s\r\n", gi.cam_serial);
     s += buf;
     s += gi.setup_info;
   }
