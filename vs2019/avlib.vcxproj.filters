@@ -80,6 +80,5 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\ffmpeg.bmp" />
-    <Image Include="..\cineform.bmp" />
   </ItemGroup>
 </Project>
