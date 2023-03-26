@@ -108,7 +108,7 @@
     </ClCompile>
     <Link>
       <AdditionalLibraryDirectories>..\ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\avlib.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>avlib.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -136,7 +136,7 @@
     <Link>
       <OutputFile>$(OutDir)avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\avlib.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>avlib.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
@@ -166,7 +166,7 @@
     <Link>
       <OutputFile>.\..\bin\avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\avlib.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>avlib.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -201,7 +201,7 @@
     <Link>
       <OutputFile>.\..\bin64\avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <ModuleDefinitionFile>..\avlib.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>avlib.def</ModuleDefinitionFile>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <SubSystem>Windows</SubSystem>
       <OptimizeReferences>true</OptimizeReferences>
@@ -213,51 +213,51 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\AudioSource2.h" />
-    <ClInclude Include="..\a_compress.h" />
-    <ClInclude Include="..\compress.h" />
-    <ClInclude Include="..\export.h" />
-    <ClInclude Include="..\fflayer.h" />
-    <ClInclude Include="..\FileInfo2.h" />
-    <ClInclude Include="..\gopro.h" />
-    <ClInclude Include="..\InputFile2.h" />
-    <ClInclude Include="..\mov_mp4.h" />
-    <ClInclude Include="..\resource.h" />
+    <ClInclude Include="AudioSource2.h" />
+    <ClInclude Include="a_compress.h" />
+    <ClInclude Include="compress.h" />
+    <ClInclude Include="export.h" />
+    <ClInclude Include="fflayer.h" />
+    <ClInclude Include="FileInfo2.h" />
+    <ClInclude Include="gopro.h" />
+    <ClInclude Include="InputFile2.h" />
+    <ClInclude Include="mov_mp4.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="..\vd2\plugin\vdinputdriver.h" />
     <ClInclude Include="..\vd2\plugin\vdplugin.h" />
     <ClInclude Include="..\vd2\VDXFrame\Unknown.h" />
     <ClInclude Include="..\vd2\VDXFrame\VideoFilter.h" />
     <ClInclude Include="..\vd2\VDXFrame\VideoFilterDialog.h" />
     <ClInclude Include="..\vd2\VDXFrame\VideoFilterEntry.h" />
-    <ClInclude Include="..\VideoSource2.h" />
+    <ClInclude Include="VideoSource2.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\AudioSource2.cpp" />
-    <ClCompile Include="..\a_compress.cpp" />
-    <ClCompile Include="..\compress.cpp" />
-    <ClCompile Include="..\export.cpp" />
-    <ClCompile Include="..\fflayer.cpp" />
-    <ClCompile Include="..\fflayer_render.cpp" />
-    <ClCompile Include="..\FileInfo2.cpp" />
-    <ClCompile Include="..\gopro.cpp" />
-    <ClCompile Include="..\InputFile2.cpp" />
-    <ClCompile Include="..\main2.cpp" />
-    <ClCompile Include="..\mov_mp4.cpp" />
+    <ClCompile Include="AudioSource2.cpp" />
+    <ClCompile Include="a_compress.cpp" />
+    <ClCompile Include="compress.cpp" />
+    <ClCompile Include="export.cpp" />
+    <ClCompile Include="fflayer.cpp" />
+    <ClCompile Include="fflayer_render.cpp" />
+    <ClCompile Include="FileInfo2.cpp" />
+    <ClCompile Include="gopro.cpp" />
+    <ClCompile Include="InputFile2.cpp" />
+    <ClCompile Include="main2.cpp" />
+    <ClCompile Include="mov_mp4.cpp" />
     <ClCompile Include="..\vd2\VDXFrame\VideoFilter.cpp" />
     <ClCompile Include="..\vd2\VDXFrame\VideoFilterDialog.cpp" />
     <ClCompile Include="..\vd2\VDXFrame\VideoFilterEntry.cpp" />
-    <ClCompile Include="..\vfmain.cpp" />
-    <ClCompile Include="..\VideoSource2.cpp" />
-    <ClCompile Include="..\nut.cpp" />
+    <ClCompile Include="vfmain.cpp" />
+    <ClCompile Include="VideoSource2.cpp" />
+    <ClCompile Include="nut.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\avlib.def" />
+    <None Include="avlib.def" />
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="..\avlib.rc" />
+    <ResourceCompile Include="avlib.rc" />
   </ItemGroup>
   <ItemGroup>
-    <Image Include="..\ffmpeg.bmp" />
+    <Image Include="ffmpeg.bmp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
