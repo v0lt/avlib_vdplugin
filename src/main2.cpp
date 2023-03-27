@@ -12,13 +12,11 @@
 #include "resource.h"
 
 #ifdef _MSC_VER
-#include <delayimp.h>
 #pragma comment(lib, "avcodec")
 #pragma comment(lib, "avformat")
 #pragma comment(lib, "avutil")
 #pragma comment(lib, "swscale")
 #pragma comment(lib, "swresample")
-#pragma comment(lib, "delayimp")
 #endif
 
 #pragma comment(lib, "vfw32")
