@@ -190,16 +190,23 @@ int VDFFVideoSource::initStream( VDFFInputFile* pSource, int streamIndex )
   average_fr = false;
 
   const AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
+
   if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP8){
     // on2 vp8 does not extract alpha
     const AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx");
     if(pDecoder2) pDecoder = pDecoder2;
   }
-  if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP9){
+  else if(m_pStreamCtx->codecpar->codec_id==AV_CODEC_ID_VP9){
     // on2 vp9 does not extract alpha
     const AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libvpx-vp9");
     if(pDecoder2) pDecoder = pDecoder2;
   }
+  else if (m_pStreamCtx->codecpar->codec_id == AV_CODEC_ID_AV1) {
+    // "libdav1d" causes video frame jerking and freezing
+    const AVCodec* pDecoder2 = avcodec_find_decoder_by_name("libaom-av1");
+    if (pDecoder2) pDecoder = pDecoder2;
+  }
+
   if(!pDecoder){
     char buf[AV_FOURCC_MAX_STRING_SIZE];
     av_fourcc_make_string(buf,m_pStreamCtx->codecpar->codec_tag);
