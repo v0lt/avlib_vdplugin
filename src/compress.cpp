@@ -1,6 +1,7 @@
 #include "vd2\plugin\vdplugin.h"
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include <memory>
+#include <functional>
 #include <windows.h>
 #include <vfw.h>
 #include <commctrl.h>
@@ -850,10 +851,7 @@ struct CodecBase : public CodecClass {
 
 	LRESULT compress2(ICCOMPRESS* icc, VDXPictureCompress* pc)
 	{
-		AVPacket pkt;
-		av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
-		pkt.data = 0;
-		pkt.size = 0;
+		std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt { av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
 		int ret = 0;
 
@@ -903,25 +901,25 @@ struct CodecBase : public CodecClass {
 		}
 
 		if (ret == 0) {
-			ret = avcodec_receive_packet(ctx, &pkt);
+			ret = avcodec_receive_packet(ctx, pkt.get());
 		}
 
 		if (ret == 0) {
-			if (pkt.size > (int)icc->lpbiOutput->biSizeImage) {
-				av_packet_unref(&pkt);
+			if (pkt->size > (int)icc->lpbiOutput->biSizeImage) {
+				av_packet_unref(pkt.get());
 				return ICERR_MEMORY;
 			}
 
 			DWORD flags = 0;
-			if (pkt.flags & AV_PKT_FLAG_KEY) flags = AVIIF_KEYFRAME;
+			if (pkt->flags & AV_PKT_FLAG_KEY) flags = AVIIF_KEYFRAME;
 			*icc->lpdwFlags = flags;
 
-			memcpy(icc->lpOutput, pkt.data, pkt.size);
-			icc->lpbiOutput->biSizeImage = pkt.size;
-			pc->pts = pkt.pts;
-			pc->dts = pkt.dts;
-			pc->duration = pkt.duration;
-			av_packet_unref(&pkt);
+			memcpy(icc->lpOutput, pkt->data, pkt->size);
+			icc->lpbiOutput->biSizeImage = pkt->size;
+			pc->pts = pkt->pts;
+			pc->dts = pkt->dts;
+			pc->duration = pkt->duration;
+			av_packet_unref(pkt.get());
 		}
 		else if (ret == AVERROR(EAGAIN)) {
 			icc->lpbiOutput->biSizeImage = 0;
