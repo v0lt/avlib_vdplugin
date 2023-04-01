@@ -25,13 +25,9 @@ VDFFAudio::VDFFAudio(const VDXInputDriverContext& pContext)
 	in_pos = 0;
 	out_format = 0;
 	out_format_size = 0;
-	{
-		memset(&pkt, 0, sizeof(pkt));
-		pkt.pts = AV_NOPTS_VALUE;
-		pkt.dts = AV_NOPTS_VALUE;
-		pkt.pos = -1;
-		pkt.time_base = av_make_q(0, 1);
-	}
+	pkt.data = 0;
+	pkt.size = 0;
+	av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
 	total_in = 0;
 	total_out = 0;
 	wav_compatible = false;

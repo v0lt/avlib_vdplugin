@@ -851,7 +851,7 @@ struct CodecBase : public CodecClass {
 	LRESULT compress2(ICCOMPRESS* icc, VDXPictureCompress* pc)
 	{
 		AVPacket pkt;
-		av_init_packet(&pkt);
+		av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
 		pkt.data = 0;
 		pkt.size = 0;
 

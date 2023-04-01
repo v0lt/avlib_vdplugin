@@ -11,8 +11,6 @@
 #include "resource.h"
 #include <vfw.h>
 
-#pragma warning(disable:4996)
-
 extern HINSTANCE hInstance;
 
 void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src);
@@ -1007,7 +1005,7 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	if (!s.st) return;
 
 	AVPacket pkt;
-	av_init_packet(&pkt);
+	av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
 	pkt.data = (uint8*)pBuffer;
 	pkt.size = cbBuffer;
 	if (s.bswap_pcm) pkt.data = (uint8*)bswap_pcm(index, pBuffer, cbBuffer);
