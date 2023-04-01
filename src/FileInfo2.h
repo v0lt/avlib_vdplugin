@@ -14,31 +14,31 @@ class VDFFInputFile;
 
 class VDFFInputFileInfoDialog : public VDXVideoFilterDialog {
 public:
-	VDFFInputFileInfoDialog(){
-    source = 0;
-    segment = 0;
-    //pFormatCtx = 0;
-    //pVideoStream = 0;
-    //pAudioStream = 0;
-  }
+	VDFFInputFileInfoDialog() {
+		source = 0;
+		segment = 0;
+		//pFormatCtx = 0;
+		//pVideoStream = 0;
+		//pAudioStream = 0;
+	}
 	bool Show(VDXHWND parent, VDFFInputFile* pInput);
 
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 
 private:
 	VDFFInputFile* source;
-  //AVFormatContext* pFormatCtx;
-  //AVStream* pVideoStream;
-  //AVStream* pAudioStream;
+	//AVFormatContext* pFormatCtx;
+	//AVStream* pVideoStream;
+	//AVStream* pAudioStream;
 
 	VDFFInputFile* segment;
-  int segment_pos;
-  int segment_count;
+	int segment_pos;
+	int segment_count;
 
-  void load_segment();
-  void print_format();
-  void print_video();
-  void print_audio();
-  void print_metadata();
-  void print_performance();
+	void load_segment();
+	void print_format();
+	void print_video();
+	void print_audio();
+	void print_metadata();
+	void print_performance();
 };

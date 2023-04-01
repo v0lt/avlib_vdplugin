@@ -1,11 +1,11 @@
 #ifndef compress_header
 #define compress_header
 
-struct CodecClass{
-  int class_id;
+struct CodecClass {
+	int class_id;
 
-  CodecClass(){ class_id = 0; }
-  virtual ~CodecClass(){}
+	CodecClass() { class_id = 0; }
+	virtual ~CodecClass() {}
 };
 
 #endif
