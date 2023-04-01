@@ -1,6 +1,6 @@
 #include "vd2\plugin\vdplugin.h"
 #include <vd2/VDXFrame/VideoFilterDialog.h>
-#include <memory.h>
+#include <memory>
 #include <windows.h>
 #include <vfw.h>
 #include <commctrl.h>
@@ -13,8 +13,6 @@ extern "C" {
 }
 #include "resource.h"
 #include "compress.h"
-
-#pragma warning(disable:4996) // silence deprecated stuff
 
 void init_av();
 extern HINSTANCE hInstance;
@@ -1055,19 +1053,22 @@ void ConfigBase::init_bits()
 	CheckDlgButton(mhdlg, IDC_16_BIT, codec->config->bits == 16 ? BST_CHECKED : BST_UNCHECKED);
 }
 
-void ConfigBase::notify_hide() {
+void ConfigBase::notify_hide()
+{
 	if (idc_message != -1) SetDlgItemText(mhdlg, idc_message, 0);
 }
 
-void ConfigBase::notify_bits_change(int bits_new, int bits_old) {
+void ConfigBase::notify_bits_change(int bits_new, int bits_old)
+{
 	if (idc_message != -1) {
 		wchar_t buf[80];
-		swprintf(buf, L"(!) Bit depth adjusted (was %d)", bits_old);
+		swprintf(buf, std::size(buf), L"(!) Bit depth adjusted (was %d)", bits_old);
 		SetDlgItemTextW(mhdlg, idc_message, buf);
 	}
 }
 
-INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+{
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
