@@ -13,27 +13,13 @@ extern HINSTANCE hInstance;
 VDFFAudio::VDFFAudio(const VDXInputDriverContext& pContext)
 	: mContext(pContext)
 {
-	config = 0;
-	codec = 0;
-	ctx = 0;
-	frame = 0;
-	swr = 0;
-	sample_buf = 0;
-	frame_size = 0;
-	frame_pos = 0;
-	in_buf = 0;
-	in_pos = 0;
-	out_format = 0;
-	out_format_size = 0;
-	total_in = 0;
-	total_out = 0;
-	wav_compatible = false;
-	max_packet = 0;
+	pkt = av_packet_alloc();
 }
 
 VDFFAudio::~VDFFAudio()
 {
 	cleanup();
+	av_packet_free(&pkt);
 }
 
 void VDFFAudio::cleanup()
@@ -47,7 +33,7 @@ void VDFFAudio::cleanup()
 		av_frame_free(&frame);
 		frame = 0;
 	}
-	av_packet_unref(pkt.get());
+	av_packet_unref(pkt);
 	if (swr) swr_free(&swr);
 	if (sample_buf) {
 		av_freep(&sample_buf[0]);
@@ -315,8 +301,8 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 		avcodec_send_frame(ctx, 0);
 	}
 
-	av_packet_unref(pkt.get());
-	avcodec_receive_packet(ctx, pkt.get());
+	av_packet_unref(pkt);
+	avcodec_receive_packet(ctx, pkt);
 	{for (int i = 0; i < pkt->side_data_elems; i++) {
 		AVPacketSideData& s = pkt->side_data[i];
 		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) export_wav();
@@ -383,7 +369,7 @@ unsigned VDFFAudio::CopyOutput(void* dst, unsigned bytes, sint64& duration)
 	duration = pkt->duration;
 	bytes = pkt->size;
 	memcpy(dst, pkt->data, bytes);
-	av_packet_unref(pkt.get());
+	av_packet_unref(pkt);
 	return bytes;
 }
 

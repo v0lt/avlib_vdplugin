@@ -1,6 +1,8 @@
 #include "InputFile2.h"
 #include "VideoSource2.h"
 #include "export.h"
+#include <memory>
+#include <functional>
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -20,38 +22,7 @@ uint8_t* align_buf(uint8_t* p)
 VDFFVideoSource::VDFFVideoSource(const VDXInputDriverContext& context)
 	:mContext(context)
 {
-	m_pFormatCtx       = 0;
-	m_pStreamCtx       = 0;
-	m_pCodecCtx        = 0;
-	m_pSwsCtx          = 0;
-	direct_format      = 0;
-	direct_format_len  = 0;
-	frame              = 0;
-	memset(&copy_pkt, 0, sizeof(copy_pkt));
-	errorMode = kErrorModeReportAll; // still not supported by host anyway
-	m_pixmap_data      = 0;
-	m_pixmap_frame     = -1;
-	last_request       = -1;
-	next_frame         = -1;
-	last_seek_frame    = -1;
-	buffer             = 0;
-	buffer_count       = 0;
-	small_buffer_count = 0;
-	buffer_reserve     = 0;
-	frame_array        = 0;
-	frame_type         = 0;
-	flip_image         = false;
-	direct_buffer      = false;
-	is_image_list      = false;
-	avi_drop_index     = false;
-	copy_mode          = false;
-	decode_mode        = true;
-	small_cache_mode   = false;
-	enable_prefetch    = false;
-	decoded_count      = 0;
-	buffer             = 0;
-	mem                = 0;
-
+	copy_pkt = av_packet_alloc();
 	/*
 	kPixFormat_XRGB64 = 0;
 	IFilterModPixmap* fmpixmap = (IFilterModPixmap*)context.mpCallbacks->GetExtendedAPI("IFilterModPixmap");
@@ -63,7 +34,8 @@ VDFFVideoSource::VDFFVideoSource(const VDXInputDriverContext& context)
 
 VDFFVideoSource::~VDFFVideoSource()
 {
-	av_packet_unref(&copy_pkt);
+	av_packet_free(&copy_pkt);
+
 	free(direct_format);
 	if (frame) av_frame_free(&frame);
 	if (m_pCodecCtx) avcodec_free_context(&m_pCodecCtx);
@@ -658,7 +630,7 @@ void VDFFVideoSource::setCopyMode(bool v)
 		last_seek_frame = -1;
 		enable_prefetch = false;
 	}
-	av_packet_unref(&copy_pkt);
+	av_packet_unref(copy_pkt);
 }
 
 void VDFFVideoSource::setDecodeMode(bool v)
@@ -1831,12 +1803,12 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	*lBytesRead = 0;
 	*lSamplesRead = 1;
 
-	if (copy_mode && copy_pkt.data) {
-		*lBytesRead = copy_pkt.size;
+	if (copy_mode && copy_pkt->data) {
+		*lBytesRead = copy_pkt->size;
 		if (!lpBuffer) return true;
-		if (cbBuffer < uint32(copy_pkt.size)) return false;
-		memcpy(lpBuffer, copy_pkt.data, copy_pkt.size);
-		av_packet_unref(&copy_pkt);
+		if (cbBuffer < uint32(copy_pkt->size)) return false;
+		memcpy(lpBuffer, copy_pkt->data, copy_pkt->size);
+		av_packet_unref(copy_pkt);
 		return true;
 	}
 
@@ -1854,7 +1826,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 		else return true;
 	}
 
-	av_packet_unref(&copy_pkt);
+	av_packet_unref(copy_pkt);
 	if (copy_mode && start != next_frame) {
 		free_buffers();
 	}
@@ -1908,12 +1880,12 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 			}
 		}
 
-		if (copy_mode && copy_pkt.data) {
-			*lBytesRead = copy_pkt.size;
+		if (copy_mode && copy_pkt->data) {
+			*lBytesRead = copy_pkt->size;
 			if (!lpBuffer) return true;
-			if (cbBuffer < uint32(copy_pkt.size)) return false;
-			memcpy(lpBuffer, copy_pkt.data, copy_pkt.size);
-			av_packet_unref(&copy_pkt);
+			if (cbBuffer < uint32(copy_pkt->size)) return false;
+			memcpy(lpBuffer, copy_pkt->data, copy_pkt->size);
+			av_packet_unref(copy_pkt);
 			return true;
 		}
 
@@ -1934,43 +1906,41 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 
 bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 {
-	AVPacket pkt;
-	pkt.data = 0;
-	pkt.size = 0;
+	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
 	if (copy_mode && !decode_mode) {
 		while (1) {
-			int rf = av_read_frame(m_pFormatCtx, &pkt);
+			int rf = av_read_frame(m_pFormatCtx, pkt.get());
 			if (rf < 0) return false;
 			bool done = false;
-			if (pkt.stream_index == m_streamIndex) {
-				int pos = handle_frame_num(pkt.pts, pkt.dts);
+			if (pkt->stream_index == m_streamIndex) {
+				int pos = handle_frame_num(pkt->pts, pkt->dts);
 				if (pos == -1 || pos > desired_frame) {
-					av_packet_unref(&pkt);
+					av_packet_unref(pkt.get());
 					return false;
 				}
 				next_frame = pos + 1;
 				if (pos == desired_frame) {
-					av_packet_unref(&copy_pkt);
-					av_packet_ref(&copy_pkt, &pkt);
+					av_packet_unref(copy_pkt);
+					av_packet_ref(copy_pkt, pkt.get());
 					done = true;
 				}
 			}
-			av_packet_unref(&pkt);
+			av_packet_unref(pkt.get());
 			if (done) return true;
 		}
 	}
 
 	while (1) {
-		int rf = av_read_frame(m_pFormatCtx, &pkt);
+		int rf = av_read_frame(m_pFormatCtx, pkt.get());
 		if (rf < 0) {
-			pkt.data = 0;
-			pkt.size = 0;
+			pkt->data = 0;
+			pkt->size = 0;
 			// end of stream, grab buffered images
-			pkt.stream_index = m_streamIndex;
+			pkt->stream_index = m_streamIndex;
 			while (1) {
 				if (direct_buffer) alloc_direct_buffer();
-				avcodec_send_packet(m_pCodecCtx, &pkt);
+				avcodec_send_packet(m_pCodecCtx, pkt.get());
 				int f = avcodec_receive_frame(m_pCodecCtx, frame);
 				if (f != 0) return false;
 				if (init) {
@@ -1985,9 +1955,9 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 		}
 		else {
 			int done_frames = 0;
-			if (pkt.stream_index == m_streamIndex) {
+			if (pkt->stream_index == m_streamIndex) {
 				if (direct_buffer) alloc_direct_buffer();
-				avcodec_send_packet(m_pCodecCtx, &pkt);
+				avcodec_send_packet(m_pCodecCtx, pkt.get());
 				int f = avcodec_receive_frame(m_pCodecCtx, frame);
 				if (f == 0) {
 					if (init) {
@@ -1998,12 +1968,12 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 					av_frame_unref(frame);
 					done_frames++;
 					if (copy_mode && pos == desired_frame) {
-						av_packet_unref(&copy_pkt);
-						av_packet_ref(&copy_pkt, &pkt);
+						av_packet_unref(copy_pkt);
+						av_packet_ref(copy_pkt, pkt.get());
 					}
 				}
 			}
-			av_packet_unref(&pkt);
+			av_packet_unref(pkt.get());
 			if (done_frames > 0) return true;
 		}
 	}

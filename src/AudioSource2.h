@@ -103,7 +103,7 @@ public:
 
 	int initStream(VDFFInputFile* pSource, int streamIndex);
 	void init_start_time();
-	int read_packet(AVPacket& pkt, ReadInfo& ri);
+	int read_packet(AVPacket* pkt, ReadInfo& ri);
 	void insert_silence(int64_t start, uint32_t count);
 	void write_silence(void* dst, uint32_t count);
 	void invalidate(int64_t start, uint32_t count);

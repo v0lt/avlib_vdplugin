@@ -88,21 +88,21 @@ public:
 	const VDXInputDriverContext& mContext;
 	VDFFInputFile* m_pSource;
 	int m_streamIndex;
-	AVFormatContext* m_pFormatCtx;
-	AVStream* m_pStreamCtx;
-	AVCodecContext* m_pCodecCtx;
-	VDXStreamSourceInfoV3   m_streamInfo;
-	void* direct_format;
-	int direct_format_len;
+	AVFormatContext* m_pFormatCtx = nullptr;
+	AVStream* m_pStreamCtx        = nullptr;
+	AVCodecContext* m_pCodecCtx   = nullptr;
+	VDXStreamSourceInfoV3 m_streamInfo;
+	void* direct_format   = nullptr;
+	int direct_format_len = 0;
 	AVRational time_base;
 	int64_t start_time;
 
-	AVFrame* frame;
-	SwsContext* m_pSwsCtx;
+	AVFrame* frame        = nullptr;
+	SwsContext* m_pSwsCtx = nullptr;
 	VDXPixmapAlpha m_pixmap;
 	FilterModPixmapInfo m_pixmap_info;
-	uint8_t* m_pixmap_data;
-	int m_pixmap_frame;
+	uint8_t* m_pixmap_data = nullptr;
+	int m_pixmap_frame = 0;
 
 	struct ConvertInfo {
 		nsVDXPixmap::VDXPixmapFormat req_format;
@@ -123,7 +123,7 @@ public:
 		}
 	} convertInfo;
 
-	ErrorMode errorMode;
+	ErrorMode errorMode = kErrorModeReportAll; // still not supported by host anyway
 
 	struct BufferPage {
 		enum {
@@ -139,48 +139,48 @@ public:
 		void* map_base;
 		uint8_t* p;
 	};
-	BufferPage* buffer;
-	int buffer_count;
-	int buffer_reserve;
-	HANDLE mem;
+	BufferPage* buffer = nullptr;
+	int buffer_count   = 0;
+	int buffer_reserve = 0;
+	HANDLE mem         = nullptr;
 
 	int sample_count;
-	BufferPage** frame_array;
-	char* frame_type;
+	BufferPage** frame_array = nullptr;
+	char* frame_type         = nullptr;
 	int64_t desired_frame;
 	int required_count;
-	int last_request;
-	int next_frame;
+	int last_request    = -1;
+	int next_frame      = -1;
 	int first_frame;
 	int last_frame;
-	int last_seek_frame;
+	int last_seek_frame = -1;
 	int used_frames;
 	int keyframe_gap;
 	int fw_seek_threshold;
-	int decoded_count;
+	int decoded_count = 0;
 
 	AVPixelFormat frame_fmt;
 	int frame_width;
 	int frame_height;
 	int frame_size;
 
-	bool flip_image;
+	bool flip_image        = false;
 	bool trust_index;
-	bool avi_drop_index;
+	bool avi_drop_index    = false;
 	bool sparse_index;
 	bool has_vfr;
 	bool average_fr;
-	bool direct_buffer;
-	bool is_image_list;
-	bool copy_mode;
-	bool decode_mode;
-	bool small_cache_mode;
-	bool enable_prefetch;
-	int small_buffer_count;
+	bool direct_buffer     = false;
+	bool is_image_list     = false;
+	bool copy_mode         = false;
+	bool decode_mode       = true;
+	bool small_cache_mode  = false;
+	bool enable_prefetch   = false;
+	int small_buffer_count = 0;
 	int64_t dead_range_start;
 	int64_t dead_range_end;
 
-	AVPacket copy_pkt;
+	AVPacket* copy_pkt = nullptr;
 
 	//uint64 kPixFormat_XRGB64;
 

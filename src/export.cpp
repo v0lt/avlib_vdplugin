@@ -363,20 +363,21 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		av_seek_frame(fmt, video, pos1, 0);
 
 		while (1) {
-			AVPacket pkt;
-			err = av_read_frame(fmt, &pkt);
+			std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
+
+			err = av_read_frame(fmt, pkt.get());
 			if (err < 0) break;
 
-			AVStream* s = fmt->streams[pkt.stream_index];
-			int64_t t = pkt.pts;
-			if (t == AV_NOPTS_VALUE) t = pkt.dts;
-			if (pkt.stream_index == video) {
+			AVStream* s = fmt->streams[pkt->stream_index];
+			int64_t t = pkt->pts;
+			if (t == AV_NOPTS_VALUE) t = pkt->dts;
+			if (pkt->stream_index == video) {
 				if (vt_end == -1) vt_end = t;
 			}
-			if (pkt.stream_index == audio) {
+			if (pkt->stream_index == audio) {
 				if (at_end == -1) at_end = t;
 			}
-			av_packet_unref(&pkt);
+			av_packet_unref(pkt.get());
 
 			if (vt_end != -1 && (at_end != -1 || audio == -1)) break;
 		}
@@ -393,43 +394,44 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			progress.check();
 			if (progress.abort) break;
 
-			AVPacket pkt;
-			err = av_read_frame(fmt, &pkt);
+			std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
+
+			err = av_read_frame(fmt, pkt.get());
 			if (err < 0) { err = 0; break; }
 
-			AVStream* in_stream = fmt->streams[pkt.stream_index];
-			int64_t t = pkt.pts;
-			if (t == AV_NOPTS_VALUE) t = pkt.dts;
+			AVStream* in_stream = fmt->streams[pkt->stream_index];
+			int64_t t = pkt->pts;
+			if (t == AV_NOPTS_VALUE) t = pkt->dts;
 
 			AVStream* out_stream = 0;
-			if (pkt.stream_index == video) {
+			if (pkt->stream_index == video) {
 				if (vt_end != -1 && t >= vt_end) v_end = true; else out_stream = out_video;
-				if (pkt.pts != AV_NOPTS_VALUE) pkt.pts -= pos0;
-				if (pkt.dts != AV_NOPTS_VALUE) pkt.dts -= pos0;
+				if (pkt->pts != AV_NOPTS_VALUE) pkt->pts -= pos0;
+				if (pkt->dts != AV_NOPTS_VALUE) pkt->dts -= pos0;
 				progress.current_pos = (double(t) - pos0) / (pos1 - pos0);
 			}
-			if (pkt.stream_index == audio) {
+			if (pkt->stream_index == audio) {
 				if (at_end != -1 && t >= at_end) a_end = true; else out_stream = out_audio;
 				out_stream = out_audio;
-				if (pkt.pts != AV_NOPTS_VALUE) pkt.pts -= a_bias;
-				if (pkt.dts != AV_NOPTS_VALUE) pkt.dts -= a_bias;
+				if (pkt->pts != AV_NOPTS_VALUE) pkt->pts -= a_bias;
+				if (pkt->dts != AV_NOPTS_VALUE) pkt->dts -= a_bias;
 			}
 
 			if (out_stream) {
-				int64_t size = pkt.size;
-				av_packet_rescale_ts(&pkt, in_stream->time_base, out_stream->time_base);
-				pkt.pos = -1;
-				pkt.stream_index = out_stream->index;
-				err = av_interleaved_write_frame(ofmt, &pkt);
+				int64_t size = pkt->size;
+				av_packet_rescale_ts(pkt.get(), in_stream->time_base, out_stream->time_base);
+				pkt->pos = -1;
+				pkt->stream_index = out_stream->index;
+				err = av_interleaved_write_frame(ofmt, pkt.get());
 				if (err < 0) {
-					av_packet_unref(&pkt);
+					av_packet_unref(pkt.get());
 					break;
 				}
 				progress.current_bytes += size;
 				progress.changed = true;
 			}
 
-			av_packet_unref(&pkt);
+			av_packet_unref(pkt.get());
 		}
 
 		av_write_trailer(ofmt);
@@ -467,8 +469,6 @@ FFOutputFile::FFOutputFile(const VDXInputDriverContext& pContext)
 	header = false;
 	stream_test = false;
 	mp4_faststart = false;
-	a_buf = 0;
-	a_buf_size = 0;
 }
 
 FFOutputFile::~FFOutputFile()
@@ -1004,20 +1004,23 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	StreamInfo& s = stream[index];
 	if (!s.st) return;
 
-	AVPacket pkt;
-	av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
-	pkt.data = (uint8*)pBuffer;
-	pkt.size = cbBuffer;
-	if (s.bswap_pcm) pkt.data = (uint8*)bswap_pcm(index, pBuffer, cbBuffer);
+	AVPacket* pkt = av_packet_alloc();
+	// pkt->data points to pBuffer or a_buf
+	if (s.bswap_pcm) {
+		pkt->data = (uint8*)bswap_pcm(index, pBuffer, cbBuffer);
+	} else {
+		pkt->data = (uint8*)pBuffer;
+	}
+	pkt->size = cbBuffer;
 
-	if (info.flags & AVIIF_KEYFRAME) pkt.flags = AV_PKT_FLAG_KEY;
+	if (info.flags & AVIIF_KEYFRAME) pkt->flags = AV_PKT_FLAG_KEY;
 
-	pkt.pos = -1;
-	pkt.stream_index = s.st->index;
-	pkt.pts = s.frame;
+	pkt->pos = -1;
+	pkt->stream_index = s.st->index;
+	pkt->pts = s.frame;
 	if (info.pts != VDX_NOPTS_VALUE) {
-		pkt.pts = info.pts;
-		pkt.dts = info.dts;
+		pkt->pts = info.pts;
+		pkt->dts = info.dts;
 	}
 
 	int64_t samples = info.samples;
@@ -1025,20 +1028,25 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 		samples = info.pcm_samples;
 		s.time_base = av_make_q(1, s.st->codecpar->sample_rate);
 	}
-	pkt.duration = samples;
-	av_packet_rescale_ts(&pkt, s.time_base, s.st->time_base);
+	pkt->duration = samples;
+	av_packet_rescale_ts(pkt, s.time_base, s.st->time_base);
 
 	if (s.offset_num != 0) {
 		double r = double(s.offset_num) * s.st->time_base.den / (s.offset_den * s.st->time_base.num);
-		pkt.pts += r > 0 ? int64_t(r + 0.5) : int64_t(r - 0.5);
+		pkt->pts += r > 0 ? int64_t(r + 0.5) : int64_t(r - 0.5);
 		//pkt.pts += av_rescale_q_rnd(s.offset_num, av_make_q(1,(int)s.offset_den), s.st->time_base, AV_ROUND_NEAR_INF);
 	}
 
 	s.frame += samples;
 
-	int err = av_interleaved_write_frame(ofmt, &pkt);
+	int err = av_interleaved_write_frame(ofmt, pkt);
 	if (err < 0) av_error(err);
-}
+
+	// pkt->data no longer points to pBuffer or a_buf
+	pkt->data = nullptr;
+	pkt->size = 0;
+	av_packet_free(&pkt);
+};
 
 void FFOutputFile::Finalize()
 {

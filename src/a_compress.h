@@ -34,28 +34,35 @@ public:
 		int bitrate;
 		int flags;
 
-		Config() { clear(); }
-		void clear() { version = 0; quality = 0; bitrate = 0; flags = 0; }
-	}*config;
+		Config() {
+			clear();
+		}
+		void clear() {
+			version = 0;
+			quality = 0;
+			bitrate = 0;
+			flags = 0;
+		}
+	}*config = nullptr;
 
-	const AVCodec* codec;
-	AVCodecContext* ctx;
-	AVFrame* frame;
-	SwrContext* swr;
-	uint8_t** sample_buf;
-	uint8_t* in_buf;
-	unsigned frame_size;
-	int frame_pos;
-	unsigned in_pos;
-	int src_linesize;
-	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
-	sint64 total_in;
-	sint64 total_out;
-	int max_packet;
+	const AVCodec* codec = nullptr;
+	AVCodecContext* ctx  = nullptr;
+	AVFrame* frame       = nullptr;
+	SwrContext* swr      = nullptr;
+	uint8_t** sample_buf = nullptr;
+	uint8_t* in_buf      = nullptr;
+	unsigned frame_size  = 0;
+	int frame_pos        = 0;
+	unsigned in_pos      = 0;
+	int src_linesize     = 0;
+	AVPacket* pkt        = nullptr;
+	sint64 total_in      = 0;
+	sint64 total_out     = 0;
+	int max_packet       = 0;
 
-	WAVEFORMATEXTENSIBLE* out_format;
-	int out_format_size;
-	bool wav_compatible;
+	WAVEFORMATEXTENSIBLE* out_format = nullptr;
+	int out_format_size = 0;
+	bool wav_compatible = false;
 
 	VDFFAudio(const VDXInputDriverContext& pContext);
 	~VDFFAudio();

@@ -2,6 +2,8 @@
 #include "AudioSource2.h"
 #include <Ks.h>
 #include <KsMedia.h>
+#include <memory>
+#include <functional>
 
 VDFFAudioSource::VDFFAudioSource(const VDXInputDriverContext& context)
 	:mContext(context)
@@ -265,17 +267,16 @@ void VDFFAudioSource::init_start_time()
 {
 	int64_t first_pts = AV_NOPTS_VALUE;
 	while (1) {
-		AVPacket pkt;
-		pkt.data = 0;
-		pkt.size = 0;
-		int rf = av_read_frame(m_pFormatCtx, &pkt);
+		std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
+		
+		int rf = av_read_frame(m_pFormatCtx, pkt.get());
 		if (rf < 0) break;
-		if (pkt.stream_index == m_streamIndex) {
-			first_pts = pkt.pts;
-			av_packet_unref(&pkt);
+		if (pkt->stream_index == m_streamIndex) {
+			first_pts = pkt->pts;
+			av_packet_unref(pkt.get());
 			break;
 		}
-		av_packet_unref(&pkt);
+		av_packet_unref(pkt.get());
 	}
 
 	start_time = m_pStreamCtx->start_time;
@@ -374,14 +375,12 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 		next_sample = AV_NOPTS_VALUE;
 	}
 
-	AVPacket pkt;
-	pkt.data = 0;
-	pkt.size = 0;
+	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
 	ReadInfo ri;
 
 	while (1) {
-		int rf = av_read_frame(m_pFormatCtx, &pkt);
+		int rf = av_read_frame(m_pFormatCtx, pkt.get());
 		if (rf < 0) {
 			// typically end of stream
 			// may result from inexact sample_count too
@@ -389,19 +388,24 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 			ri.last_sample = start;
 		}
 		else {
-			if (pkt.stream_index != m_streamIndex) {
-				av_packet_unref(&pkt);
+			if (pkt->stream_index != m_streamIndex) {
+				av_packet_unref(pkt.get());
 				continue;
 			}
 
-			AVPacket orig_pkt = pkt;
+			auto pkt_data_orig = pkt->data;
+			auto pkt_size_orig = pkt->size;
+
 			do {
-				int s = read_packet(pkt, ri);
+				int s = read_packet(pkt.get(), ri);
 				if (s < 0) break;
-				pkt.data += s;
-				pkt.size -= s;
-			} while (pkt.size > 0);
-			av_packet_unref(&orig_pkt);
+				pkt->data += s;
+				pkt->size -= s;
+			} while (pkt->size > 0);
+
+			pkt->data = pkt_data_orig;
+			pkt->size = pkt_size_orig;
+			av_packet_unref(pkt.get());
 		}
 
 		if (ri.last_sample < start) continue;
@@ -494,9 +498,9 @@ void VDFFAudioSource::invalidate(int64_t start, uint32_t count)
 	}
 }
 
-int VDFFAudioSource::read_packet(AVPacket& pkt, ReadInfo& ri)
+int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 {
-	int r = avcodec_send_packet(m_pCodecCtx, &pkt);
+	int r = avcodec_send_packet(m_pCodecCtx, pkt);
 	if (r != 0) return -1;
 
 	while (1) {
@@ -602,7 +606,7 @@ int VDFFAudioSource::read_packet(AVPacket& pkt, ReadInfo& ri)
 		if (!trust_sample_pos && next_sample > 0) invalidate(next_sample, 1);
 	}
 
-	return pkt.size;
+	return pkt->size;
 }
 
 void VDFFAudioSource::reset_cache()

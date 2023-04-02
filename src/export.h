@@ -115,13 +115,13 @@ public:
 	std::string out_ff_path;
 	std::string format_name;
 	std::vector<StreamInfo> stream;
-	AVFormatContext* ofmt;
-	bool header;
-	bool stream_test;
-	bool mp4_faststart;
+	AVFormatContext* ofmt = nullptr;
+	bool header = false;
+	bool stream_test = false;
+	bool mp4_faststart = false;
 
-	void* a_buf;
-	uint32 a_buf_size;
+	void* a_buf = nullptr;
+	uint32 a_buf_size = 0;
 
 	FFOutputFile(const VDXInputDriverContext& pContext);
 	~FFOutputFile();
