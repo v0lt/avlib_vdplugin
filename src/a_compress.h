@@ -3,6 +3,8 @@
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
+#include <memory>
+#include <functional>
 extern "C"
 {
 #include <libavcodec/avcodec.h>
@@ -46,7 +48,7 @@ public:
 	int frame_pos;
 	unsigned in_pos;
 	int src_linesize;
-	AVPacket pkt;
+	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 	sint64 total_in;
 	sint64 total_out;
 	int max_packet;

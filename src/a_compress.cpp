@@ -25,9 +25,6 @@ VDFFAudio::VDFFAudio(const VDXInputDriverContext& pContext)
 	in_pos = 0;
 	out_format = 0;
 	out_format_size = 0;
-	pkt.data = 0;
-	pkt.size = 0;
-	av_init_packet(&pkt); // av_init_packet is deprecated. TODO: convert pkt to a pointer?
 	total_in = 0;
 	total_out = 0;
 	wav_compatible = false;
@@ -50,7 +47,7 @@ void VDFFAudio::cleanup()
 		av_frame_free(&frame);
 		frame = 0;
 	}
-	av_packet_unref(&pkt);
+	av_packet_unref(pkt.get());
 	if (swr) swr_free(&swr);
 	if (sample_buf) {
 		av_freep(&sample_buf[0]);
@@ -300,7 +297,7 @@ int VDFFAudio::SuggestFileFormat(const char* name)
 
 bool VDFFAudio::Convert(bool flush, bool requireOutput)
 {
-	if (pkt.size) return true;
+	if (pkt->size) return true;
 
 	if (in_pos >= frame_size || (in_pos > 0 && flush)) {
 		const uint8_t* src[] = { in_buf };
@@ -318,16 +315,16 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 		avcodec_send_frame(ctx, 0);
 	}
 
-	av_packet_unref(&pkt);
-	avcodec_receive_packet(ctx, &pkt);
-	{for (int i = 0; i < pkt.side_data_elems; i++) {
-		AVPacketSideData& s = pkt.side_data[i];
+	av_packet_unref(pkt.get());
+	avcodec_receive_packet(ctx, pkt.get());
+	{for (int i = 0; i < pkt->side_data_elems; i++) {
+		AVPacketSideData& s = pkt->side_data[i];
 		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) export_wav();
 	}}
-	if (pkt.size > max_packet) max_packet = pkt.size;
+	if (pkt->size > max_packet) max_packet = pkt->size;
 	if (flush) export_wav();
 
-	if (pkt.size) return true;
+	if (pkt->size) return true;
 
 	return false;
 }
@@ -344,7 +341,7 @@ unsigned VDFFAudio::GetInputSpace() const
 
 unsigned VDFFAudio::GetOutputLevel() const
 {
-	return pkt.size;
+	return pkt->size;
 }
 
 void* VDFFAudio::LockInputBuffer(unsigned& bytes)
@@ -371,22 +368,22 @@ void VDFFAudio::UnlockOutputBuffer(unsigned bytes)
 unsigned VDFFAudio::CopyOutput(void* dst, unsigned bytes, sint64& duration)
 {
 	// output is delayed, need more input
-	if (!pkt.size) {
+	if (!pkt->size) {
 		duration = -1;
 		return 0;
 	}
 
 	// host must resize buffer
-	if (int(bytes) < pkt.size) {
-		duration = pkt.duration;
-		return pkt.size;
+	if (int(bytes) < pkt->size) {
+		duration = pkt->duration;
+		return pkt->size;
 	}
 
-	total_out += pkt.duration;
-	duration = pkt.duration;
-	bytes = pkt.size;
-	memcpy(dst, pkt.data, bytes);
-	av_packet_unref(&pkt);
+	total_out += pkt->duration;
+	duration = pkt->duration;
+	bytes = pkt->size;
+	memcpy(dst, pkt->data, bytes);
+	av_packet_unref(pkt.get());
 	return bytes;
 }
 
