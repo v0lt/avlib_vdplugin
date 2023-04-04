@@ -56,17 +56,17 @@ public:
 	int64_t start_time;
 	int64_t time_adjust;
 
-	AVFormatContext* m_pFormatCtx;
-	AVStream* m_pStreamCtx;
-	AVCodecContext* m_pCodecCtx;
-	SwrContext* swr;
-	AVFrame* frame;
-	int src_linesize;
-	uint64_t out_layout;
-	AVSampleFormat out_fmt;
-	uint64_t swr_layout;
-	int swr_rate;
-	AVSampleFormat swr_fmt;
+	AVFormatContext* m_pFormatCtx = nullptr;
+	AVStream* m_pStreamCtx        = nullptr;
+	AVCodecContext* m_pCodecCtx   = nullptr;
+	SwrContext* swr               = nullptr;
+	AVFrame* frame                = nullptr;
+	int src_linesize       = 0;
+	uint64_t out_layout    = 0;
+	AVSampleFormat out_fmt = AV_SAMPLE_FMT_NONE;
+	uint64_t swr_layout    = 0;
+	int swr_rate           = 0;
+	AVSampleFormat swr_fmt = AV_SAMPLE_FMT_NONE;
 
 	struct BufferPage {
 		enum { size = 0x8000 }; // max usable value 0xFFFF
@@ -81,16 +81,16 @@ public:
 		int empty(int s0, uint32_t count);
 	};
 
-	BufferPage* buffer;
+	BufferPage* buffer = nullptr;
 	int buffer_size; // in pages
 	int used_pages;
 	int used_pages_max;
 	int first_page;
 	int last_page;
 
-	int64_t next_sample;
-	int64_t first_sample;
-	int discard_samples;
+	int64_t next_sample  = 0;
+	int64_t first_sample = AV_NOPTS_VALUE;
+	int discard_samples  = 0;
 	bool trust_sample_pos;
 	bool use_keys;
 

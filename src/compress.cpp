@@ -199,15 +199,15 @@ void copy_gray(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, 
 
 struct CodecBase : public CodecClass {
 	enum {
-		format_rgb = 1,
-		format_rgba = 2,
-		format_yuv420 = 3,
-		format_yuv422 = 4,
-		format_yuv444 = 5,
+		format_rgb     = 1,
+		format_rgba    = 2,
+		format_yuv420  = 3,
+		format_yuv422  = 4,
+		format_yuv444  = 5,
 		format_yuva420 = 6,
 		format_yuva422 = 7,
 		format_yuva444 = 8,
-		format_gray = 9,
+		format_gray    = 9,
 	};
 
 	struct Config {
@@ -224,32 +224,19 @@ struct CodecBase : public CodecClass {
 	}*config;
 
 	AVRational time_base;
-	int keyint;
+	int keyint = 1;
 	LONG frame_total;
-	AVColorRange color_range;
-	AVColorSpace colorspace;
+	AVColorRange color_range = AVCOL_RANGE_UNSPECIFIED;;
+	AVColorSpace colorspace  = AVCOL_SPC_UNSPECIFIED;
 
-	AVCodecID codec_id;
-	const char* codec_name;
-	int codec_tag;
-	const AVCodec* codec;
-	AVCodecContext* ctx;
-	AVFrame* frame;
-	VDLogProc logProc;
-	bool global_header;
-
-	CodecBase() {
-		codec = 0; ctx = 0; frame = 0;
-		keyint = 1;
-		color_range = AVCOL_RANGE_UNSPECIFIED;
-		colorspace = AVCOL_SPC_UNSPECIFIED;
-		codec_id = AV_CODEC_ID_NONE;
-		codec_name = 0;
-		codec_tag = 0;
-		config = 0;
-		logProc = 0;
-		global_header = false;
-	}
+	AVCodecID codec_id     = AV_CODEC_ID_NONE;
+	const char* codec_name = nullptr;
+	int codec_tag          = 0;
+	const AVCodec* codec   = nullptr;
+	AVCodecContext* ctx    = nullptr;
+	AVFrame* frame         = nullptr;
+	VDLogProc logProc      = nullptr;
+	bool global_header     = false;
 
 	virtual ~CodecBase() {
 		compress_end();

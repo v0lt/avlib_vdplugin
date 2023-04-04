@@ -8,20 +8,6 @@
 VDFFAudioSource::VDFFAudioSource(const VDXInputDriverContext& context)
 	:mContext(context)
 {
-	m_pFormatCtx = 0;
-	m_pStreamCtx = 0;
-	m_pCodecCtx = 0;
-	swr = 0;
-	frame = 0;
-	buffer = 0;
-	next_sample = 0;
-	first_sample = AV_NOPTS_VALUE;
-	discard_samples = 0;
-	out_layout = 0;
-	out_fmt = AV_SAMPLE_FMT_NONE;
-	swr_layout = 0;
-	swr_rate = 0;
-	swr_fmt = AV_SAMPLE_FMT_NONE;
 }
 
 VDFFAudioSource::~VDFFAudioSource()

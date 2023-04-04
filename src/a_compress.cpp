@@ -27,11 +27,11 @@ void VDFFAudio::cleanup()
 	if (ctx) {
 		avcodec_close(ctx);
 		av_free(ctx);
-		ctx = 0;
+		ctx = nullptr;
 	}
 	if (frame) {
 		av_frame_free(&frame);
-		frame = 0;
+		frame = nullptr;
 	}
 	av_packet_unref(pkt);
 	if (swr) swr_free(&swr);
@@ -39,12 +39,12 @@ void VDFFAudio::cleanup()
 		av_freep(&sample_buf[0]);
 		free(sample_buf);
 		free(in_buf);
-		sample_buf = 0;
-		in_buf = 0;
+		sample_buf = nullptr;
+		in_buf = nullptr;
 	}
 	if (out_format) {
 		free(out_format);
-		out_format = 0;
+		out_format = nullptr;
 		out_format_size = 0;
 	}
 }
