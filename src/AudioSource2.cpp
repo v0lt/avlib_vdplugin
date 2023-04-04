@@ -247,8 +247,11 @@ void VDFFAudioSource::reset_swr()
 	av_opt_set_int(swr, "out_channel_layout", out_layout, 0);
 	av_opt_set_int(swr, "out_sample_rate", m_pCodecCtx->sample_rate, 0);
 	av_opt_set_sample_fmt(swr, "out_sample_fmt", out_fmt, 0);
-	int rr = swr_init(swr);
-	if (rr < 0) mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error.");
+
+	int ret = swr_init(swr);
+	if (ret < 0) {
+		mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error.");
+	}
 }
 
 void VDFFAudioSource::init_start_time()
@@ -499,7 +502,9 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 		int count = frame->nb_samples;
 		int64_t frame_start = next_sample;
 		if (frame->pts != AV_NOPTS_VALUE) {
-			if (frame->pts == start_time) discard_samples = 0;
+			if (frame->pts == start_time) {
+				discard_samples = 0;
+			}
 			frame_start = (frame->pts + time_adjust) * time_base.num / time_base.den;
 			if (next_sample != AV_NOPTS_VALUE && frame_start != next_sample) {
 				trust_sample_pos = false;
@@ -508,7 +513,9 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 		}
 
 		int64_t start = frame_start;
-		if (first_sample == AV_NOPTS_VALUE || start < first_sample) first_sample = start;
+		if (first_sample == AV_NOPTS_VALUE || start < first_sample) {
+			first_sample = start;
+		}
 		int src_pos = 0;
 
 		// ignore samples to discard
@@ -562,8 +569,12 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 		*/
 
 		if (count) {
-			if (ri.first_sample == -1) ri.first_sample = start;
-			if (ri.last_sample < start + count - 1) ri.last_sample = start + count - 1;
+			if (ri.first_sample == -1) {
+				ri.first_sample = start;
+			}
+			if (ri.last_sample < start + count - 1) {
+				ri.last_sample = start + count - 1;
+			}
 		}
 
 		while (count) {

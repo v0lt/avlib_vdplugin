@@ -95,10 +95,8 @@ public:
 	bool use_keys;
 
 	struct ReadInfo {
-		int64_t first_sample;
-		int64_t last_sample;
-
-		ReadInfo() { first_sample = -1; last_sample = -1; }
+		int64_t first_sample = -1;
+		int64_t last_sample  = -1;
 	};
 
 	int initStream(VDFFInputFile* pSource, int streamIndex);
