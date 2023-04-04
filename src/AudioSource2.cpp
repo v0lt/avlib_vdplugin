@@ -58,7 +58,9 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	}
 	avcodec_parameters_to_context(m_pCodecCtx, m_pStreamCtx->codecpar);
 	m_pCodecCtx->thread_count = 1;
-	if (avcodec_open2(m_pCodecCtx, pDecoder, 0) < 0) {
+
+	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
+	if (ret < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
 		return -1;
 	}

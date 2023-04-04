@@ -212,7 +212,8 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	InitContext();
 
-	if (avcodec_open2(ctx, codec, NULL) < 0) {
+	int ret = avcodec_open2(ctx, codec, nullptr);
+	if (ret < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Cannot open codec.");
 		cleanup();
 		return;

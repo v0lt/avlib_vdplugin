@@ -347,7 +347,8 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	//?/m_pCodecCtx->refcounted_frames = 1;
 
-	if (avcodec_open2(m_pCodecCtx, pDecoder, 0) < 0) {
+	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
+	if (ret < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
 		return -1;
 	}

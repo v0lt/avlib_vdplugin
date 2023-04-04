@@ -768,7 +768,11 @@ struct CodecBase : public CodecClass {
 
 		if (keyint > 1) ctx->gop_size = keyint;
 
-		if (avcodec_open2(ctx, codec, NULL) < 0) { compress_end(); return ICERR_BADPARAM; }
+		int ret = avcodec_open2(ctx, codec, nullptr);
+		if (ret < 0) {
+			compress_end();
+			return ICERR_BADPARAM;
+		}
 
 		frame = av_frame_alloc();
 		frame->format = ctx->pix_fmt;
@@ -777,7 +781,7 @@ struct CodecBase : public CodecClass {
 		frame->width = ctx->width;
 		frame->height = ctx->height;
 
-		int ret = av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32);
+		ret = av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32);
 		if (ret < 0) { compress_end(); return ICERR_MEMORY; }
 
 		return ICERR_OK;
