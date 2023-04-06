@@ -35,11 +35,17 @@ VDFFVideoSource::VDFFVideoSource(const VDXInputDriverContext& context)
 VDFFVideoSource::~VDFFVideoSource()
 {
 	av_packet_free(&copy_pkt);
-
 	free(direct_format);
-	if (frame) av_frame_free(&frame);
-	if (m_pCodecCtx) avcodec_free_context(&m_pCodecCtx);
-	if (m_pSwsCtx) sws_freeContext(m_pSwsCtx);
+
+	if (m_pFrame) {
+		av_frame_free(&m_pFrame);
+	}
+	if (m_pCodecCtx) {
+		avcodec_free_context(&m_pCodecCtx);
+	}
+	if (m_pSwsCtx) {
+		sws_freeContext(m_pSwsCtx);
+	}
 
 	if (buffer) {
 		for (int i = 0; i < buffer_count; i++) {
@@ -353,7 +359,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 
-	frame = av_frame_alloc();
+	m_pFrame = av_frame_alloc();
 	dead_range_start = -1;
 	dead_range_end = -1;
 	first_frame = 0;
@@ -1942,14 +1948,14 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 			while (1) {
 				if (direct_buffer) alloc_direct_buffer();
 				avcodec_send_packet(m_pCodecCtx, pkt.get());
-				int f = avcodec_receive_frame(m_pCodecCtx, frame);
+				int f = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 				if (f != 0) return false;
 				if (init) {
 					init = false;
 					set_start_time();
 				}
 				handle_frame();
-				av_frame_unref(frame);
+				av_frame_unref(m_pFrame);
 				return true;
 			}
 
@@ -1959,14 +1965,14 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 			if (pkt->stream_index == m_streamIndex) {
 				if (direct_buffer) alloc_direct_buffer();
 				avcodec_send_packet(m_pCodecCtx, pkt.get());
-				int f = avcodec_receive_frame(m_pCodecCtx, frame);
+				int f = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 				if (f == 0) {
 					if (init) {
 						init = false;
 						set_start_time();
 					}
 					int pos = handle_frame();
-					av_frame_unref(frame);
+					av_frame_unref(m_pFrame);
 					done_frames++;
 					if (copy_mode && pos == desired_frame) {
 						av_packet_unref(copy_pkt);
@@ -1983,14 +1989,14 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 void VDFFVideoSource::set_start_time()
 {
 	// this is used for audio sync
-	int64_t t1 = frame->pts;
+	int64_t t1 = m_pFrame->pts;
 	if (t1 == AV_NOPTS_VALUE) t1 = m_pStreamCtx->start_time;
 	if (t1 != AV_NOPTS_VALUE)
 		m_pSource->video_start_time = t1;
 
 	// this is used for seeking etc
-	int64_t t2 = frame->pts;
-	if (t2 == AV_NOPTS_VALUE) t2 = frame->pkt_dts;
+	int64_t t2 = m_pFrame->pts;
+	if (t2 == AV_NOPTS_VALUE) t2 = m_pFrame->pkt_dts;
 	start_time = t2;
 	if (frame_fmt == -1) init_format();
 }
@@ -2025,7 +2031,7 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 int VDFFVideoSource::handle_frame()
 {
 	decoded_count++;
-	int pos = handle_frame_num(frame->pts, frame->pkt_dts);
+	int pos = handle_frame_num(m_pFrame->pts, m_pFrame->pkt_dts);
 	if (pos == -1) return -1;
 
 	if (next_frame > 0 && pos > next_frame) {
@@ -2044,7 +2050,7 @@ int VDFFVideoSource::handle_frame()
 
 	if (!frame_array[pos]) {
 		alloc_page(pos);
-		frame_type[pos] = av_get_picture_type_char(frame->pict_type);
+		frame_type[pos] = av_get_picture_type_char(m_pFrame->pict_type);
 		BufferPage* page = frame_array[pos];
 		open_write(page);
 		page->error = 0;
@@ -2058,13 +2064,13 @@ int VDFFVideoSource::handle_frame()
 		else {
 			uint8_t* dst = align_buf(page->p);
 			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210)
-				memcpy(dst, frame->data[0], frame->linesize[0] * frame->height);
+				memcpy(dst, m_pFrame->data[0], m_pFrame->linesize[0] * m_pFrame->height);
 			else
-				av_image_copy_to_buffer(dst, frame_size, frame->data, frame->linesize, (AVPixelFormat)frame->format, frame->width, frame->height, line_align);
+				av_image_copy_to_buffer(dst, frame_size, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height, line_align);
 		}
 	}
 	else if (direct_buffer) {
-		frame_type[pos] = av_get_picture_type_char(frame->pict_type);
+		frame_type[pos] = av_get_picture_type_char(m_pFrame->pict_type);
 	}
 
 	return pos;
@@ -2072,9 +2078,9 @@ int VDFFVideoSource::handle_frame()
 
 bool VDFFVideoSource::check_frame_format()
 {
-	if (frame->format != frame_fmt) return false;
-	if (frame->width != frame_width) return false;
-	if (frame->height != frame_height) return false;
+	if (m_pFrame->format != frame_fmt) return false;
+	if (m_pFrame->width != frame_width) return false;
+	if (m_pFrame->height != frame_height) return false;
 	return true;
 }
 

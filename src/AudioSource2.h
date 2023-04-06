@@ -23,9 +23,9 @@ public:
 	VDFFAudioSource(const VDXInputDriverContext& context);
 	~VDFFAudioSource();
 
-	int VDXAPIENTRY AddRef();
-	int VDXAPIENTRY Release();
-	void* VDXAPIENTRY AsInterface(uint32_t iid);
+	int VDXAPIENTRY AddRef() override;
+	int VDXAPIENTRY Release() override;
+	void* VDXAPIENTRY AsInterface(uint32_t iid) override;
 
 	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo& srcInfo) { srcInfo = m_streamInfo; }
 	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead);
@@ -44,23 +44,25 @@ public:
 
 	void VDXAPIENTRY GetAudioSourceInfo(VDXAudioSourceInfo& info) { info.mFlags = 0; }
 
-public:
+private:
 	const VDXInputDriverContext& mContext;
 	WAVEFORMATEXTENSIBLE mRawFormat;
-	VDXStreamSourceInfo	m_streamInfo;
 
 	VDFFInputFile* m_pSource;
-	int m_streamIndex;
-	int64_t sample_count;
 	AVRational time_base;
 	int64_t start_time;
 	int64_t time_adjust;
 
 	AVFormatContext* m_pFormatCtx = nullptr;
-	AVStream* m_pStreamCtx        = nullptr;
-	AVCodecContext* m_pCodecCtx   = nullptr;
-	SwrContext* swr               = nullptr;
-	AVFrame* frame                = nullptr;
+public:
+	AVStream*        m_pStreamCtx = nullptr;
+	AVCodecContext*  m_pCodecCtx  = nullptr;
+	VDXStreamSourceInfo m_streamInfo;
+	int m_streamIndex;
+	int64_t sample_count;
+private:
+	SwrContext*      m_pSwrCtx    = nullptr;
+	AVFrame*         m_pFrame     = nullptr;
 	int src_linesize       = 0;
 	uint64_t out_layout    = 0;
 	AVSampleFormat out_fmt = AV_SAMPLE_FMT_NONE;
@@ -99,7 +101,9 @@ public:
 		int64_t last_sample  = -1;
 	};
 
+public:
 	int initStream(VDFFInputFile* pSource, int streamIndex);
+private:
 	void init_start_time();
 	int read_packet(AVPacket* pkt, ReadInfo& ri);
 	void insert_silence(int64_t start, uint32_t count);

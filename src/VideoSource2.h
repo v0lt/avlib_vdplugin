@@ -28,14 +28,14 @@ public:
 	VDFFVideoSource(const VDXInputDriverContext& context);
 	~VDFFVideoSource();
 
-	int VDXAPIENTRY AddRef();
-	int VDXAPIENTRY Release();
-	void* VDXAPIENTRY AsInterface(uint32_t iid);
+	int VDXAPIENTRY AddRef() override;
+	int VDXAPIENTRY Release() override;
+	void* VDXAPIENTRY AsInterface(uint32_t iid) override;
 
 	//Stream Interface
-	void        VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo&);
-	void        VDXAPIENTRY GetStreamSourceInfoV3(VDXStreamSourceInfoV3&);
-	bool        VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead);
+	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo&);
+	void VDXAPIENTRY GetStreamSourceInfoV3(VDXStreamSourceInfoV3&);
+	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead);
 
 	void VDXAPIENTRY ApplyStreamMode(uint32 flags);
 	bool VDXAPIENTRY QueryStreamMode(uint32 flags);
@@ -83,47 +83,45 @@ public:
 	const void* VDXAPIENTRY GetFrameBufferBase();
 	bool        VDXAPIENTRY IsDecodable(int64_t sample_num);
 
-public:
+private:
 	//Internal
 	const VDXInputDriverContext& mContext;
 	VDFFInputFile* m_pSource;
-	int m_streamIndex;
+
 	AVFormatContext* m_pFormatCtx = nullptr;
-	AVStream* m_pStreamCtx        = nullptr;
-	AVCodecContext* m_pCodecCtx   = nullptr;
+public:
+	AVStream*        m_pStreamCtx = nullptr;
+	AVCodecContext*  m_pCodecCtx  = nullptr;
 	VDXStreamSourceInfoV3 m_streamInfo;
-	void* direct_format   = nullptr;
-	int direct_format_len = 0;
+	int m_streamIndex;
+	int sample_count;
 	AVRational time_base;
 	int64_t start_time;
 
-	AVFrame* frame        = nullptr;
+private:
+	void* direct_format   = nullptr;
+	int direct_format_len = 0;
+
+	AVFrame*    m_pFrame  = nullptr;
 	SwsContext* m_pSwsCtx = nullptr;
 	VDXPixmapAlpha m_pixmap;
 	FilterModPixmapInfo m_pixmap_info;
 	uint8_t* m_pixmap_data = nullptr;
 	int m_pixmap_frame = 0;
 
+public:
 	struct ConvertInfo {
-		nsVDXPixmap::VDXPixmapFormat req_format;
-		nsVDXPixmap::VDXPixmapFormat ext_format;
+		nsVDXPixmap::VDXPixmapFormat req_format = nsVDXPixmap::kPixFormat_Null;
+		nsVDXPixmap::VDXPixmapFormat ext_format = nsVDXPixmap::kPixFormat_Null;
 		bool req_dib;
 
-		AVPixelFormat av_fmt;
+		AVPixelFormat av_fmt = AV_PIX_FMT_NONE;
 		bool direct_copy;
 		bool in_yuv;
 		bool in_subs;
 		bool out_rgb;
 		bool out_garbage;
-
-		ConvertInfo() {
-			req_format = nsVDXPixmap::kPixFormat_Null;
-			ext_format = nsVDXPixmap::kPixFormat_Null;
-			av_fmt = AV_PIX_FMT_NONE;
-		}
 	} convertInfo;
-
-	ErrorMode errorMode = kErrorModeReportAll; // still not supported by host anyway
 
 	struct BufferPage {
 		enum {
@@ -139,12 +137,16 @@ public:
 		void* map_base;
 		uint8_t* p;
 	};
+
 	BufferPage* buffer = nullptr;
 	int buffer_count   = 0;
 	int buffer_reserve = 0;
+
+private:
+	ErrorMode errorMode = kErrorModeReportAll; // still not supported by host anyway
+
 	HANDLE mem         = nullptr;
 
-	int sample_count;
 	BufferPage** frame_array = nullptr;
 	char* frame_type         = nullptr;
 	int64_t desired_frame;
@@ -155,21 +157,26 @@ public:
 	int last_frame;
 	int last_seek_frame = -1;
 	int used_frames;
-	int keyframe_gap;
 	int fw_seek_threshold;
-	int decoded_count = 0;
 
 	AVPixelFormat frame_fmt;
 	int frame_width;
 	int frame_height;
+public:
 	int frame_size;
 
-	bool flip_image        = false;
+	int keyframe_gap;
+	int decoded_count = 0;
+
 	bool trust_index;
-	bool avi_drop_index    = false;
 	bool sparse_index;
 	bool has_vfr;
 	bool average_fr;
+
+private:
+	bool flip_image        = false;
+	bool avi_drop_index    = false;
+
 	bool direct_buffer     = false;
 	bool is_image_list     = false;
 	bool copy_mode         = false;
@@ -184,7 +191,9 @@ public:
 
 	//uint64 kPixFormat_XRGB64;
 
+public:
 	int  initStream(VDFFInputFile* pSource, int indexStream);
+private:
 	int  init_duration(const AVRational fr);
 	void init_format();
 	void set_pixmap_layout(uint8_t* p);
