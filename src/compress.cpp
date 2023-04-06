@@ -25,14 +25,14 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 			uint8* s = (uint8*)data + layout->data + layout->pitch * y;
 			uint8* d = frame->data[0] + frame->linesize[0] * y;
 
-			{for (int x = 0; x < layout->w; x++) {
+			for (int x = 0; x < layout->w; x++) {
 				d[0] = s[2];
 				d[1] = s[1];
 				d[2] = s[0];
 
 				s += 3;
 				d += 3;
-			}}
+			}
 		}
 	}
 	if (frame->format == AV_PIX_FMT_GBRP) {
@@ -43,25 +43,25 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 			uint8* b = frame->data[1] + frame->linesize[1] * y;
 			uint8* r = frame->data[2] + frame->linesize[2] * y;
 
-			{for (int x = 0; x < layout->w; x++) {
+			for (int x = 0; x < layout->w; x++) {
 				b[0] = s[0];
 				g[0] = s[1];
 				r[0] = s[2];
 
 				r++; g++; b++;
 				s += 3;
-			}}
+			}
 		}
 	}
 }
 
 void copy_rgb32(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
-	{for (int y = 0; y < layout->h; y++) {
+	for (int y = 0; y < layout->h; y++) {
 		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
 		uint8* d = frame->data[0] + frame->linesize[0] * y;
 		memcpy(d, s, layout->w * 4);
-	}}
+	}
 }
 
 bool planar_rgb16(int format) {
@@ -103,14 +103,14 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 			uint16* b = (uint16*)frame->data[1] + frame->linesize[1] * y / 2;
 			uint16* r = (uint16*)frame->data[2] + frame->linesize[2] * y / 2;
 
-			{for (int x = 0; x < layout->w; x++) {
+			for (int x = 0; x < layout->w; x++) {
 				b[0] = s[0];
 				g[0] = s[1];
 				r[0] = s[2];
 
 				r++; g++; b++;
 				s += 4;
-			}}
+			}
 		}
 	}
 	if (planar_rgba16(frame->format)) {
@@ -122,7 +122,7 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 			uint16* r = (uint16*)frame->data[2] + frame->linesize[2] * y / 2;
 			uint16* a = (uint16*)frame->data[3] + frame->linesize[3] * y / 2;
 
-			{for (int x = 0; x < layout->w; x++) {
+			for (int x = 0; x < layout->w; x++) {
 				b[0] = s[0];
 				g[0] = s[1];
 				r[0] = s[2];
@@ -130,7 +130,7 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 
 				r++; g++; b++; a++;
 				s += 4;
-			}}
+			}
 		}
 	}
 }
@@ -151,21 +151,21 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, i
 		break;
 	}
 
-	{for (int y = 0; y < layout->h; y++) {
+	for (int y = 0; y < layout->h; y++) {
 		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
 		uint8* d = frame->data[0] + frame->linesize[0] * y;
 		memcpy(d, s, layout->w * bpp);
-	}}
-	{for (int y = 0; y < h2; y++) {
+	}
+	for (int y = 0; y < h2; y++) {
 		uint8* s = (uint8*)data + layout->data2 + layout->pitch2 * y;
 		uint8* d = frame->data[1] + frame->linesize[1] * y;
 		memcpy(d, s, w2 * bpp);
-	}}
-	{for (int y = 0; y < h2; y++) {
+	}
+	for (int y = 0; y < h2; y++) {
 		uint8* s = (uint8*)data + layout->data3 + layout->pitch3 * y;
 		uint8* d = frame->data[2] + frame->linesize[2] * y;
 		memcpy(d, s, w2 * bpp);
-	}}
+	}
 
 	switch (layout->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
@@ -176,11 +176,11 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, i
 	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
 	{
 		const VDXPixmapLayoutAlpha* layout2 = (const VDXPixmapLayoutAlpha*)layout;
-		{for (int y = 0; y < layout->h; y++) {
+		for (int y = 0; y < layout->h; y++) {
 			uint8* s = (uint8*)data + layout2->data4 + layout2->pitch4 * y;
 			uint8* d = frame->data[3] + frame->linesize[3] * y;
 			memcpy(d, s, layout->w * bpp);
-		}}
+		}
 		break;
 	}
 	}
@@ -190,11 +190,11 @@ void copy_gray(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, 
 {
 	int w2 = layout->w;
 	int h2 = layout->h;
-	{for (int y = 0; y < layout->h; y++) {
+	for (int y = 0; y < layout->h; y++) {
 		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
 		uint8* d = frame->data[0] + frame->linesize[0] * y;
 		memcpy(d, s, layout->w * bpp);
-	}}
+	}
 }
 
 struct CodecBase : public CodecClass {
@@ -1006,11 +1006,11 @@ void ConfigBase::adjust_bits()
 		};
 
 		int bits1 = 0;
-		{for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < 6; i++) {
 			int x = option[i];
 			if (x) bits1 = x;
 			if (x >= bits) break;
-		}}
+		}
 
 		notify_bits_change(bits1, codec->config->bits);
 		codec->config->bits = bits1;
@@ -1287,8 +1287,11 @@ void ConfigFFV1::init_slices()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
 	int x = 0;
-	{for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++)
-		if (ffv1_slice_tab[i] == config->slice) x = i; }
+	for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
+		if (ffv1_slice_tab[i] == config->slice) {
+			x = i;
+		}
+	}
 	SendDlgItemMessage(mhdlg, IDC_SLICES, CB_SETCURSEL, x, 0);
 	CheckDlgButton(mhdlg, IDC_SLICECRC, config->slicecrc == 1 ? BST_CHECKED : BST_UNCHECKED);
 }
@@ -1331,11 +1334,11 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 		SendDlgItemMessage(mhdlg, IDC_SLICES, CB_RESETCONTENT, 0, 0);
 		SendDlgItemMessage(mhdlg, IDC_SLICES, CB_ADDSTRING, 0, (LPARAM)"default");
-		{for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
+		for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
 			char buf[10];
 			sprintf(buf, "%d", ffv1_slice_tab[i]);
 			SendDlgItemMessage(mhdlg, IDC_SLICES, CB_ADDSTRING, 0, (LPARAM)buf);
-		}}
+		}
 		CheckDlgButton(mhdlg, IDC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
 		apply_level();
 		break;

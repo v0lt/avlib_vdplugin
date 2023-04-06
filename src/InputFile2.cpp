@@ -51,10 +51,12 @@ DWORD fcc_toupper(DWORD a)
 {
 	DWORD r = a;
 	char* c = (char*)(&r);
-	{for (int i = 0; i < 4; i++) {
+	for (int i = 0; i < 4; i++) {
 		int v = c[i];
-		if (v >= 'a' && v <= 'z') c[i] = v + 'A' - 'a';
-	}}
+		if (v >= 'a' && v <= 'z') {
+			c[i] = v + 'A' - 'a';
+		}
+	}
 	return r;
 }
 
@@ -110,7 +112,7 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 		DWORD h1 = sh.fccHandler;
 		char* ch = (char*)(&h1);
 		info.vcodec_name[0] = 0;
-		{for (int i = 0; i < 4; i++) {
+		for (int i = 0; i < 4; i++) {
 			int v = ch[i];
 			if (v >= 32) {
 				wchar_t vc[] = { 0,0 };
@@ -122,7 +124,7 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 				swprintf(vc, 10, L"[%d]", v);
 				wcscat(info.vcodec_name, vc);
 			}
-		}}
+		}
 
 		// skip internally supported formats
 		if (!config_decode_raw) {
@@ -253,11 +255,13 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 		return -1;
 	}
 	fmt = ctx->iformat;
-	{for (int i = 0; i < 100; i++) {
+	for (int i = 0; i < 100; i++) {
 		int c = fmt->name[i];
 		info.format_name[i] = c;
-		if (c == 0) break;
-	}}
+		if (c == 0) {
+			break;
+		}
+	}
 	info.format_name[99] = 0;
 	avformat_close_input(&ctx);
 
@@ -668,15 +672,17 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 	if (st != -1) {
 		// disable unwanted streams
 		bool is_avi = strcmp(fmt->iformat->name, "avi") == 0;
-		{for (int i = 0; i < (int)fmt->nb_streams; i++) {
-			if (i == st) continue;
+		for (int i = 0; i < (int)fmt->nb_streams; i++) {
+			if (i == st) {
+				continue;
+			}
 			// this has minor impact on performance, ~10% for video
 			fmt->streams[i]->discard = AVDISCARD_ALL;
 
 			// this is HUGE if streams are not evenly interleaved (like VD does by default)
 			// this fix is hack, I dont know if it will work for other format
 			//?/if(is_avi) fmt->streams[i]->nb_index_entries = 0;
-		}}
+		}
 	}
 
 	return fmt;
@@ -708,11 +714,11 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 
 	char start_buf[128];
 	char* s = start_buf;
-	{for (int i = digit0; i <= digit1; i++) {
+	for (int i = digit0; i <= digit1; i++) {
 		int c = path[i];
 		*s = c;
 		s++;
-	}}
+	}
 	*s = 0;
 
 	wchar_t buf[20];
@@ -794,15 +800,17 @@ bool VDFFInputFile::GetAudioSource(int index, IVDXAudioSource** ppAS)
 	int s_index = find_stream(m_pFormatCtx, AVMEDIA_TYPE_AUDIO);
 	if (index > 0) {
 		int n = 0;
-		{for (int i = 0; i < (int)m_pFormatCtx->nb_streams; i++) {
+		for (int i = 0; i < (int)m_pFormatCtx->nb_streams; i++) {
 			AVStream* st = m_pFormatCtx->streams[i];
 			if (i == s_index) continue;
 			if (st->codecpar->codec_type != AVMEDIA_TYPE_AUDIO) continue;
 			if (!st->codecpar->ch_layout.nb_channels) continue;
 			if (!st->codecpar->sample_rate) continue;
 			n++;
-			if (n == index) { s_index = i; break; }
-		}}
+			if (n == index) {
+				s_index = i; break;
+			}
+		}
 		if (n != index) return false;
 	}
 

@@ -317,7 +317,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		if (audio_source)
 			audio = audio_source->m_streamIndex;
 
-		{for (int i = 0; i < (int)fmt->nb_streams; i++) {
+		for (int i = 0; i < (int)fmt->nb_streams; i++) {
 			if (i != video && i != audio) continue;
 
 			AVStream* in_stream = fmt->streams[i];
@@ -328,7 +328,9 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			}
 
 			err = avcodec_parameters_copy(out_stream->codecpar, in_stream->codecpar);
-			if (err < 0) goto end;
+			if (err < 0) {
+				goto end;
+			}
 
 			adjust_codec_tag2(m_pFormatCtx->iformat->name, ofmt->oformat, out_stream);
 
@@ -336,14 +338,20 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 			out_stream->time_base = in_stream->time_base;
 			err = avformat_transfer_internal_stream_timing_info(ofmt->oformat, out_stream, in_stream, AVFMT_TBCF_AUTO);
-			if (err < 0) goto end;
+			if (err < 0) {
+				goto end;
+			}
 
 			out_stream->r_frame_rate = in_stream->r_frame_rate;
 			out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 
-			if (i == video) out_video = out_stream;
-			if (i == audio) out_audio = out_stream;
-		}}
+			if (i == video) {
+				out_video = out_stream;
+			}
+			else if (i == audio) {
+				out_audio = out_stream;
+			}
+		}
 
 		if (!(ofmt->oformat->flags & AVFMT_NOFILE)) {
 			err = avio_open(&ofmt->pb, out_ff_path, AVIO_FLAG_WRITE);
@@ -712,9 +720,9 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	{
 		const uint16* a = (const uint16*)pBuffer;
 		uint16* b = (uint16*)a_buf;
-		{for (uint32 i = 0; i < cbBuffer / 2; i++) {
+		for (uint32 i = 0; i < cbBuffer / 2; i++) {
 			b[i] = _byteswap_ushort(a[i]);
-		}}
+		}
 	}
 	break;
 	case AV_CODEC_ID_PCM_F32LE:
@@ -726,9 +734,9 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	{
 		const uint32* a = (const uint32*)pBuffer;
 		uint32* b = (uint32*)a_buf;
-		{for (uint32 i = 0; i < cbBuffer / 4; i++) {
+		for (uint32 i = 0; i < cbBuffer / 4; i++) {
 			b[i] = _byteswap_ulong(a[i]);
-		}}
+		}
 	}
 	break;
 	case AV_CODEC_ID_PCM_F64LE:
@@ -738,9 +746,9 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	{
 		const uint64* a = (const uint64*)pBuffer;
 		uint64* b = (uint64*)a_buf;
-		{for (uint32 i = 0; i < cbBuffer / 8; i++) {
+		for (uint32 i = 0; i < cbBuffer / 8; i++) {
 			b[i] = _byteswap_uint64(a[i]);
-		}}
+		}
 	}
 	break;
 	}
@@ -896,7 +904,7 @@ bool FFOutputFile::Begin()
 
 bool FFOutputFile::test_streams()
 {
-	{for (int i = 0; i < (int)stream.size(); i++) {
+	for (int i = 0; i < (int)stream.size(); i++) {
 		StreamInfo& si = stream[i];
 		AVCodecID codec_id = si.st->codecpar->codec_id;
 
@@ -937,7 +945,7 @@ bool FFOutputFile::test_streams()
 			mContext.mpCallbacks->SetError(msg.c_str());
 			return false;
 		}
-	}}
+	}
 
 	/*
 	if(!ofmt->oformat->codec_tag) return true;

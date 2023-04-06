@@ -276,7 +276,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		if (trust_index) {
 			int64_t exp_dt = time_base.den / time_base.num;
 			int64_t min_dt = exp_dt;
-			{for (int i = 1; i < nb_index_entries; i++) {
+			for (int i = 1; i < nb_index_entries; i++) {
 				const AVIndexEntry* i0 = avformat_index_get_entry(m_pStreamCtx, i - 1);
 				const AVIndexEntry* i1 = avformat_index_get_entry(m_pStreamCtx, i);
 				if (i0->flags & AVINDEX_DISCARD_FRAME) continue;
@@ -288,7 +288,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 				if (dt < min_dt) {
 					min_dt = dt;
 				}
-			}}
+			}
 
 			/*
 			increasing framerate could work but has huge memory impact
@@ -306,19 +306,21 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		keyframe_gap = 0;
 		if (trust_index) {
 			int d = 1;
-			{for (int i = 0; i < nb_index_entries; i++) {
+			for (int i = 0; i < nb_index_entries; i++) {
 				if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
 					if (d > keyframe_gap) keyframe_gap = d;
 					d = 1;
 				}
-				else d++;
-			}}
+				else {
+					d++;
+				}
+			}
 			if (d > keyframe_gap) keyframe_gap = d;
 		}
 		else if (nb_index_entries > 1) {
 			sparse_index = true;
 			int p0 = 0;
-			{for (int i = 0; i < nb_index_entries; i++) {
+			for (int i = 0; i < nb_index_entries; i++) {
 				const auto index_entry = avformat_index_get_entry(m_pStreamCtx, i);
 				if (index_entry->flags & AVINDEX_KEYFRAME) {
 					int64_t ts = index_entry->timestamp;
@@ -329,7 +331,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 					p0 = pos;
 					if (d > keyframe_gap) keyframe_gap = d;
 				}
-			}}
+			}
 			int d = sample_count - p0;
 			if (d > keyframe_gap) keyframe_gap = d;
 		}
@@ -471,13 +473,13 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 		const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
 
-		{for (int i = 0; i < nb_index_entries; i++) {
+		for (int i = 0; i < nb_index_entries; i++) {
 			int64_t ts = avformat_index_get_entry(m_pStreamCtx, i)->timestamp;
 			ts -= m_pStreamCtx->start_time;
 			int rndd = time_base.den / 2;
 			int pos = int((ts * time_base.num + rndd) / time_base.den);
 			if (pos >= 0 && pos < sample_count) frame_type[pos] = ' ';
-		}}
+		}
 	}
 
 	// start_time rarely known before actually decoding, init from here
@@ -573,7 +575,9 @@ void VDFFVideoSource::init_format()
 		if (frame_size2 > frame_size) frame_size = frame_size2;
 	}
 	free_buffers();
-	{for (int i = 0; i < buffer_count; i++) dealloc_page(&buffer[i]); }
+	for (int i = 0; i < buffer_count; i++)  {
+		dealloc_page(&buffer[i]);
+	}
 }
 
 void VDXAPIENTRY VDFFVideoSource::GetStreamSourceInfo(VDXStreamSourceInfo& srcInfo)
@@ -1665,8 +1669,12 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 	if (trust_index) {
 		int next_key = -1;
 		const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
-		{for (int i = (int)start; i < nb_index_entries; i++)
-			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) { next_key = i; break; } }
+		for (int i = (int)start; i < nb_index_entries; i++) {
+			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+				next_key = i;
+				break;
+			}
+		}
 		if (next_key == -1) return -1;
 		int64_t pos = avformat_index_get_entry(m_pStreamCtx, next_key)->timestamp;
 		return pos;
@@ -1705,8 +1713,12 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 
 	if (trust_index && jump > next_frame) {
 		int next_key = -1;
-		{for (int i = jump; i > next_frame; i--)
-			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) { next_key = i; break; } }
+		for (int i = jump; i > next_frame; i--) {
+			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+				next_key = i;
+				break;
+			}
+		}
 
 		if (next_key != -1 && (next_frame == -1 || next_key > next_frame + fw_seek_threshold)) {
 			// required to seek forward
@@ -1718,8 +1730,12 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 	if (trust_index && jump < next_frame) {
 		// required to seek backward
 		int prev_key = 0;
-		{for (int i = jump; i >= 0; i--)
-			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) { prev_key = i; break; } }
+		for (int i = jump; i >= 0; i--) {
+			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+				prev_key = i;
+				break;
+			}
+		}
 		pos = avformat_index_get_entry(m_pStreamCtx, prev_key)->timestamp;
 		return prev_key;
 	}
@@ -1773,16 +1789,25 @@ int VDFFVideoSource::calc_prefetch(int jump)
 
 	int x = -1;
 	int n = 0;
-	{for (int i = jump; i >= 0; i--) {
-		if (i < jump - keyframe_gap) break;
-		if (!frame_array[i]) { x = i; break; }
-	}}
+	for (int i = jump; i >= 0; i--) {
+		if (i < jump - keyframe_gap) {
+			break;
+		}
+		if (!frame_array[i]) {
+			x = i;
+			break;
+		}
+	}
 	if (x == -1) return -1; // all nearby frames are already cached
 
 	int prev_key = 0;
 	if (trust_index) {
-		{for (int i = x; i >= 0; i--)
-			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) { prev_key = i; break; } }
+		for (int i = x; i >= 0; i--) {
+			if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+				prev_key = i;
+				break;
+			}
+		}
 	}
 	if (sparse_index) {
 		int64_t pos;
@@ -2094,7 +2119,7 @@ void VDFFVideoSource::alloc_direct_buffer()
 
 void VDFFVideoSource::free_buffers()
 {
-	{for (int i = 0; i < buffer_count; i++) {
+	for (int i = 0; i < buffer_count; i++) {
 		BufferPage& page = buffer[i];
 		frame_array[page.target] = 0;
 		if (page.map_base) {
@@ -2105,7 +2130,7 @@ void VDFFVideoSource::free_buffers()
 		page.refs = 0;
 		page.access = 0;
 		page.target = 0;
-	}}
+	}
 
 	memset(frame_array, 0, sample_count * sizeof(void*));
 
@@ -2186,15 +2211,21 @@ void VDFFVideoSource::alloc_page(int pos)
 
 void VDFFVideoSource::copy_page(int start, int end, BufferPage* p)
 {
-	{for (int i = start; i <= end; i++) {
+	for (int i = start; i <= end; i++) {
 		if (frame_array[i]) continue;
 		p->refs++;
 		frame_array[i] = p;
-		if (i > last_frame) last_frame = i;
-		if (i < first_frame) first_frame = i;
+		if (i > last_frame) {
+			last_frame = i;
+		}
+		if (i < first_frame) {
+			first_frame = i;
+		}
 
-		if (frame_type[i] == ' ') frame_type[i] = '+';
-	}}
+		if (frame_type[i] == ' ') {
+			frame_type[i] = '+';
+		}
+	}
 }
 
 void VDFFVideoSource::dealloc_page(BufferPage* p)
@@ -2215,7 +2246,7 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 	if (!mem) return;
 	if (p->map_base && (p->access & flag)) return;
 
-	{for (int i = 0; i < buffer_count; i++) {
+	for (int i = 0; i < buffer_count; i++) {
 		BufferPage& p1 = buffer[i];
 		if (&p1 == p) continue;
 		if (!p1.map_base) continue;
@@ -2235,7 +2266,7 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 			}
 			break;
 		}
-	}}
+	}
 
 	while (1) {
 		int access0 = p->access & 3;

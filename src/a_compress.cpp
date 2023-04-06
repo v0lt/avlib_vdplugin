@@ -304,10 +304,10 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 
 	av_packet_unref(pkt);
 	avcodec_receive_packet(ctx, pkt);
-	{for (int i = 0; i < pkt->side_data_elems; i++) {
+	for (int i = 0; i < pkt->side_data_elems; i++) {
 		AVPacketSideData& s = pkt->side_data[i];
 		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) export_wav();
-	}}
+	}
 	if (pkt->size > max_packet) max_packet = pkt->size;
 	if (flush) export_wav();
 
