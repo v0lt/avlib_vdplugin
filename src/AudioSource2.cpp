@@ -54,7 +54,9 @@ void* VDXAPIENTRY VDFFAudioSource::AsInterface(uint32_t iid)
 int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 {
 	m_pFormatCtx = pSource->open_file(AVMEDIA_TYPE_AUDIO, streamIndex);
-	if (!m_pFormatCtx) return -1;
+	if (!m_pFormatCtx) {
+		return -1;
+	}
 
 	m_pSource = pSource;
 	m_streamIndex = streamIndex;
@@ -82,8 +84,11 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	// should normally reduce to integer if timebase is derived from sample_rate
 	av_reduce(&time_base.num, &time_base.den, int64(m_pCodecCtx->sample_rate) * tb.num, tb.den, INT_MAX);
 
-	trust_sample_pos = false;
-	if (time_base.den == 1) trust_sample_pos = true; // works for mp4
+	if (time_base.den == 1) {
+		trust_sample_pos = true; // works for mp4
+	} else {
+		trust_sample_pos = false;
+	}
 	use_keys = false;
 	const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
 	for (int i = 0; i < nb_index_entries; i++) {
@@ -105,8 +110,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 			if (m_pFormatCtx->duration == AV_NOPTS_VALUE) {
 				// fill 10 hours
 				sample_count = int64_t(3600 * 10) * m_pCodecCtx->sample_rate;
-			}
-			else {
+			} else {
 				sample_count = (m_pFormatCtx->duration * m_pCodecCtx->sample_rate + AV_TIME_BASE / 2) / AV_TIME_BASE;
 			}
 		}
@@ -139,9 +143,9 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	m_pFrame = av_frame_alloc();
 
-	first_page = 0;
-	last_page = 0;
-	used_pages = 0;
+	first_page     = 0;
+	last_page      = 0;
+	used_pages     = 0;
 	used_pages_max = 1024;
 	buffer_size = (int)((sample_count + BufferPage::size - 1) / BufferPage::size);
 	buffer = (BufferPage*)malloc(buffer_size * sizeof(BufferPage));
@@ -182,8 +186,10 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 	}
 
 	if (target) {
-		if (target->mChannels == 1) layout = AV_CH_LAYOUT_MONO;
-		if (target->mChannels == 2) {
+		if (target->mChannels == 1) {
+			layout = AV_CH_LAYOUT_MONO;
+		}
+		else if (target->mChannels == 2) {
 			switch (layout) {
 			case AV_CH_LAYOUT_MONO:
 			case AV_CH_LAYOUT_STEREO:
@@ -192,11 +198,18 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 				layout = AV_CH_LAYOUT_STEREO_DOWNMIX;
 			}
 		}
-		if (target->mBitsPerSample == 8) fmt = AV_SAMPLE_FMT_U8;
-		if (target->mBitsPerSample == 16 && fmt != AV_SAMPLE_FMT_U8) fmt = AV_SAMPLE_FMT_S16;
+
+		if (target->mBitsPerSample == 8) {
+			fmt = AV_SAMPLE_FMT_U8;
+		}
+		if (target->mBitsPerSample == 16 && fmt != AV_SAMPLE_FMT_U8) {
+			fmt = AV_SAMPLE_FMT_S16;
+		}
 	}
 
-	if (layout == out_layout && fmt == out_fmt) return;
+	if (layout == out_layout && fmt == out_fmt) {
+		return;
+	}
 
 	out_layout = layout;
 	out_fmt = fmt;
@@ -219,10 +232,11 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 
 	if (mRawFormat.Format.wBitsPerSample > 16 || mRawFormat.Format.nChannels > 2) {
 		mRawFormat.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-		if (out_fmt == AV_SAMPLE_FMT_FLT)
+		if (out_fmt == AV_SAMPLE_FMT_FLT) {
 			mRawFormat.SubFormat = KSDATAFORMAT_SUBTYPE_IEEE_FLOAT;
-		else
+		} else {
 			mRawFormat.SubFormat = KSDATAFORMAT_SUBTYPE_PCM;
+		}
 		mRawFormat.Format.cbSize = sizeof(WAVEFORMATEXTENSIBLE) - sizeof(WAVEFORMATEX);
 		mRawFormat.Samples.wValidBitsPerSample = mRawFormat.Format.wBitsPerSample;
 		mRawFormat.dwChannelMask = uint32_t(out_layout) & 0x3ffff;
@@ -249,7 +263,9 @@ void VDFFAudioSource::reset_swr()
 		in_layout = ch_layout_def.u.mask;
 	}
 
-	if (in_layout == swr_layout && m_pCodecCtx->sample_rate == swr_rate && m_pCodecCtx->sample_fmt == swr_fmt) return;
+	if (in_layout == swr_layout && m_pCodecCtx->sample_rate == swr_rate && m_pCodecCtx->sample_fmt == swr_fmt) {
+		return;
+	}
 
 	swr_layout = in_layout;
 	swr_rate = m_pCodecCtx->sample_rate;
@@ -259,15 +275,16 @@ void VDFFAudioSource::reset_swr()
 		swr_free(&m_pSwrCtx);
 	}
 	m_pSwrCtx = swr_alloc();
-	av_opt_set_int(m_pSwrCtx, "in_channel_layout", in_layout, 0);
-	av_opt_set_int(m_pSwrCtx, "in_sample_rate", m_pCodecCtx->sample_rate, 0);
-	av_opt_set_sample_fmt(m_pSwrCtx, "in_sample_fmt", m_pCodecCtx->sample_fmt, 0);
+	int ret = 0;
+	ret = av_opt_set_int(m_pSwrCtx, "in_channel_layout", in_layout, 0);
+	ret = av_opt_set_int(m_pSwrCtx, "in_sample_rate", m_pCodecCtx->sample_rate, 0);
+	ret = av_opt_set_sample_fmt(m_pSwrCtx, "in_sample_fmt", m_pCodecCtx->sample_fmt, 0);
 
-	av_opt_set_int(m_pSwrCtx, "out_channel_layout", out_layout, 0);
-	av_opt_set_int(m_pSwrCtx, "out_sample_rate", m_pCodecCtx->sample_rate, 0);
-	av_opt_set_sample_fmt(m_pSwrCtx, "out_sample_fmt", out_fmt, 0);
+	ret = av_opt_set_int(m_pSwrCtx, "out_channel_layout", out_layout, 0);
+	ret = av_opt_set_int(m_pSwrCtx, "out_sample_rate", m_pCodecCtx->sample_rate, 0);
+	ret = av_opt_set_sample_fmt(m_pSwrCtx, "out_sample_fmt", out_fmt, 0);
 
-	int ret = swr_init(m_pSwrCtx);
+	ret = swr_init(m_pSwrCtx);
 	if (ret < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error.");
 	}
@@ -279,8 +296,10 @@ void VDFFAudioSource::init_start_time()
 	while (1) {
 		std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 		
-		int rf = av_read_frame(m_pFormatCtx, pkt.get());
-		if (rf < 0) break;
+		int ret = av_read_frame(m_pFormatCtx, pkt.get());
+		if (ret < 0) {
+			break;
+		}
 		if (pkt->stream_index == m_streamIndex) {
 			first_pts = pkt->pts;
 			av_packet_unref(pkt.get());
@@ -290,9 +309,13 @@ void VDFFAudioSource::init_start_time()
 	}
 
 	start_time = m_pStreamCtx->start_time;
-	if (start_time == AV_NOPTS_VALUE) start_time = 0;
+	if (start_time == AV_NOPTS_VALUE) {
+		start_time = 0;
+	}
 	// somehow mov aac starts at pts -1024 but start_time is 0
-	if (first_pts != AV_NOPTS_VALUE && first_pts < start_time) start_time = first_pts;
+	if (first_pts != AV_NOPTS_VALUE && first_pts < start_time) {
+		start_time = first_pts;
+	}
 	time_adjust = 0;
 	// offset start time so that it will match first video frame
 	int vs = m_pSource->find_stream(m_pFormatCtx, AVMEDIA_TYPE_VIDEO);
@@ -395,8 +418,8 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 	ReadInfo ri;
 
 	while (1) {
-		int rf = av_read_frame(m_pFormatCtx, pkt.get());
-		if (rf < 0) {
+		int ret = av_read_frame(m_pFormatCtx, pkt.get());
+		if (ret < 0) {
 			// typically end of stream
 			// may result from inexact sample_count too
 			//insert_silence(start,count);
@@ -515,12 +538,16 @@ void VDFFAudioSource::invalidate(int64_t start, uint32_t count)
 
 int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 {
-	int r = avcodec_send_packet(m_pCodecCtx, pkt);
-	if (r != 0) return -1;
+	int ret = avcodec_send_packet(m_pCodecCtx, pkt);
+	if (ret != 0) {
+		return -1;
+	}
 
 	while (1) {
-		int f = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
-		if (f != 0) break;
+		ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
+		if (ret != 0) {
+			break;
+		}
 
 		reset_swr();
 		int count = m_pFrame->nb_samples;
@@ -628,7 +655,9 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 
 		// we cannot reliably join cached regions
 		// so create gap to force to continue decoding
-		if (!trust_sample_pos && next_sample > 0) invalidate(next_sample, 1);
+		if (!trust_sample_pos && next_sample > 0) {
+			invalidate(next_sample, 1);
+		}
 	}
 
 	return pkt->size;
@@ -641,9 +670,9 @@ void VDFFAudioSource::reset_cache()
 		buffer[i].reset();
 	}
 
-	first_page = 0;
-	last_page = 0;
-	used_pages = 0;
+	first_page  = 0;
+	last_page   = 0;
+	used_pages  = 0;
 	next_sample = AV_NOPTS_VALUE;
 }
 
@@ -654,29 +683,33 @@ void VDFFAudioSource::alloc_page(int i)
 
 	uint8_t* buf = 0;
 
-	if (used_pages > used_pages_max) while (1) {
-		if (last_page > i) {
-			if (buffer[last_page].p) {
-				if (buf) break;
-				buf = buffer[last_page].p;
-				buffer[last_page].reset();
-				used_pages--;
-			}
-			last_page--;
+	if (used_pages > used_pages_max) {
+		while (1) {
+			if (last_page > i) {
+				if (buffer[last_page].p) {
+					if (buf) break;
+					buf = buffer[last_page].p;
+					buffer[last_page].reset();
+					used_pages--;
+				}
+				last_page--;
 
-		}
-		else if (first_page < i) {
-			if (buffer[first_page].p) {
-				if (buf) break;
-				buf = buffer[first_page].p;
-				buffer[first_page].reset();
-				used_pages--;
 			}
-			first_page++;
+			else if (first_page < i) {
+				if (buffer[first_page].p) {
+					if (buf) break;
+					buf = buffer[first_page].p;
+					buffer[first_page].reset();
+					used_pages--;
+				}
+				first_page++;
+			}
 		}
 	}
 
-	if (!buf) buf = (uint8_t*)malloc(BufferPage::size * mRawFormat.Format.nBlockAlign);
+	if (!buf) {
+		buf = (uint8_t*)malloc(BufferPage::size * mRawFormat.Format.nBlockAlign);
+	}
 
 	bp.p = buf;
 	if (i < first_page) first_page = i;
