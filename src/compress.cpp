@@ -935,17 +935,10 @@ struct CodecBase : public CodecClass {
 
 class ConfigBase : public VDXVideoFilterDialog {
 public:
-	CodecBase* codec;
-	void* old_param;
+	CodecBase* codec = nullptr;
+	void* old_param  = nullptr;
 	int dialog_id;
-	int idc_message;
-
-	ConfigBase()
-	{
-		codec = 0;
-		old_param = 0;
-		idc_message = -1;
-	}
+	int idc_message  = -1;
 
 	virtual ~ConfigBase()
 	{
@@ -1389,9 +1382,8 @@ public:
 struct CodecHUFF : public CodecBase {
 	enum { tag = MKTAG('F', 'F', 'V', 'H') };
 	struct Config : public CodecBase::Config {
-		int prediction;
+		int prediction = 0;
 
-		Config() { prediction = 0; }
 		void clear() { CodecBase::Config::clear(); prediction = 0; }
 	} codec_config;
 

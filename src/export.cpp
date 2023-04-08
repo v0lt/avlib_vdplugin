@@ -121,21 +121,15 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 
 struct ProgressDialog : public VDXVideoFilterDialog {
 public:
-	bool abort;
+	bool abort            = false;
 	DWORD dwLastTime;
-	int mSparseCount;
-	int mSparseInterval;
-	int64_t current_bytes;
-	double current_pos;
-	bool changed;
+	int mSparseCount      = 1;
+	int mSparseInterval   = 1;
+	int64_t current_bytes = 0;
+	double current_pos    = 0.0;
+	bool changed          = false;
 	HWND parent;
 
-	ProgressDialog() {
-		abort = false; mSparseCount = 1; mSparseInterval = 1;
-		current_bytes = 0;
-		current_pos = 0;
-		changed = false;
-	}
 	~ProgressDialog() { Close(); }
 	void Show(HWND parent);
 	void Close();

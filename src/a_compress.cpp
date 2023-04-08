@@ -379,15 +379,9 @@ unsigned VDFFAudio::CopyOutput(void* dst, unsigned bytes, sint64& duration)
 class AConfigBase : public VDXVideoFilterDialog
 {
 public:
-	VDFFAudio* codec;
-	void* old_param;
+	VDFFAudio* codec = nullptr;
+	void* old_param  = nullptr;
 	int dialog_id;
-
-	AConfigBase()
-	{
-		codec = 0;
-		old_param = 0;
-	}
 
 	virtual ~AConfigBase()
 	{
