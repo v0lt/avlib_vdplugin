@@ -231,7 +231,7 @@ struct CodecBase : public CodecClass {
 
 	AVCodecID codec_id     = AV_CODEC_ID_NONE;
 	const char* codec_name = nullptr;
-	int codec_tag          = 0;
+	uint32_t codec_tag     = 0;
 	const AVCodec* codec   = nullptr;
 	AVCodecContext* ctx    = nullptr;
 	AVFrame* frame         = nullptr;
