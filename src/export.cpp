@@ -4,6 +4,7 @@
 #include "AudioSource2.h"
 #include "export.h"
 #include "a_compress.h"
+#include <algorithm>
 #include <string>
 #include <windows.h>
 #include <commdlg.h>
@@ -209,8 +210,7 @@ void ProgressDialog::init_bytes(int64_t bytes)
 
 void ProgressDialog::init_pos(double p)
 {
-	if (p < 0) p = 0;
-	if (p > 1) p = 1;
+	p = std::clamp(p, 0.0, 1.0);
 	int v = int(p * 16384);
 	SendMessage(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETPOS, v, 0);
 }
