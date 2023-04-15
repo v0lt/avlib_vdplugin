@@ -760,7 +760,7 @@ void FFOutputFile::import_bmp(AVStream* st, const void* pFormat, int cbFormat)
 	AVCodecID codec_id = AV_CODEC_ID_NONE;
 
 	if (!codec_id) {
-		AVCodecTag* riff_tag = (AVCodecTag*)avformat_get_riff_video_tags();
+		const AVCodecTag* riff_tag = avformat_get_riff_video_tags();
 		while (riff_tag->id != AV_CODEC_ID_NONE) {
 			if (riff_tag->tag == tag) {
 				codec_id = riff_tag->id;
@@ -771,7 +771,7 @@ void FFOutputFile::import_bmp(AVStream* st, const void* pFormat, int cbFormat)
 	}
 
 	if (!codec_id) {
-		AVCodecTag* mov_tag = (AVCodecTag*)avformat_get_mov_video_tags();
+		const AVCodecTag* mov_tag = avformat_get_mov_video_tags();
 		while (mov_tag->id != AV_CODEC_ID_NONE) {
 			if (mov_tag->tag == tag) {
 				codec_id = mov_tag->id;

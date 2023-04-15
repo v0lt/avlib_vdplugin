@@ -1942,8 +1942,10 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 
 	if (copy_mode && !decode_mode) {
 		while (1) {
-			int rf = av_read_frame(m_pFormatCtx, pkt.get());
-			if (rf < 0) return false;
+			int ret = av_read_frame(m_pFormatCtx, pkt.get());
+			if (ret < 0) {
+				return false;
+			}
 			bool done = false;
 			if (pkt->stream_index == m_streamIndex) {
 				int pos = handle_frame_num(pkt->pts, pkt->dts);
@@ -1959,22 +1961,28 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 				}
 			}
 			av_packet_unref(pkt.get());
-			if (done) return true;
+			if (done) {
+				return true;
+			}
 		}
 	}
 
 	while (1) {
-		int rf = av_read_frame(m_pFormatCtx, pkt.get());
-		if (rf < 0) {
+		int ret = av_read_frame(m_pFormatCtx, pkt.get());
+		if (ret < 0) {
 			pkt->data = 0;
 			pkt->size = 0;
 			// end of stream, grab buffered images
 			pkt->stream_index = m_streamIndex;
 			while (1) {
-				if (direct_buffer) alloc_direct_buffer();
-				avcodec_send_packet(m_pCodecCtx, pkt.get());
-				int f = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
-				if (f != 0) return false;
+				if (direct_buffer) {
+					alloc_direct_buffer();
+				}
+				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
+				ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
+				if (ret != 0) {
+					return false;
+				}
 				if (init) {
 					init = false;
 					set_start_time();
@@ -1988,10 +1996,12 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 		else {
 			int done_frames = 0;
 			if (pkt->stream_index == m_streamIndex) {
-				if (direct_buffer) alloc_direct_buffer();
-				avcodec_send_packet(m_pCodecCtx, pkt.get());
-				int f = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
-				if (f == 0) {
+				if (direct_buffer) {
+					alloc_direct_buffer();
+				}
+				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
+				ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
+				if (ret == 0) {
 					if (init) {
 						init = false;
 						set_start_time();
@@ -2006,7 +2016,9 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 				}
 			}
 			av_packet_unref(pkt.get());
-			if (done_frames > 0) return true;
+			if (done_frames > 0) {
+				return true;
+			}
 		}
 	}
 }
