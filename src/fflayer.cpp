@@ -18,8 +18,8 @@ void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src);
 
 void edit_changed(HWND wnd)
 {
-	WPARAM id = GetWindowLong(wnd, GWL_ID);
-	SendMessage(GetParent(wnd), WM_EDIT_CHANGED, id, (LPARAM)wnd);
+	WPARAM id = GetWindowLongW(wnd, GWL_ID);
+	SendMessageW(GetParent(wnd), WM_EDIT_CHANGED, id, (LPARAM)wnd);
 }
 
 LRESULT CALLBACK EditWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
@@ -32,8 +32,8 @@ LRESULT CALLBACK EditWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 	}
 	if (msg == WM_KILLFOCUS) edit_changed(wnd);
 
-	WNDPROC p = (WNDPROC)GetWindowLongPtr(wnd, GWLP_USERDATA);
-	return CallWindowProc(p, wnd, msg, wparam, lparam);
+	WNDPROC p = (WNDPROC)GetWindowLongPtrW(wnd, GWLP_USERDATA);
+	return CallWindowProcW(p, wnd, msg, wparam, lparam);
 }
 
 //-------------------------------------------------------------------------------------------------
@@ -113,7 +113,7 @@ static void __cdecl PreviewZoomCallback(PreviewZoomInfo& info, void* pData)
 //-------------------------------------------------------------------------------------------------
 
 bool LogoDialog::Show(HWND parent) {
-	return 0 != VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCE(IDD_FFLAYER), parent);
+	return 0 != VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(IDD_FFLAYER), parent);
 }
 
 INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
@@ -181,7 +181,7 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case IDC_ALPHABLEND:
 		{
-			bool v = SendMessage((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
+			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
 			if (v) filter->param.blendMode = LogoParam::blend_alpha;
 			if (!v) filter->param.blendMode = LogoParam::blend_replace;
 			init_buttons();
@@ -191,7 +191,7 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case IDC_PREMULTALPHA:
 		{
-			bool v = SendMessage((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
+			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
 			if (v) filter->param.blendMode = LogoParam::blend_alpha_pm;
 			if (!v) filter->param.blendMode = LogoParam::blend_alpha;
 			init_buttons();
@@ -201,7 +201,7 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 
 		case IDC_LOOP:
 		{
-			bool v = SendMessage((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
+			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
 			if (v) filter->param.loopMode = LogoParam::loop_saw;
 			if (!v) filter->param.loopMode = 0;
 			redo_frame();
@@ -265,16 +265,16 @@ void LogoDialog::init_buttons()
 	bool use_alpha_pm = false;
 	if (filter->param.blendMode == LogoParam::blend_alpha) use_alpha = true;
 	if (filter->param.blendMode == LogoParam::blend_alpha_pm) { use_alpha = true; use_alpha_pm = true; }
-	SendDlgItemMessage(mhdlg, IDC_ALPHABLEND, BM_SETCHECK, use_alpha ? BST_CHECKED : BST_UNCHECKED, 0);
-	SendDlgItemMessage(mhdlg, IDC_PREMULTALPHA, BM_SETCHECK, use_alpha_pm ? BST_CHECKED : BST_UNCHECKED, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ALPHABLEND, BM_SETCHECK, use_alpha ? BST_CHECKED : BST_UNCHECKED, 0);
+	SendDlgItemMessageW(mhdlg, IDC_PREMULTALPHA, BM_SETCHECK, use_alpha_pm ? BST_CHECKED : BST_UNCHECKED, 0);
 
 	EnableWindow(GetDlgItem(mhdlg, IDC_REF_SINGLE), filter->param.animMode == LogoParam::anim_single);
 	EnableWindow(GetDlgItem(mhdlg, IDC_REF_FOLLOW), filter->param.animMode == LogoParam::anim_follow);
 	EnableWindow(GetDlgItem(mhdlg, IDC_FOLLOW_RATE), filter->param.animMode == LogoParam::anim_follow);
-	SendDlgItemMessage(mhdlg, IDC_ANIM_SINGLE, BM_SETCHECK, filter->param.animMode == LogoParam::anim_single ? BST_CHECKED : BST_UNCHECKED, 0);
-	SendDlgItemMessage(mhdlg, IDC_ANIM_FOLLOW, BM_SETCHECK, filter->param.animMode == LogoParam::anim_follow ? BST_CHECKED : BST_UNCHECKED, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ANIM_SINGLE, BM_SETCHECK, filter->param.animMode == LogoParam::anim_single ? BST_CHECKED : BST_UNCHECKED, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ANIM_FOLLOW, BM_SETCHECK, filter->param.animMode == LogoParam::anim_follow ? BST_CHECKED : BST_UNCHECKED, 0);
 	bool loop = filter->param.loopMode == LogoParam::loop_saw;
-	SendDlgItemMessage(mhdlg, IDC_LOOP, BM_SETCHECK, loop ? BST_CHECKED : BST_UNCHECKED, 0);
+	SendDlgItemMessageW(mhdlg, IDC_LOOP, BM_SETCHECK, loop ? BST_CHECKED : BST_UNCHECKED, 0);
 }
 
 void LogoDialog::init_path()
@@ -295,37 +295,37 @@ bool LogoDialog::modify_path()
 
 void LogoDialog::init_pos()
 {
-	char buf[80];
-	sprintf(buf, "%d", filter->param.pos_x);
-	SetDlgItemText(mhdlg, IDC_XPOS, buf);
-	sprintf(buf, "%d", filter->param.pos_y);
-	SetDlgItemText(mhdlg, IDC_YPOS, buf);
+	wchar_t buf[80];
+	swprintf_s(buf, L"%d", filter->param.pos_x);
+	SetDlgItemTextW(mhdlg, IDC_XPOS, buf);
+	swprintf_s(buf, L"%d", filter->param.pos_y);
+	SetDlgItemTextW(mhdlg, IDC_YPOS, buf);
 }
 
 void LogoDialog::init_rate()
 {
-	char buf[80];
-	sprintf(buf, "%g", filter->param.rate);
-	SetDlgItemText(mhdlg, IDC_FOLLOW_RATE, buf);
+	wchar_t buf[80];
+	swprintf_s(buf, L"%g", filter->param.rate);
+	SetDlgItemTextW(mhdlg, IDC_FOLLOW_RATE, buf);
 }
 
 void LogoDialog::init_ref(int64 r)
 {
 	int rframe = filter->currentRFrame(r);
 
-	char buf[80];
-	sprintf(buf, "%d", filter->param.animMode == LogoParam::anim_single ? filter->param.refFrame : rframe);
-	SetDlgItemText(mhdlg, IDC_REF_SINGLE, buf);
-	sprintf(buf, "%d", filter->param.animMode == LogoParam::anim_follow ? filter->param.refFrame : 0);
-	SetDlgItemText(mhdlg, IDC_REF_FOLLOW, buf);
+	wchar_t buf[80];
+	swprintf_s(buf, L"%d", filter->param.animMode == LogoParam::anim_single ? filter->param.refFrame : rframe);
+	SetDlgItemTextW(mhdlg, IDC_REF_SINGLE, buf);
+	swprintf_s(buf, L"%d", filter->param.animMode == LogoParam::anim_follow ? filter->param.refFrame : 0);
+	SetDlgItemTextW(mhdlg, IDC_REF_FOLLOW, buf);
 }
 
 bool LogoDialog::modify_value(HWND item, int& v)
 {
-	char buf[80];
-	GetWindowText(item, buf, sizeof(buf));
+	wchar_t buf[80];
+	GetWindowTextW(item, buf, (int)std::size(buf));
 	int val;
-	if (sscanf(buf, "%d", &val) == 1) {
+	if (swscanf(buf, L"%d", &val) == 1) {
 		v = val;
 		return true;
 	}
@@ -334,10 +334,10 @@ bool LogoDialog::modify_value(HWND item, int& v)
 
 bool LogoDialog::modify_value(HWND item, double& v)
 {
-	char buf[80];
-	GetWindowText(item, buf, sizeof(buf));
+	wchar_t buf[80];
+	GetWindowTextW(item, buf, (int)std::size(buf));
 	float val;
-	if (sscanf(buf, "%f", &val) == 1) {
+	if (swscanf(buf, L"%f", &val) == 1) {
 		v = val;
 		return true;
 	}
@@ -347,9 +347,9 @@ bool LogoDialog::modify_value(HWND item, double& v)
 void LogoDialog::init_edit(int id)
 {
 	HWND hWnd = GetDlgItem(mhdlg, id);
-	LPARAM p = GetWindowLongPtr(hWnd, GWLP_WNDPROC);
-	SetWindowLongPtr(hWnd, GWLP_USERDATA, p);
-	SetWindowLongPtr(hWnd, GWLP_WNDPROC, (LPARAM)EditWndProc);
+	LPARAM p = GetWindowLongPtrW(hWnd, GWLP_WNDPROC);
+	SetWindowLongPtrW(hWnd, GWLP_USERDATA, p);
+	SetWindowLongPtrW(hWnd, GWLP_WNDPROC, (LPARAM)EditWndProc);
 }
 
 void LogoDialog::redo_frame()
@@ -554,4 +554,3 @@ VDXFilterDefinition2 filterDef_fflayer = VDXVideoFilterDefinition<LogoFilter>("A
 VDXVF_BEGIN_SCRIPT_METHODS(LogoFilter)
 VDXVF_DEFINE_SCRIPT_METHOD(LogoFilter, ScriptConfig, "iiisiid")
 VDXVF_END_SCRIPT_METHODS()
-

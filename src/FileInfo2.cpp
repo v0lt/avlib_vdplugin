@@ -75,8 +75,8 @@ void VDFFInputFileInfoDialog::load_segment()
 	if (GetFocus() == next && !bnext) SetFocus(prev);
 	EnableWindow(prev, bprev);
 	EnableWindow(next, bnext);
-	SendMessage(prev, BM_SETSTYLE, (WPARAM)BS_FLAT, TRUE);
-	SendMessage(next, BM_SETSTYLE, (WPARAM)BS_FLAT, TRUE);
+	SendMessageW(prev, BM_SETSTYLE, (WPARAM)BS_FLAT, TRUE);
+	SendMessageW(next, BM_SETSTYLE, (WPARAM)BS_FLAT, TRUE);
 
 	print_format();
 	print_metadata();
@@ -129,18 +129,18 @@ void VDFFInputFileInfoDialog::print_format()
 	const AVInputFormat* pInputFormat = pFormatCtx->iformat;
 
 	SetDlgItemTextA(mhdlg, IDC_STATICVerNumber, vsnstr);
-	char buf[128];
+	wchar_t buf[128];
 
 	SetDlgItemTextA(mhdlg, IDC_FORMATNAME, pInputFormat->long_name);
 
 	if (segment->is_image) {
 		int n = segment->video_source->sample_count;
 		if (n > 1) {
-			sprintf(buf, "%d images", n);
-			SetDlgItemText(mhdlg, IDC_DURATION, buf);
+			swprintf_s(buf, L"%d images", n);
+			SetDlgItemTextW(mhdlg, IDC_DURATION, buf);
 		}
 		else {
-			SetDlgItemText(mhdlg, IDC_DURATION, "single image");
+			SetDlgItemTextW(mhdlg, IDC_DURATION, L"single image");
 		}
 	}
 	else {
@@ -157,7 +157,7 @@ void VDFFInputFileInfoDialog::print_format()
 		}
 
 		if (seconds == -1) {
-			SetDlgItemText(mhdlg, IDC_DURATION, "unknown");
+			SetDlgItemTextW(mhdlg, IDC_DURATION, L"unknown");
 		}
 		else {
 			int hours = (int)(seconds / 3600);
@@ -165,16 +165,16 @@ void VDFFInputFileInfoDialog::print_format()
 			int minutes = (int)(seconds / 60);
 			seconds -= (minutes * 60);
 
-			sprintf(buf, "%d h : %d min : %.2f sec", hours, minutes, seconds);
-			SetDlgItemText(mhdlg, IDC_DURATION, buf);
+			swprintf_s(buf, L"%d h : %d min : %.2f sec", hours, minutes, seconds);
+			SetDlgItemTextW(mhdlg, IDC_DURATION, buf);
 		}
 	}
 
-	sprintf(buf, "%I64d kb/sec", pFormatCtx->bit_rate / 1000);
-	SetDlgItemText(mhdlg, IDC_BITRATE, buf);
+	swprintf_s(buf, L"%I64d kb/sec", pFormatCtx->bit_rate / 1000);
+	SetDlgItemTextW(mhdlg, IDC_BITRATE, buf);
 
-	sprintf(buf, "%u", pFormatCtx->nb_streams);
-	SetDlgItemText(mhdlg, IDC_STREAMSCOUNT, buf);
+	swprintf_s(buf, L"%u", pFormatCtx->nb_streams);
+	SetDlgItemTextW(mhdlg, IDC_STREAMSCOUNT, buf);
 }
 
 void VDFFInputFileInfoDialog::print_video()
@@ -184,7 +184,7 @@ void VDFFInputFileInfoDialog::print_video()
 	AVCodecParameters* codecpar = pVideoStream->codecpar;
 	if (!pVideoCtx) return;
 
-	char buf[256];
+	wchar_t buf[256];
 
 	const AVCodec* pCodec = avcodec_find_decoder(codecpar->codec_id);
 	const char* codec_name = "N/A";
@@ -196,7 +196,8 @@ void VDFFInputFileInfoDialog::print_video()
 
 	if (pVideoCtx->pix_fmt != AV_PIX_FMT_NONE)
 	{
-		strncpy(buf, av_get_pix_fmt_name(pVideoCtx->pix_fmt), 128);
+		char bufA[256];
+		strncpy(bufA, av_get_pix_fmt_name(pVideoCtx->pix_fmt), 128);
 		const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get(pVideoCtx->pix_fmt);
 		bool is_rgb = (desc->flags & AV_PIX_FMT_FLAG_RGB) != 0;
 
@@ -214,32 +215,34 @@ void VDFFInputFileInfoDialog::print_video()
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_CL) spc = "2020";
 			if (pVideoCtx->color_range == AVCOL_RANGE_JPEG) r = "FR";
 			if (spc) {
-				strcat(buf, " (");
-				strcat(buf, spc);
+				strcat(bufA, " (");
+				strcat(bufA, spc);
 				if (r) {
-					strcat(buf, ":");
-					strcat(buf, r);
+					strcat(bufA, ":");
+					strcat(bufA, r);
 				}
-				strcat(buf, ")");
+				strcat(bufA, ")");
 			}
 		}
 
-		SetDlgItemTextA(mhdlg, IDC_VIDEO_PIXFMT, buf);
+		SetDlgItemTextA(mhdlg, IDC_VIDEO_PIXFMT, bufA);
 
 	}
 	else {
-		SetDlgItemTextA(mhdlg, IDC_VIDEO_PIXFMT, "N/A");
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_PIXFMT, L"N/A");
 	}
 
 	if (segment->is_image) {
-		sprintf(buf, "%u x %u", pVideoCtx->width, pVideoCtx->height);
-		SetDlgItemText(mhdlg, IDC_VIDEO_WXH, buf);
+		swprintf_s(buf, L"%u x %u", pVideoCtx->width, pVideoCtx->height);
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
 	}
 	else {
 		VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
-		sprintf(buf, "%u x %u, %.2f fps", pVideoCtx->width, pVideoCtx->height, fr.mNumerator / double(fr.mDenominator));
-		if (segment->video_source->average_fr) strcat(buf, " (average)");
-		SetDlgItemText(mhdlg, IDC_VIDEO_WXH, buf);
+		swprintf_s(buf, L"%u x %u, %.2f fps", pVideoCtx->width, pVideoCtx->height, fr.mNumerator / double(fr.mDenominator));
+		if (segment->video_source->average_fr) {
+			wcscat(buf, L" (average)");
+		}
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
 	}
 
 	AVRational ar = av_make_q(1, 1);
@@ -251,15 +254,15 @@ void VDFFInputFileInfoDialog::print_video()
 	}
 	AVRational ar1;
 	av_reduce(&ar1.num, &ar1.den, ar.num, ar.den, INT_MAX);
-	sprintf(buf, "%u : %u", ar1.num, ar1.den);
-	SetDlgItemText(mhdlg, IDC_VIDEO_ASPECTRATIO, buf);
+	swprintf_s(buf, L"%u : %u", ar1.num, ar1.den);
+	SetDlgItemTextW(mhdlg, IDC_VIDEO_ASPECTRATIO, buf);
 
 	if (pVideoCtx->bit_rate) {
-		sprintf(buf, "%I64d kb/sec", pVideoCtx->bit_rate / 1000);
-		SetDlgItemText(mhdlg, IDC_VIDEO_BITRATE, buf);
+		swprintf_s(buf, L"%I64d kb/sec", pVideoCtx->bit_rate / 1000);
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_BITRATE, buf);
 	}
 	else {
-		SetDlgItemText(mhdlg, IDC_VIDEO_BITRATE, "N/A");
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_BITRATE, L"N/A");
 	}
 }
 
@@ -269,36 +272,35 @@ void VDFFInputFileInfoDialog::print_audio()
 	AVCodecContext* pAudioCtx = segment->audio_source->m_pCodecCtx;
 	if (!pAudioCtx) return;
 
-	char buf[128];
-	char buf2[128];
+	wchar_t buf[128];
+	char bufA[128];
 
 	const AVCodec* pCodec = avcodec_find_decoder(pAudioCtx->codec_id);
-	const char* codec_name = "N/A";
-	if (pCodec) codec_name = pCodec->name;
+	const char* codec_name = pCodec ? pCodec->name: "N/A";
 
 	SetDlgItemTextA(mhdlg, IDC_AUDIO_CODECNAME, codec_name);
 
-	sprintf(buf, "%u Hz", pAudioCtx->sample_rate);
-	SetDlgItemText(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
+	swprintf_s(buf, L"%u Hz", pAudioCtx->sample_rate);
+	SetDlgItemTextW(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
 
-	av_channel_layout_describe(&pAudioCtx->ch_layout, buf2, sizeof(buf2));
-	sprintf(buf, "%s (%u), ", buf2, pAudioCtx->ch_layout.nb_channels);
+	av_channel_layout_describe(&pAudioCtx->ch_layout, bufA, sizeof(bufA));
+	sprintf(bufA+strlen(bufA), " (%u), ", pAudioCtx->ch_layout.nb_channels);
 	if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE) {
-		strcat(buf, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
+		strcat(bufA, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
 	}
 	else {
-		strcat(buf, "N/A");
+		strcat(bufA, "N/A");
 	}
-	SetDlgItemText(mhdlg, IDC_AUDIO_CHANNELS, buf);
+	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, bufA);
 
 	int bits_per_sample = av_get_bits_per_sample(pAudioCtx->codec_id);
 	int64_t bit_rate = bits_per_sample ? pAudioCtx->sample_rate * pAudioCtx->ch_layout.nb_channels * bits_per_sample : pAudioCtx->bit_rate;
 	if (bit_rate) {
-		sprintf(buf, "%I64d kb/sec", bit_rate / 1000);
-		SetDlgItemText(mhdlg, IDC_AUDIO_BITRATE, buf);
+		swprintf_s(buf, L"%I64d kb/sec", bit_rate / 1000);
+		SetDlgItemTextW(mhdlg, IDC_AUDIO_BITRATE, buf);
 	}
 	else {
-		SetDlgItemText(mhdlg, IDC_AUDIO_BITRATE, "N/A");
+		SetDlgItemTextW(mhdlg, IDC_AUDIO_BITRATE, L"N/A");
 	}
 }
 
@@ -386,8 +388,8 @@ void VDFFInputFileInfoDialog::print_metadata()
 	}
 
 	int tab[2] = { 42,90 };
-	SendDlgItemMessage(mhdlg, IDC_METADATA, EM_SETTABSTOPS, 2, (LPARAM)tab);
-	SetDlgItemText(mhdlg, IDC_METADATA, s.c_str());
+	SendDlgItemMessageW(mhdlg, IDC_METADATA, EM_SETTABSTOPS, 2, (LPARAM)tab);
+	SetDlgItemTextA(mhdlg, IDC_METADATA, s.c_str());
 }
 
 void VDFFInputFileInfoDialog::print_performance()
@@ -424,9 +426,9 @@ void VDFFInputFileInfoDialog::print_performance()
 	}
 
 	if (buf_max == 0) {
-		SetDlgItemText(mhdlg, IDC_MEMORY_INFO, 0);
-		SetDlgItemText(mhdlg, IDC_STATS, 0);
-		SetDlgItemText(mhdlg, IDC_INDEX_INFO, 0);
+		SetDlgItemTextW(mhdlg, IDC_MEMORY_INFO, nullptr);
+		SetDlgItemTextW(mhdlg, IDC_STATS, nullptr);
+		SetDlgItemTextW(mhdlg, IDC_INDEX_INFO, nullptr);
 		return;
 	}
 
@@ -437,34 +439,34 @@ void VDFFInputFileInfoDialog::print_performance()
 
 	int buf_used = (buf_count * 200 + buf_max) / (buf_max * 2);
 
-	char buf[1024];
-	sprintf(buf, "Memory cache: %d frames / %dM reserved, %d%% used", buf_max, int(mem_max), buf_used);
-	SetDlgItemText(mhdlg, IDC_MEMORY_INFO, buf);
+	wchar_t buf[1024];
+	swprintf_s(buf, L"Memory cache: %d frames / %dM reserved, %d%% used", buf_max, int(mem_max), buf_used);
+	SetDlgItemTextW(mhdlg, IDC_MEMORY_INFO, buf);
 
-	sprintf(buf, "Frames decoded: %d", decoded_count);
-	SetDlgItemText(mhdlg, IDC_STATS, buf);
+	swprintf_s(buf, L"Frames decoded: %d", decoded_count);
+	SetDlgItemTextW(mhdlg, IDC_STATS, buf);
 
 	if (segment->is_image) {
-		SetDlgItemText(mhdlg, IDC_INDEX_INFO, "Seeking: image list (random access)");
+		SetDlgItemTextW(mhdlg, IDC_INDEX_INFO, L"Seeking: image list (random access)");
 	}
 	else {
-		std::string msg;
+		std::wstring msg;
 		if (index_quality > 0) {
 			if (all_key) {
-				msg = "Seeking: index present, optimal random access";
+				msg = L"Seeking: index present, optimal random access";
 			}
 			else if (index_quality == 2) {
-				msg = "Seeking: index present, all frames";
+				msg = L"Seeking: index present, all frames";
 			}
 			else {
-				msg = "Seeking: index present";
+				msg = L"Seeking: index present";
 			}
-			if (has_vfr) msg += " (vfr)";
+			if (has_vfr) msg += L" (vfr)";
 		}
 		else {
-			msg = "Seeking: index missing, reverse scan may be slow";
+			msg = L"Seeking: index missing, reverse scan may be slow";
 		}
 
-		SetDlgItemText(mhdlg, IDC_INDEX_INFO, msg.c_str());
+		SetDlgItemTextW(mhdlg, IDC_INDEX_INFO, msg.c_str());
 	}
 }

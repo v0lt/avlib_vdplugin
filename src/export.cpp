@@ -145,7 +145,7 @@ public:
 void ProgressDialog::Show(HWND parent)
 {
 	this->parent = parent;
-	VDXVideoFilterDialog::ShowModeless(hInstance, MAKEINTRESOURCE(IDD_EXPORT_PROGRESS), parent);
+	VDXVideoFilterDialog::ShowModeless(hInstance, MAKEINTRESOURCEW(IDD_EXPORT_PROGRESS), parent);
 }
 
 void ProgressDialog::Close()
@@ -162,7 +162,7 @@ INT_PTR ProgressDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		EnableWindow(parent, false);
 		dwLastTime = GetTickCount();
 		init_bytes(0);
-		SendMessage(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETRANGE, 0, MAKELPARAM(0, 16384));
+		SendMessageW(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETRANGE, 0, MAKELPARAM(0, 16384));
 		SetTimer(mhdlg, 1, 500, NULL);
 		return true;
 	}
@@ -193,26 +193,26 @@ void ProgressDialog::sync_state()
 void ProgressDialog::init_bytes(int64_t bytes)
 {
 	double n = double(bytes);
-	const char* x = "K";
+	const wchar_t* x = L"K";
 	n = n / 1024;
 	if (n / 1024 > 8) {
 		n = n / 1024;
-		x = "M";
+		x = L"M";
 	}
 	if (n / 1024 > 8) {
 		n = n / 1024;
-		x = "G";
+		x = L"G";
 	}
-	char buf[1024];
-	sprintf(buf, "%5.2f%s bytes copied", n, x);
-	SetDlgItemText(mhdlg, IDC_EXPORT_STATE, buf);
+	wchar_t buf[1024];
+	swprintf_s(buf, L"%5.2f%s bytes copied", n, x);
+	SetDlgItemTextW(mhdlg, IDC_EXPORT_STATE, buf);
 }
 
 void ProgressDialog::init_pos(double p)
 {
 	p = std::clamp(p, 0.0, 1.0);
 	int v = int(p * 16384);
-	SendMessage(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETPOS, v, 0);
+	SendMessageW(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETPOS, v, 0);
 }
 
 void ProgressDialog::check()
@@ -278,7 +278,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 		const AVOutputFormat* oformat = av_guess_format(0, out_ff_path, 0);
 		if (!oformat) {
-			MessageBox((HWND)parent, "Unable to find a suitable output format", "Stream copy", MB_ICONSTOP | MB_OK);
+			MessageBoxW((HWND)parent, L"Unable to find a suitable output format", L"Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
 		}
 
@@ -452,11 +452,11 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			av_strerror(err, buf2, 1024);
 			strcpy(buf, "Operation failed.\nInternal error (FFMPEG): ");
 			strcat(buf, buf2);
-			MessageBox(progress.getHwnd(), buf, "Stream copy", MB_ICONSTOP | MB_OK);
+			MessageBoxA(progress.getHwnd(), buf, "Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
 		}
 		else if (!progress.abort) {
-			MessageBox(progress.getHwnd(), "Operation completed successfully.", "Stream copy", MB_OK);
+			MessageBoxW(progress.getHwnd(), L"Operation completed successfully.", L"Stream copy", MB_OK);
 			return true;
 		}
 	}
@@ -944,7 +944,7 @@ bool FFOutputFile::test_streams()
 	/*
 	if(!ofmt->oformat->codec_tag) return true;
 
-	{for(int i=0; i<(int)stream.size(); i++) {
+	for(int i=0; i<(int)stream.size(); i++) {
 		StreamInfo& si = stream[i];
 		AVCodecID codec_id = si.st->codecpar->codec_id;
 
@@ -957,7 +957,7 @@ bool FFOutputFile::test_streams()
 			mContext.mpCallbacks->SetError(msg.c_str());
 			return false;
 		}
-	}}
+	}
 	*/
 	return true;
 }

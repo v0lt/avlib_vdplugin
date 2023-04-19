@@ -47,7 +47,7 @@ void av_log_func(void* obj, int type, const char* msg, va_list arg)
 
 	char buf[1024];
 	vsprintf(buf, msg, arg);
-	OutputDebugString(buf);
+	OutputDebugStringA(buf);
 	//DebugBreak();
 }
 
@@ -68,25 +68,27 @@ class ConfigureDialog : public VDXVideoFilterDialog {
 public:
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void Show(HWND parent) {
-		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCE(IDD_SYS_INPUT_OPTIONS), parent);
+		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(IDD_SYS_INPUT_OPTIONS), parent);
 	}
 	void init_cache();
 };
 
-float GetDlgItemFloat(HWND wnd, int id, float bv) {
+float GetDlgItemFloat(HWND wnd, int id, float bv)
+{
 	HWND w1 = GetDlgItem(wnd, id);
-	char buf[128];
-	if (!GetWindowText(w1, buf, 128)) return bv;
+	wchar_t buf[128];
+	if (!GetWindowTextW(w1, buf, (int)std::size(buf))) return bv;
 	float v;
-	if (sscanf(buf, "%f", &v) != 1) return bv;
+	if (swscanf_s(buf, L"%f", &v) != 1) return bv;
 	return v;
 }
 
-void SetDlgItemFloat(HWND wnd, int id, float v) {
+void SetDlgItemFloat(HWND wnd, int id, float v)
+{
 	HWND w1 = GetDlgItem(wnd, id);
-	char buf[128];
-	sprintf(buf, "%g", v);
-	SetWindowText(w1, buf);
+	wchar_t buf[128];
+	swprintf_s(buf, L"%g", v);
+	SetWindowTextW(w1, buf);
 }
 
 void ConfigureDialog::init_cache()
@@ -97,7 +99,7 @@ void ConfigureDialog::init_cache()
 	int max = int(ms.ullTotalPhys / gb1);
 
 	SetDlgItemFloat(mhdlg, IDC_CACHE_SIZE, config_cache_size);
-	SendMessage(GetDlgItem(mhdlg, IDC_CACHE_SPIN), UDM_SETRANGE, 0, (LPARAM)MAKELONG(max, 0));
+	SendMessageW(GetDlgItem(mhdlg, IDC_CACHE_SPIN), UDM_SETRANGE, 0, (LPARAM)MAKELONG(max, 0));
 }
 
 INT_PTR ConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)

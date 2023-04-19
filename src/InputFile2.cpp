@@ -335,7 +335,7 @@ public:
 
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void Show(HWND parent) {
-		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCE(IDD_INPUT_OPTIONS), parent);
+		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(IDD_INPUT_OPTIONS), parent);
 	}
 };
 
