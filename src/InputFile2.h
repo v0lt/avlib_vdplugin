@@ -80,23 +80,23 @@ public:
 class VDFFInputFile : public vdxunknown<IVDXInputFile>, public IFilterModFileTool
 {
 public:
-	int64_t video_start_time;
-	wchar_t path[MAX_PATH];
-	bool auto_append;
-	bool single_file_mode;
+	int64_t video_start_time = 0;
+	wchar_t path[MAX_PATH]   = {};
+	bool auto_append         = false;
+	bool single_file_mode    = false;
 
-	bool is_image_list;
-	bool is_image;
-	bool is_anim_image;
+	bool is_image_list = false;
+	bool is_image      = false;
+	bool is_anim_image = false;
 
-	int cfg_frame_buffers;
-	bool cfg_disable_cache;
+	int  cfg_frame_buffers = 0;
+	bool cfg_disable_cache = false;
 
-	AVFormatContext* m_pFormatCtx;
-	VDFFVideoSource* video_source;
-	VDFFAudioSource* audio_source;
-	VDFFInputFile* next_segment;
-	VDFFInputFile* head_segment;
+	AVFormatContext* m_pFormatCtx = nullptr;
+	VDFFVideoSource* video_source = nullptr;
+	VDFFAudioSource* audio_source = nullptr;
+	VDFFInputFile*   next_segment = nullptr;
+	VDFFInputFile*   head_segment = nullptr;
 
 	int VDXAPIENTRY AddRef() {
 		return vdxunknown<IVDXInputFile>::AddRef();

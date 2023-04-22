@@ -399,28 +399,22 @@ bool VDXAPIENTRY VDFFInputFile::CreateOptions(const void* buf, uint32_t len, IVD
 VDFFInputFile::VDFFInputFile(const VDXInputDriverContext& context)
 	: mContext(context)
 {
-	m_pFormatCtx = 0;
-	video_start_time = 0;
-	video_source = 0;
-	audio_source = 0;
-	next_segment = 0;
-	head_segment = 0;
-	auto_append = false;
-	single_file_mode = false;
-	is_image = false;
-	is_image_list = false;
-	is_anim_image = false;
-
-	cfg_frame_buffers = 0;
-	cfg_disable_cache = false;
 }
 
 VDFFInputFile::~VDFFInputFile()
 {
-	if (next_segment) next_segment->Release();
-	if (video_source) video_source->Release();
-	if (audio_source) audio_source->Release();
-	if (m_pFormatCtx) avformat_close_input(&m_pFormatCtx);
+	if (next_segment) {
+		next_segment->Release();
+	}
+	if (video_source) {
+		video_source->Release();
+	}
+	if (audio_source) {
+		audio_source->Release();
+	}
+	if (m_pFormatCtx) {
+		avformat_close_input(&m_pFormatCtx);
+	}
 }
 
 void VDFFInputFile::DisplayInfo(VDXHWND hwndParent)
