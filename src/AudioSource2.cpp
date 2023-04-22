@@ -451,7 +451,9 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 		if (start == 0 && first_sample > 0) {
 			// some crappy padding
 			// it seems aac discards first frame and vorbis too
-			insert_silence(start, (int)first_sample);
+			if (m_pCodecCtx->codec_id != AV_CODEC_ID_OPUS) { // but don't use this for Opus
+				insert_silence(start, (int)first_sample);
+			}
 		}
 
 		int n = buffer[px].copy(s0, count, lpBuffer, mRawFormat.Format.nBlockAlign);
