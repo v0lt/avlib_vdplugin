@@ -87,8 +87,8 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 
 	// 0 video
 	if (mode) {
-		sprintf(p, "\tmode:\t%d\r\n", mode); p += strlen(p);
-		sprintf(p, "\tsubmode:\t%d\r\n", submode); p += strlen(p);
+		sprintf(p, "\tmode:\t%u\r\n", mode); p += strlen(p);
+		sprintf(p, "\tsubmode:\t%u\r\n", submode); p += strlen(p);
 	}
 	else {
 		sprintf(p, "\tmode:\t%s\r\n", DecipherValue(strs_vmode, arraysize(strs_vmode), submode)); p += strlen(p);
