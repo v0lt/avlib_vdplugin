@@ -203,7 +203,7 @@ void VDFFInputFileInfoDialog::print_video()
 
 		if (!is_rgb) {
 			const char* spc = "?";
-			const char* r = 0;
+			const char* r = nullptr;
 			if (pVideoCtx->colorspace == AVCOL_SPC_UNSPECIFIED) spc = 0;
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT709) spc = "709";
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT470BG) spc = "601";
@@ -322,8 +322,8 @@ bool skip_useless_meta(MetaInfo& info, AVDictionaryEntry* t)
 void VDFFInputFileInfoDialog::print_metadata()
 {
 	AVFormatContext* pFormatCtx = segment->m_pFormatCtx;
-	AVStream* pVideoStream = 0;
-	AVStream* pAudioStream = 0;
+	AVStream* pVideoStream = nullptr;
+	AVStream* pAudioStream = nullptr;
 	if (segment->video_source) pVideoStream = segment->video_source->m_pStreamCtx;
 	if (segment->audio_source) pAudioStream = segment->audio_source->m_pStreamCtx;
 
@@ -335,7 +335,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 	MetaInfo info = { 0 };
 
 	if (pFormatCtx && pFormatCtx->metadata) {
-		AVDictionaryEntry* t = 0;
+		AVDictionaryEntry* t = nullptr;
 		bool header = true;
 		while (t = av_dict_get(pFormatCtx->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
 			if (skip_useless_meta(info, t)) continue;
@@ -348,7 +348,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 		}
 	}
 	if (pVideoStream && pVideoStream->metadata) {
-		AVDictionaryEntry* t = 0;
+		AVDictionaryEntry* t = nullptr;
 		bool header = true;
 		while (t = av_dict_get(pVideoStream->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
 			if (skip_useless_meta(info, t)) continue;
@@ -361,7 +361,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 		}
 	}
 	if (pAudioStream && pAudioStream->metadata) {
-		AVDictionaryEntry* t = 0;
+		AVDictionaryEntry* t = nullptr;
 		bool header = true;
 		while (t = av_dict_get(pAudioStream->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
 			if (skip_useless_meta(info, t)) continue;

@@ -732,7 +732,7 @@ bool VDFFVideoSource::CreateVideoDecoderModel(IVDXVideoDecoderModel** ppModel)
 void VDFFVideoSource::GetSampleInfo(sint64 sample, VDXVideoFrameInfo& frameInfo)
 {
 	if (sample >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		v1->GetSampleInfo(sample - sample_count, frameInfo);
 		return;
@@ -751,7 +751,7 @@ void VDFFVideoSource::GetSampleInfo(sint64 sample, VDXVideoFrameInfo& frameInfo)
 bool VDFFVideoSource::IsKey(int64_t sample)
 {
 	if (sample >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		return v1->IsKey(sample - sample_count);
 	}
@@ -821,7 +821,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 	m_pixmap_info.frame_num = -1;
 
 	if (targetFrame >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (!v1) return 0;
 		return v1->DecodeFrame(inputBuffer, data_len, is_preroll, streamFrame, targetFrame - sample_count);
@@ -891,7 +891,7 @@ bool VDFFVideoSource::IsFrameBufferValid()
 	if (m_pixmap_frame == -1) return false;
 
 	if (m_pixmap_frame >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (!v1) return 0;
 		return v1->IsFrameBufferValid();
@@ -904,7 +904,7 @@ bool VDFFVideoSource::IsFrameBufferValid()
 const VDXPixmap& VDFFVideoSource::GetFrameBuffer()
 {
 	if (m_pixmap_frame >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		return v1->GetFrameBuffer();
 	}
@@ -915,7 +915,7 @@ const VDXPixmap& VDFFVideoSource::GetFrameBuffer()
 const FilterModPixmapInfo& VDFFVideoSource::GetFrameBufferInfo()
 {
 	if (m_pixmap_frame >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		return v1->GetFrameBufferInfo();
 	}
@@ -929,7 +929,7 @@ const void* VDFFVideoSource::GetFrameBufferBase()
 	if (m_pixmap_frame == -1) return 0;
 
 	if (m_pixmap_frame >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (!v1) return 0;
 		return v1->GetFrameBufferBase();
@@ -1821,7 +1821,7 @@ int VDFFVideoSource::calc_prefetch(int jump)
 bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 cbBuffer, uint32* lBytesRead, uint32* lSamplesRead)
 {
 	if (start >= sample_count) {
-		VDFFVideoSource* v1 = 0;
+		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (v1) return v1->Read(start - sample_count, lCount, lpBuffer, cbBuffer, lBytesRead, lSamplesRead);
 	}
@@ -2202,7 +2202,7 @@ VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, 
 
 void VDFFVideoSource::alloc_page(int pos)
 {
-	BufferPage* r = 0;
+	BufferPage* r = nullptr;
 	int buffer_max = buffer_count;
 	if (m_small_cache_mode) buffer_max = small_buffer_count;
 

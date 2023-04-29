@@ -682,7 +682,7 @@ void VDFFAudioSource::alloc_page(int i)
 	BufferPage& bp = buffer[i];
 	if (bp.p) return;
 
-	uint8_t* buf = 0;
+	uint8_t* buf = nullptr;
 
 	if (used_pages > used_pages_max) {
 		while (1) {

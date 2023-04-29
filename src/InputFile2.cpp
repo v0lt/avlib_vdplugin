@@ -637,7 +637,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 			auto_append = false;
 			avformat_close_input(&fmt);
 			widechar_to_utf8(ff_path, ff_path_size, list_path);
-			AVDictionary* options = 0;
+			AVDictionary* options = nullptr;
 			av_dict_set_int(&options, "start_number", start, 0);
 			if (r_fr.num != 0) {
 				char buf[80];
@@ -752,7 +752,7 @@ int VDFFInputFile::find_stream(AVFormatContext* fmt, AVMediaType type)
 
 bool VDFFInputFile::GetVideoSource(int index, IVDXVideoSource** ppVS)
 {
-	if (ppVS) *ppVS = 0;
+	if (ppVS) *ppVS = nullptr;
 
 	if (!m_pFormatCtx) return false;
 	if (index != 0) return false;
@@ -787,7 +787,7 @@ bool VDFFInputFile::GetVideoSource(int index, IVDXVideoSource** ppVS)
 
 bool VDFFInputFile::GetAudioSource(int index, IVDXAudioSource** ppAS)
 {
-	if (ppAS) *ppAS = 0;
+	if (ppAS) *ppAS = nullptr;
 
 	if (!m_pFormatCtx) return false;
 

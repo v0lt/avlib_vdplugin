@@ -285,8 +285,8 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		ProgressDialog progress;
 		progress.Show((HWND)parent);
 
-		AVFormatContext* fmt = 0;
-		AVFormatContext* ofmt = 0;
+		AVFormatContext* fmt = nullptr;
+		AVFormatContext* ofmt = nullptr;
 		bool v_end;
 		bool a_end;
 		int64_t vt_end = -1;
@@ -295,8 +295,8 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		int64_t a_bias = 0;
 		int video = -1;
 		int audio = -1;
-		AVStream* out_video = 0;
-		AVStream* out_audio = 0;
+		AVStream* out_video = nullptr;
+		AVStream* out_audio = nullptr;
 
 		int err = 0;
 		err = avformat_open_input(&fmt, ff_path, 0, 0);
@@ -405,7 +405,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			int64_t t = pkt->pts;
 			if (t == AV_NOPTS_VALUE) t = pkt->dts;
 
-			AVStream* out_stream = 0;
+			AVStream* out_stream = nullptr;
 			if (pkt->stream_index == video) {
 				if (vt_end != -1 && t >= vt_end) v_end = true; else out_stream = out_video;
 				if (pkt->pts != AV_NOPTS_VALUE) pkt->pts -= pos0;
