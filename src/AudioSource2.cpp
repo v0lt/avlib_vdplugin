@@ -80,7 +80,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 
-	AVRational tb = m_pStreamCtx->time_base;
+	const AVRational tb = m_pStreamCtx->time_base;
 	// should normally reduce to integer if timebase is derived from sample_rate
 	av_reduce(&time_base.num, &time_base.den, int64(m_pCodecCtx->sample_rate) * tb.num, tb.den, INT_MAX);
 
@@ -116,7 +116,6 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		}
 	}
 	else {
-		AVRational tb = m_pStreamCtx->time_base;
 		sample_count = (m_pStreamCtx->duration * time_base.num + time_base.den / 2) / time_base.den;
 	}
 
@@ -456,7 +455,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 			}
 		}
 
-		int n = buffer[px].copy(s0, count, lpBuffer, mRawFormat.Format.nBlockAlign);
+		n = buffer[px].copy(s0, count, lpBuffer, mRawFormat.Format.nBlockAlign);
 		if (n > 0) {
 			*lBytesRead = n * mRawFormat.Format.nBlockAlign;
 			*lSamplesRead = n;
@@ -464,7 +463,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 		}
 		else {
 			// seek/decode missed required sample
-			int n = buffer[px].empty(s0, count);
+			n = buffer[px].empty(s0, count);
 			write_silence(lpBuffer, n);
 			*lBytesRead = n * mRawFormat.Format.nBlockAlign;
 			*lSamplesRead = n;

@@ -242,9 +242,11 @@ extern "C" VDPluginInfo * *__cdecl VDGetPluginInfo()
 void saveConfig()
 {
 	wchar_t buf[MAX_PATH + 128];
-	size_t n = GetModuleFileNameW(hInstance, buf, MAX_PATH);
-	if (n <= 0) return;
-	buf[n] = 0;
+	const DWORD len = GetModuleFileNameW(hInstance, buf, MAX_PATH);
+	if (len == 0) {
+		return;
+	}
+	buf[len] = 0;
 
 	wchar_t* p1 = wcsrchr(buf, '\\');
 	wchar_t* p2 = wcsrchr(buf, '/');
@@ -269,9 +271,11 @@ void saveConfig()
 void loadConfig()
 {
 	wchar_t buf[MAX_PATH + 128];
-	size_t n = GetModuleFileNameW(hInstance, buf, MAX_PATH);
-	if (n <= 0) return;
-	buf[n] = 0;
+	const DWORD len = GetModuleFileNameW(hInstance, buf, MAX_PATH);
+	if (len == 0) {
+		return;
+	}
+	buf[len] = 0;
 
 	wchar_t* p1 = wcsrchr(buf, '\\');
 	wchar_t* p2 = wcsrchr(buf, '/');

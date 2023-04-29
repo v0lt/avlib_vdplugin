@@ -174,16 +174,16 @@ public:
 	bool average_fr;
 
 private:
-	bool flip_image        = false;
-	bool avi_drop_index    = false;
+	bool flip_image         = false;
+	bool avi_drop_index     = false;
 
-	bool direct_buffer     = false;
-	bool is_image_list     = false;
-	bool copy_mode         = false;
-	bool decode_mode       = true;
-	bool small_cache_mode  = false;
-	bool enable_prefetch   = false;
-	int small_buffer_count = 0;
+	bool direct_buffer      = false;
+	bool is_image_list      = false;
+	bool m_copy_mode        = false;
+	bool m_decode_mode      = true;
+	bool m_small_cache_mode = false;
+	bool enable_prefetch    = false;
+	int small_buffer_count  = 0;
 	int64_t dead_range_start;
 	int64_t dead_range_end;
 

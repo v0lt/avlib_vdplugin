@@ -2258,31 +2258,33 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 	case DRV_OPEN:
 	{
 		ICOPEN* icopen = (ICOPEN*)lParam2;
-		if (icopen && icopen->fccType != ICTYPE_VIDEO) return 0;
-
-		CodecBase* codec = 0;
-		if (icopen->fccHandler == 0) codec = new CodecFFV1;
-		if (icopen->fccHandler == CodecFFV1::tag) codec = new CodecFFV1;
-		if (icopen->fccHandler == CodecHUFF::tag) codec = new CodecHUFF;
-		if (icopen->fccHandler == CodecProres::tag) codec = new CodecProres;
-		if (icopen->fccHandler == CodecVP8::tag) codec = new CodecVP8;
-		if (icopen->fccHandler == CodecVP9::tag) codec = new CodecVP9;
-		if (icopen->fccHandler == CodecH265::id_tag) codec = new CodecH265;
-		if (icopen->fccHandler == CodecH265LS::id_tag) codec = new CodecH265LS;
-		if (icopen->fccHandler == CodecH264::tag) codec = new CodecH264;
-		if (codec) {
-			if (!codec->init()) {
-				delete codec;
-				codec = 0;
-			}
-		}
-		if (!codec) {
-			if (icopen) icopen->dwError = ICERR_MEMORY;
+		if (!icopen || icopen->fccType != ICTYPE_VIDEO) {
 			return 0;
 		}
 
-		if (icopen) icopen->dwError = ICERR_OK;
-		return (LRESULT)codec;
+		CodecBase* new_codec = nullptr;
+		if (icopen->fccHandler == 0) new_codec = new CodecFFV1;
+		if (icopen->fccHandler == CodecFFV1::tag) new_codec = new CodecFFV1;
+		if (icopen->fccHandler == CodecHUFF::tag) new_codec = new CodecHUFF;
+		if (icopen->fccHandler == CodecProres::tag) new_codec = new CodecProres;
+		if (icopen->fccHandler == CodecVP8::tag) new_codec = new CodecVP8;
+		if (icopen->fccHandler == CodecVP9::tag) new_codec = new CodecVP9;
+		if (icopen->fccHandler == CodecH265::id_tag) new_codec = new CodecH265;
+		if (icopen->fccHandler == CodecH265LS::id_tag) new_codec = new CodecH265LS;
+		if (icopen->fccHandler == CodecH264::tag) new_codec = new CodecH264;
+		if (new_codec) {
+			if (!new_codec->init()) {
+				delete new_codec;
+				new_codec = 0;
+			}
+		}
+		if (!new_codec) {
+			icopen->dwError = ICERR_MEMORY;
+			return 0;
+		}
+
+		icopen->dwError = ICERR_OK;
+		return (LRESULT)new_codec;
 	}
 
 	case DRV_CLOSE:

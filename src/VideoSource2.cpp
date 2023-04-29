@@ -623,18 +623,18 @@ bool VDXAPIENTRY VDFFVideoSource::QueryStreamMode(uint32 flags)
 
 const void* VDFFVideoSource::GetDirectFormat()
 {
-	return copy_mode ? direct_format : 0;
+	return m_copy_mode ? direct_format : 0;
 }
 
 int VDFFVideoSource::GetDirectFormatLen()
 {
-	return copy_mode ? direct_format_len : 0;
+	return m_copy_mode ? direct_format_len : 0;
 }
 
 void VDFFVideoSource::setCopyMode(bool v)
 {
-	if (copy_mode == v) return;
-	copy_mode = v;
+	if (m_copy_mode == v) return;
+	m_copy_mode = v;
 	if (v) {
 		free_buffers();
 		next_frame = -1;
@@ -646,8 +646,8 @@ void VDFFVideoSource::setCopyMode(bool v)
 
 void VDFFVideoSource::setDecodeMode(bool v)
 {
-	if (decode_mode == v) return;
-	decode_mode = v;
+	if (m_decode_mode == v) return;
+	m_decode_mode = v;
 	if (v) {
 		// must begin from IDR
 		next_frame = -1;
@@ -658,7 +658,7 @@ void VDFFVideoSource::setDecodeMode(bool v)
 
 void VDFFVideoSource::setCacheMode(bool v)
 {
-	small_cache_mode = !v;
+	m_small_cache_mode = !v;
 	if (!v) {
 		enable_prefetch = false;
 		int buffer_max = m_pSource->cfg_frame_buffers;
@@ -1781,7 +1781,7 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 int VDFFVideoSource::calc_prefetch(int jump)
 {
 	if (keyframe_gap == 1) return -1;
-	if (small_cache_mode || copy_mode) return -1;
+	if (m_small_cache_mode || m_copy_mode) return -1;
 	if (jump >= last_request) return -1;
 	if (!enable_prefetch) return -1; // do not activate until first explicit backward seek
 	if (dead_range_start != -1) return -1; // in such case we have much worse problem than prefetch is meant so solve
@@ -1835,7 +1835,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	*lBytesRead = 0;
 	*lSamplesRead = 1;
 
-	if (copy_mode && copy_pkt->data) {
+	if (m_copy_mode && copy_pkt->data) {
 		*lBytesRead = copy_pkt->size;
 		if (!lpBuffer) return true;
 		if (cbBuffer < uint32(copy_pkt->size)) return false;
@@ -1844,12 +1844,12 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 		return true;
 	}
 
-	if (copy_mode && frame_type[start] == 'D') {
+	if (m_copy_mode && frame_type[start] == 'D') {
 		*lBytesRead = 0;
 		return true;
 	}
 
-	if (!copy_mode) {
+	if (!m_copy_mode) {
 		// 0 bytes identifies "drop frame"
 		int size = 1;
 		if (frame_type[start] == 'D') size = 0;
@@ -1859,7 +1859,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	}
 
 	av_packet_unref(copy_pkt);
-	if (copy_mode && start != next_frame) {
+	if (m_copy_mode && start != next_frame) {
 		free_buffers();
 	}
 
@@ -1868,7 +1868,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	if (head->required_count) head->required_count--;
 
 	int jump = (int)start;
-	if (!copy_mode && frame_array[jump]) {
+	if (!m_copy_mode && frame_array[jump]) {
 		jump = calc_prefetch(jump);
 		if (jump == -1) return true;
 	}
@@ -1884,14 +1884,22 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	int64_t seek_pos;
 	int seek_frame = calc_seek(jump, seek_pos);
 	if (seek_frame != -1) {
-		if (jump < next_frame) enable_prefetch = true;
+		if (jump < next_frame) {
+			enable_prefetch = true;
+		}
 
 		avcodec_flush_buffers(m_pCodecCtx);
 		::seek_frame(m_pFormatCtx, m_streamIndex, seek_pos, AVSEEK_FLAG_BACKWARD);
-		if (trust_index || is_image_list) next_frame = seek_frame; else next_frame = -1;
+		if (trust_index || is_image_list) {
+			next_frame = seek_frame;
+		} else {
+			next_frame = -1;
+		}
 
 		// this helps to prevent seeking again to satisfy same request
-		if (!trust_index) last_seek_frame = jump;
+		if (!trust_index) {
+			last_seek_frame = jump;
+		}
 	}
 
 	while (1) {
@@ -1912,7 +1920,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 			}
 		}
 
-		if (copy_mode && copy_pkt->data) {
+		if (m_copy_mode && copy_pkt->data) {
 			*lBytesRead = copy_pkt->size;
 			if (!lpBuffer) return true;
 			if (cbBuffer < uint32(copy_pkt->size)) return false;
@@ -1921,7 +1929,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 			return true;
 		}
 
-		if (!copy_mode && frame_array[start]) return true;
+		if (!m_copy_mode && frame_array[start]) return true;
 
 		//! missed seek or bad stream, just fail
 		// better idea is to build new corrected index maybe
@@ -1940,7 +1948,7 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 {
 	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
-	if (copy_mode && !decode_mode) {
+	if (m_copy_mode && !m_decode_mode) {
 		while (1) {
 			int ret = av_read_frame(m_pFormatCtx, pkt.get());
 			if (ret < 0) {
@@ -2009,7 +2017,7 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 					int pos = handle_frame();
 					av_frame_unref(m_pFrame);
 					done_frames++;
-					if (copy_mode && pos == desired_frame) {
+					if (m_copy_mode && pos == desired_frame) {
 						av_packet_unref(copy_pkt);
 						av_packet_ref(copy_pkt, pkt.get());
 					}
@@ -2196,7 +2204,7 @@ void VDFFVideoSource::alloc_page(int pos)
 {
 	BufferPage* r = 0;
 	int buffer_max = buffer_count;
-	if (small_cache_mode) buffer_max = small_buffer_count;
+	if (m_small_cache_mode) buffer_max = small_buffer_count;
 
 	if (used_frames >= buffer_max) r = remove_page(pos);
 	if (!r) {

@@ -76,9 +76,9 @@ struct MovParser {
 		__int64 d = a.pos + a.sz - offset;
 		offset += d;
 		if (hfile) {
-			LARGE_INTEGER p;
-			p.QuadPart = offset;
-			SetFilePointerEx(hfile, p, 0, FILE_BEGIN);
+			LARGE_INTEGER distance;
+			distance.QuadPart = offset;
+			SetFilePointerEx(hfile, distance, 0, FILE_BEGIN);
 		}
 		else {
 			p += d;

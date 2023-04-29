@@ -66,19 +66,19 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 	uint8_t* data = (uint8_t*)pHeader;
 	int rsize = nHeaderSize;
 
-	RIFFCHUNK ch;
-	memcpy(&ch, data, sizeof(ch)); data += sizeof(ch); rsize -= sizeof(ch);
-	if (ch.fcc != 0x46464952) return -1; //RIFF
+	RIFFCHUNK chunk;
+	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
+	if (chunk.fcc != 0x46464952) return -1; //RIFF
 	DWORD fmt;
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
 	if (fmt != 0x20495641) return -1; //AVI
-	memcpy(&ch, data, sizeof(ch)); data += sizeof(ch); rsize -= sizeof(ch);
-	if (ch.fcc != 0x5453494C) return -1; //LIST
+	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
+	if (chunk.fcc != 0x5453494C) return -1; //LIST
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
 	if (fmt != 0x6C726468) return -1; //hdrl
 
-	memcpy(&ch, data, sizeof(ch));
-	if (ch.fcc != ckidMAINAVIHEADER) return -1; //avih
+	memcpy(&chunk, data, sizeof(chunk));
+	if (chunk.fcc != ckidMAINAVIHEADER) return -1; //avih
 
 	if (rsize < sizeof(AVIMAINHEADER)) {
 		AVIMAINHEADER mh = { 0 };
@@ -92,9 +92,9 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 	info.height = mh.dwHeight;
 	wcscpy(info.format_name, L"AVI");
 
-	if (rsize < sizeof(ch)) return 1;
-	memcpy(&ch, data, sizeof(ch)); data += sizeof(ch); rsize -= sizeof(ch);
-	if (ch.fcc != 0x5453494C) return -1; //LIST
+	if (rsize < sizeof(chunk)) return 1;
+	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
+	if (chunk.fcc != 0x5453494C) return -1; //LIST
 
 	if (rsize < sizeof(fmt)) return 1;
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
