@@ -20,20 +20,22 @@ struct MovParser {
 	__int64 fileSize;
 	HANDLE hfile;
 
-	MovParser(const void* buf, int buf_size, int64_t fileSize) {
-		this->buf = buf;
-		this->buf_size = buf_size;
-		this->fileSize = fileSize;
-		p = (const char*)buf;
-		offset = 0;
-		hfile = 0;
+	MovParser(const void* _buf, int _buf_size, int64_t _fileSize)
+		: buf(_buf)
+		, buf_size(_buf_size)
+		, fileSize(_fileSize)
+		, p((const char*)_buf)
+		, offset(0)
+		, hfile(nullptr)
+	{
 	}
 
-	MovParser(const wchar_t* name) {
-		buf = 0;
-		buf_size = 0;
-		p = 0;
-		offset = 0;
+	MovParser(const wchar_t* name)
+		: buf(nullptr)
+		, buf_size(0)
+		, p(nullptr)
+		, offset(0)
+	{
 		hfile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
 		LARGE_INTEGER s;
 		GetFileSizeEx(hfile, &s);

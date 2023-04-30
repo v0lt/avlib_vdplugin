@@ -402,18 +402,22 @@ void LogoFilter::ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* 
 
 void LogoFilter::clear()
 {
-	if (video) video->Release();
-	video = 0;
-	if (file) file->Release();
-	file = 0;
+	if (video) {
+		video->Release();
+		video = nullptr;
+	}
+	if (file) {
+		file->Release();
+		file = nullptr;
+	}
 	last_frame = -1;
 	file_dirty = false;
 }
 
 void LogoFilter::init()
 {
-	file = 0;
-	video = 0;
+	file  = nullptr;
+	video = nullptr;
 	last_frame = -1;
 	file_dirty = false;
 }

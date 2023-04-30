@@ -982,7 +982,7 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 			}
 		}
 
-		AVDictionary* options = 0;
+		AVDictionary* options = nullptr;
 		if (mp4_faststart) av_dict_set_int(&options, "movflags", FF_MOV_FLAG_FASTSTART, 0);
 		if (strcmp(m_ofmt->oformat->name, "avi") == 0) {
 			// we take care of tags

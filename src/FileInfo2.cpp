@@ -204,7 +204,7 @@ void VDFFInputFileInfoDialog::print_video()
 		if (!is_rgb) {
 			const char* spc = "?";
 			const char* r = nullptr;
-			if (pVideoCtx->colorspace == AVCOL_SPC_UNSPECIFIED) spc = 0;
+			if (pVideoCtx->colorspace == AVCOL_SPC_UNSPECIFIED) spc = nullptr;
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT709) spc = "709";
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT470BG) spc = "601";
 			if (pVideoCtx->colorspace == AVCOL_SPC_SMPTE170M) spc = "601";

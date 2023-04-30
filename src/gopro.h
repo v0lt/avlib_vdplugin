@@ -29,17 +29,10 @@ struct GoproInfo {
 		const char ExifModel[25];
 	};
 
-	CameraType* type;
-	char* cam_serial;
-	char* firmware;
-	char* setup_info;
-
-	GoproInfo() {
-		type = 0;
-		cam_serial = 0;
-		firmware = 0;
-		setup_info = 0;
-	}
+	CameraType* type = nullptr;
+	char* cam_serial = nullptr;
+	char* firmware   = nullptr;
+	char* setup_info = nullptr;
 
 	~GoproInfo() {
 		free(cam_serial);

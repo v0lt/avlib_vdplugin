@@ -245,7 +245,7 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 	char ff_path[ff_path_size];
 	widechar_to_utf8(ff_path, ff_path_size, fileName);
 
-	AVFormatContext* ctx = 0;
+	AVFormatContext* ctx = nullptr;
 	int err = 0;
 	err = avformat_open_input(&ctx, ff_path, 0, 0);
 	if (err != 0) return -1;
@@ -390,7 +390,7 @@ bool VDXAPIENTRY VDFFInputFile::CreateOptions(const void* buf, uint32_t len, IVD
 	}
 
 	delete opt;
-	*r = 0;
+	*r = nullptr;
 	return false;
 }
 
@@ -543,7 +543,7 @@ bool VDXAPIENTRY VDFFInputFile::Append2(const wchar_t* szFile, int flags, IVDXIn
 			}
 		}
 		else {
-			last->next_segment = 0;
+			last->next_segment = nullptr;
 			f->Release();
 			return false;
 		}
@@ -562,7 +562,7 @@ bool VDXAPIENTRY VDFFInputFile::Append2(const wchar_t* szFile, int flags, IVDXIn
 		else {
 			// no audio is allowed
 			/*
-			last->next_segment = 0;
+			last->next_segment = nullptr;
 			f->Release();
 			return false;
 			*/
@@ -578,7 +578,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 	char ff_path[ff_path_size];
 	widechar_to_utf8(ff_path, ff_path_size, path);
 
-	AVFormatContext* fmt = 0;
+	AVFormatContext* fmt = nullptr;
 	int err = 0;
 	err = avformat_open_input(&fmt, ff_path, 0, 0);
 	if (err != 0) {

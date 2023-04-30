@@ -9,13 +9,9 @@
 uint32 export_avi_fcc(AVStream* src);
 
 struct IOBuffer {
-	uint8_t* data;
-	int64_t size;
-	int64_t pos;
-
-	IOBuffer() {
-		data = 0; size = 0; pos = 0;
-	}
+	uint8_t* data = nullptr;
+	int64_t  size = 0;
+	int64_t  pos  = 0;
 
 	~IOBuffer() {
 		av_free(data);
@@ -54,13 +50,9 @@ struct IOBuffer {
 };
 
 struct IOWBuffer {
-	uint8_t* data;
-	int64_t size;
-	int64_t pos;
-
-	IOWBuffer() {
-		data = 0; size = 0; pos = 0;
-	}
+	uint8_t* data = nullptr;
+	int64_t  size = 0;
+	int64_t  pos  = 0;
 
 	~IOWBuffer() {
 		free(data);
@@ -94,22 +86,12 @@ public:
 	const VDXInputDriverContext& mContext;
 
 	struct StreamInfo {
-		AVStream* st;
-		int64_t frame;
-		int64_t offset_num;
-		int64_t offset_den;
-		AVRational time_base;
-		bool bswap_pcm;
-
-		StreamInfo() {
-			st = 0;
-			frame = 0;
-			offset_num = 0;
-			offset_den = 1;
-			time_base.den = 0;
-			time_base.num = 0;
-			bswap_pcm = false;
-		}
+		AVStream* st = nullptr;
+		int64_t frame = 0;
+		int64_t offset_num = 0;
+		int64_t offset_den = 1;
+		AVRational time_base = { 0, 0 };
+		bool bswap_pcm = false;
 	};
 
 	std::string m_out_ff_path;

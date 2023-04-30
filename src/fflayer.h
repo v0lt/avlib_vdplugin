@@ -9,7 +9,8 @@
 struct LogoParam {
 	wchar_t path[MAX_PATH];
 
-	int   pos_x, pos_y;
+	int pos_x = 0;
+	int pos_y = 0;
 
 	enum {
 		blend_replace = 0,
@@ -21,20 +22,13 @@ struct LogoParam {
 		loop_saw = 2,
 	};
 
-	int blendMode;
-	int animMode;
-	int loopMode;
-	int refFrame;
-	double rate;
+	int blendMode = 0;
+	int animMode  = 0;
+	int loopMode  = 0;
+	int refFrame  = 0;
+	double rate   = 1;
 
 	LogoParam() {
-		pos_x = 0;
-		pos_y = 0;
-		blendMode = 0;
-		animMode = 0;
-		loopMode = 0;
-		refFrame = 0;
-		rate = 1;
 		path[0] = 0;
 	}
 };

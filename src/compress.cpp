@@ -823,12 +823,12 @@ struct CodecBase : public CodecClass {
 		if (ctx) {
 			avcodec_close(ctx);
 			av_free(ctx);
-			ctx = 0;
+			ctx = nullptr;
 		}
 		if (frame) {
 			av_freep(&frame->data[0]);
 			av_frame_free(&frame);
-			frame = 0;
+			frame = nullptr;
 		}
 		return ICERR_OK;
 	}
@@ -2275,7 +2275,7 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		if (new_codec) {
 			if (!new_codec->init()) {
 				delete new_codec;
-				new_codec = 0;
+				new_codec = nullptr;
 			}
 		}
 		if (!new_codec) {

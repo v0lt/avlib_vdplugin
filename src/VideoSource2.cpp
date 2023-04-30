@@ -1631,12 +1631,12 @@ void VDFFVideoSource::set_pixmap_layout(uint8_t* p)
 		pic.linesize[0] = row;
 	}
 
-	m_pixmap.palette = 0;
-	m_pixmap.data = pic.data[0];
-	m_pixmap.data2 = pic.data[1];
-	m_pixmap.data3 = pic.data[2];
-	m_pixmap.data4 = pic.data[3];
-	m_pixmap.pitch = pic.linesize[0];
+	m_pixmap.palette = nullptr;
+	m_pixmap.data   = pic.data[0];
+	m_pixmap.data2  = pic.data[1];
+	m_pixmap.data3  = pic.data[2];
+	m_pixmap.data4  = pic.data[3];
+	m_pixmap.pitch  = pic.linesize[0];
 	m_pixmap.pitch2 = pic.linesize[1];
 	m_pixmap.pitch3 = pic.linesize[2];
 	m_pixmap.pitch4 = pic.linesize[3];
@@ -1978,7 +1978,7 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 	while (1) {
 		int ret = av_read_frame(m_pFormatCtx, pkt.get());
 		if (ret < 0) {
-			pkt->data = 0;
+			pkt->data = nullptr;
 			pkt->size = 0;
 			// end of stream, grab buffered images
 			pkt->stream_index = m_streamIndex;
@@ -2141,11 +2141,11 @@ void VDFFVideoSource::free_buffers()
 {
 	for (int i = 0; i < buffer_count; i++) {
 		BufferPage& page = buffer[i];
-		frame_array[page.target] = 0;
+		frame_array[page.target] = nullptr;
 		if (page.map_base) {
 			UnmapViewOfFile(page.map_base);
-			page.map_base = 0;
-			page.p = 0;
+			page.map_base = nullptr;
+			page.p = nullptr;
 		}
 		page.refs = 0;
 		page.access = 0;
@@ -2167,13 +2167,13 @@ VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, 
 {
 	if (!used_frames) return 0;
 
-	BufferPage* r = 0;
+	BufferPage* r = nullptr;
 	while (1) {
 		if (last_frame > pos && after) {
 			if (frame_array[last_frame]) {
 				if (r) return r;
 				BufferPage* p1 = frame_array[last_frame];
-				frame_array[last_frame] = 0;
+				frame_array[last_frame] = nullptr;
 				p1->refs--;
 				if (!p1->refs) {
 					r = p1;
@@ -2187,7 +2187,7 @@ VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, 
 			if (frame_array[first_frame]) {
 				if (r) return r;
 				BufferPage* p1 = frame_array[first_frame];
-				frame_array[first_frame] = 0;
+				frame_array[first_frame] = nullptr;
 				p1->refs--;
 				if (!p1->refs) {
 					r = p1;
@@ -2255,8 +2255,8 @@ void VDFFVideoSource::dealloc_page(BufferPage* p)
 	else
 		free(p->p);
 
-	p->map_base = 0;
-	p->p = 0;
+	p->map_base = nullptr;
+	p->p = nullptr;
 	p->error = 0;
 	p->access = 0;
 }
@@ -2277,8 +2277,8 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 					int access2 = access0 & ~flag;
 					if (!access2) {
 						UnmapViewOfFile(p1.map_base);
-						p1.map_base = 0;
-						p1.p = 0;
+						p1.map_base = nullptr;
+						p1.p = nullptr;
 					}
 					InterlockedExchange(&p1.access, access2);
 					break;

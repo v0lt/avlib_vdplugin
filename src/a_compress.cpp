@@ -78,7 +78,7 @@ void VDFFAudio::export_wav()
 	wav_compatible = false;
 	if (out_format) {
 		free(out_format);
-		out_format = 0;
+		out_format = nullptr;
 		out_format_size = 0;
 	}
 	IOWBuffer io;
