@@ -112,10 +112,10 @@ public:
 		}
 	};
 
-	std::string out_ff_path;
+	std::string m_out_ff_path;
 	std::string format_name;
 	std::vector<StreamInfo> stream;
-	AVFormatContext* ofmt = nullptr;
+	AVFormatContext* m_ofmt = nullptr;
 	bool header = false;
 	bool stream_test = false;
 	bool mp4_faststart = false;

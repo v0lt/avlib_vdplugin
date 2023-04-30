@@ -152,8 +152,8 @@ void GoproInfo::find_info(const wchar_t* name)
 							parser.read(c, buf, size);
 							cam_serial = (char*)malloc(size * 2 + 1);
 							for (int i = 0; i < size; i++) {
-								int b = ((unsigned char*)buf)[i];
-								sprintf(cam_serial + i * 2, "%02x", b);
+								unsigned val = ((unsigned char*)buf)[i];
+								sprintf(cam_serial + i * 2, "%02x", val);
 							}
 							free(buf);
 						}

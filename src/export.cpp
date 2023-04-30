@@ -467,10 +467,6 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 FFOutputFile::FFOutputFile(const VDXInputDriverContext& pContext)
 	:mContext(pContext)
 {
-	ofmt = 0;
-	header = false;
-	stream_test = false;
-	mp4_faststart = false;
 }
 
 FFOutputFile::~FFOutputFile()
@@ -535,7 +531,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
 	char out_ff_path[ff_path_size];
 	widechar_to_utf8(out_ff_path, ff_path_size, path);
-	this->out_ff_path = out_ff_path;
+	this->m_out_ff_path = out_ff_path;
 
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
@@ -551,7 +547,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 
 	format_name = oformat->name;
 
-	err = avformat_alloc_output_context2(&ofmt, oformat, 0, out_ff_path); // filename needed for second pass
+	err = avformat_alloc_output_context2(&m_ofmt, oformat, 0, out_ff_path); // filename needed for second pass
 	if (err < 0) {
 		av_error(err);
 		Finalize();
@@ -574,7 +570,7 @@ typedef struct AVCodecTag {
 
 void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat)
 {
-	if (!ofmt) return;
+	if (!m_ofmt) return;
 
 	StreamInfo& s = stream[index];
 	const VDXAVIStreamHeader& asi = si.aviHeader;
@@ -582,7 +578,7 @@ void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* p
 		return;
 	}
 
-	AVStream* st = avformat_new_stream(ofmt, 0);
+	AVStream* st = avformat_new_stream(m_ofmt, 0);
 	st->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
 
 	import_bmp(st, pFormat, cbFormat);
@@ -633,7 +629,7 @@ uint8_t* copy_extradata(AVCodecContext* c)
 
 void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat)
 {
-	if (!ofmt) return;
+	if (!m_ofmt) return;
 
 	StreamInfo& s = stream[index];
 	const VDXAVIStreamHeader& asi = si.aviHeader;
@@ -660,12 +656,12 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* p
 		return;
 	}
 
-	AVStream* st = avformat_new_stream(ofmt, 0);
+	AVStream* st = avformat_new_stream(m_ofmt, 0);
 	st->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 
 	import_wav(st, pFormat, cbFormat);
 
-	if (ofmt->oformat == av_guess_format("aiff", 0, 0)) {
+	if (m_ofmt->oformat == av_guess_format("aiff", 0, 0)) {
 		if (st->codecpar->codec_id == AV_CODEC_ID_PCM_S16LE) {
 			st->codecpar->codec_id = AV_CODEC_ID_PCM_S16BE;
 			s.bswap_pcm = true;
@@ -886,7 +882,7 @@ fail:
 void FFOutputFile::adjust_codec_tag(AVStream* st)
 {
 	// initial tag imported from bmp: suitable for avi
-	::adjust_codec_tag("avi", ofmt->oformat, st);
+	::adjust_codec_tag("avi", m_ofmt->oformat, st);
 }
 
 bool FFOutputFile::Begin()
@@ -908,7 +904,7 @@ bool FFOutputFile::test_streams()
 		AVIOContext* avio_ctx = avio_alloc_context((unsigned char*)buf, buf_size, 1, &io, 0, &IOWBuffer::Write, &IOWBuffer::Seek);
 		AVFormatContext* ofmt = avformat_alloc_context();
 		ofmt->pb = avio_ctx;
-		ofmt->oformat = this->ofmt->oformat;
+		ofmt->oformat = this->m_ofmt->oformat;
 		AVStream* st = avformat_new_stream(ofmt, 0);
 		avcodec_parameters_copy(st->codecpar, si.st->codecpar);
 		st->sample_aspect_ratio = si.st->sample_aspect_ratio;
@@ -942,14 +938,14 @@ bool FFOutputFile::test_streams()
 	}
 
 	/*
-	if(!ofmt->oformat->codec_tag) return true;
+	if(!m_ofmt->oformat->codec_tag) return true;
 
 	for(int i=0; i<(int)stream.size(); i++) {
 		StreamInfo& si = stream[i];
 		AVCodecID codec_id = si.st->codecpar->codec_id;
 
 		unsigned int codec_tag2;
-		int have_codec_tag2 = av_codec_get_tag2(ofmt->oformat->codec_tag, codec_id, &codec_tag2);
+		int have_codec_tag2 = av_codec_get_tag2(m_ofmt->oformat->codec_tag, codec_id, &codec_tag2);
 		if(!have_codec_tag2) {
 			std::string msg;
 			msg += avcodec_get_name(codec_id);
@@ -966,7 +962,7 @@ bool FFOutputFile::test_streams()
 
 void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, PacketInfo& info)
 {
-	if (!ofmt) return;
+	if (!m_ofmt) return;
 
 	if (!header) {
 		if (!stream_test && !test_streams()) {
@@ -974,11 +970,11 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 			return;
 		}
 
-		if (!(ofmt->oformat->flags & AVFMT_TS_NEGATIVE)) ofmt->avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE;
+		if (!(m_ofmt->oformat->flags & AVFMT_TS_NEGATIVE)) m_ofmt->avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE;
 
 		int err = 0;
-		if (!(ofmt->oformat->flags & AVFMT_NOFILE)) {
-			err = avio_open(&ofmt->pb, out_ff_path.c_str(), AVIO_FLAG_WRITE);
+		if (!(m_ofmt->oformat->flags & AVFMT_NOFILE)) {
+			err = avio_open(&m_ofmt->pb, m_out_ff_path.c_str(), AVIO_FLAG_WRITE);
 			if (err < 0) {
 				av_error(err);
 				Finalize();
@@ -988,12 +984,12 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 
 		AVDictionary* options = 0;
 		if (mp4_faststart) av_dict_set_int(&options, "movflags", FF_MOV_FLAG_FASTSTART, 0);
-		if (strcmp(ofmt->oformat->name, "avi") == 0) {
+		if (strcmp(m_ofmt->oformat->name, "avi") == 0) {
 			// we take care of tags
 			av_dict_set_int(&options, "strict", -2, 0);
 		}
 
-		err = avformat_write_header(ofmt, &options);
+		err = avformat_write_header(m_ofmt, &options);
 		av_dict_free(&options);
 		if (err < 0) {
 			av_error(err);
@@ -1041,7 +1037,7 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 
 	s.frame += samples;
 
-	int err = av_interleaved_write_frame(ofmt, pkt);
+	int err = av_interleaved_write_frame(m_ofmt, pkt);
 	if (err < 0) av_error(err);
 
 	// pkt->data no longer points to pBuffer or a_buf
@@ -1052,11 +1048,15 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 
 void FFOutputFile::Finalize()
 {
-	if (header) av_write_trailer(ofmt);
+	if (header) {
+		av_write_trailer(m_ofmt);
+	}
 
-	if (ofmt && !(ofmt->oformat->flags & AVFMT_NOFILE)) avio_closep(&ofmt->pb);
-	avformat_free_context(ofmt);
-	ofmt = 0;
+	if (m_ofmt && !(m_ofmt->oformat->flags & AVFMT_NOFILE)) {
+		avio_closep(&m_ofmt->pb);
+	}
+	avformat_free_context(m_ofmt);
+	m_ofmt = nullptr;
 }
 
 enum {

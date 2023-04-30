@@ -248,11 +248,11 @@ void saveConfig()
 	}
 	buf[len] = 0;
 
-	wchar_t* p1 = wcsrchr(buf, '\\');
-	wchar_t* p2 = wcsrchr(buf, '/');
-	if (p2 > p1) p1 = p2;
-	if (!p1) return;
-	*p1 = 0;
+	wchar_t* pSlash = std::max(wcsrchr(buf, '\\'), wcsrchr(buf, '/'));
+	if (!pSlash) {
+		return;
+	}
+	*pSlash = 0;
 
 	wcscat(buf, L"\\cch_input.ini");
 
@@ -277,11 +277,11 @@ void loadConfig()
 	}
 	buf[len] = 0;
 
-	wchar_t* p1 = wcsrchr(buf, '\\');
-	wchar_t* p2 = wcsrchr(buf, '/');
-	if (p2 > p1) p1 = p2;
-	if (!p1) return;
-	*p1 = 0;
+	wchar_t* pSlash = std::max(wcsrchr(buf, '\\'), wcsrchr(buf, '/'));
+	if (!pSlash) {
+		return;
+	}
+	*pSlash = 0;
 
 	wcscat(buf, L"\\cch_input.ini");
 
