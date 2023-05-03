@@ -327,8 +327,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 	if (segment->video_source) pVideoStream = segment->video_source->m_pStreamCtx;
 	if (segment->audio_source) pAudioStream = segment->audio_source->m_pStreamCtx;
 
-	const int buf_size = 1024;
-	char buf[buf_size];
+	char buf[1024];
 
 	std::string s;
 
@@ -343,7 +342,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 				s += "File:";
 				header = false;
 			}
-			sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
 			s += buf;
 		}
 	}
@@ -356,7 +355,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 				s += "Video:";
 				header = false;
 			}
-			sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
 			s += buf;
 		}
 	}
@@ -369,7 +368,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 				s += "Audio:";
 				header = false;
 			}
-			sprintf_s(buf, buf_size, "\t%s = %s\r\n", t->key, t->value);
+			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
 			s += buf;
 		}
 	}
@@ -378,11 +377,11 @@ void VDFFInputFileInfoDialog::print_metadata()
 	gi.find_info(segment->path);
 
 	if (gi.type) {
-		sprintf_s(buf, buf_size, "GoPro info:\t%s\r\n", gi.type->Name);
+		sprintf_s(buf, "GoPro info:\t%s\r\n", gi.type->Name);
 		s += buf;
-		sprintf_s(buf, buf_size, "\tfirmware = %s\r\n", gi.firmware);
+		sprintf_s(buf, "\tfirmware = %s\r\n", gi.firmware);
 		s += buf;
-		sprintf_s(buf, buf_size, "\tserial# = %s\r\n", gi.cam_serial);
+		sprintf_s(buf, "\tserial# = %s\r\n", gi.cam_serial);
 		s += buf;
 		s += gi.setup_info;
 	}

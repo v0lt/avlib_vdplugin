@@ -640,8 +640,8 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 			AVDictionary* options = nullptr;
 			av_dict_set_int(&options, "start_number", start, 0);
 			if (r_fr.num != 0) {
-				char buf[80];
-				sprintf(buf, "%d/%d", r_fr.num, r_fr.den);
+				char buf[32];
+				sprintf_s(buf, "%d/%d", r_fr.num, r_fr.den);
 				av_dict_set(&options, "framerate", buf, 0);
 			}
 			err = avformat_open_input(&fmt, ff_path, fmt_image2, &options);
