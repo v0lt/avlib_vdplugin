@@ -57,12 +57,12 @@ void VDFFInputFileInfoDialog::load_segment()
 
 	const int buf_size = 80 + MAX_PATH;
 	wchar_t buf[buf_size];
-	swprintf(buf, buf_size, L"Segment %d of %d: %ls", segment_pos + 1, segment_count, name);
+	swprintf_s(buf, L"Segment %d of %d: %ls", segment_pos + 1, segment_count, name);
 	SetDlgItemTextW(mhdlg, IDC_SEGMENT, buf);
 
 	int end_frame = start_frame;
 	if (segment->video_source) end_frame += segment->video_source->sample_count - 1;
-	swprintf(buf, buf_size, L"Timeline: frame %d to %d", start_frame, end_frame);
+	swprintf_s(buf, L"Timeline: frame %d to %d", start_frame, end_frame);
 	SetDlgItemTextW(mhdlg, IDC_SEGMENT_TIMELINE, buf);
 
 	HWND prev = GetDlgItem(mhdlg, IDC_SEGMENT_PREV);

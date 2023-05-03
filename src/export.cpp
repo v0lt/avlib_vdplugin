@@ -96,7 +96,7 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	if (p) ext = p; else ext = L".";
 
 	wchar_t filter[256];
-	swprintf(filter, 256, L"Same as source (*%ls)", ext.c_str());
+	swprintf_s(filter, L"Same as source (*%ls)", ext.c_str());
 	size_t n = wcslen(filter) + 1;
 	filter[n] = '*'; n++;
 	filter[n] = 0; wcscat(filter + n, ext.c_str()); n += ext.length();

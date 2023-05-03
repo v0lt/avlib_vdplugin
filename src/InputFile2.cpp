@@ -121,7 +121,7 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 			}
 			else {
 				wchar_t vc[10];
-				swprintf(vc, 10, L"[%d]", v);
+				swprintf_s(vc, L"[%d]", v);
 				wcscat(info.vcodec_name, vc);
 			}
 		}
@@ -465,7 +465,7 @@ void VDFFInputFile::do_auto_append(const wchar_t* szFile)
 			wchar_t buf[MAX_PATH + 128];
 			wcsncpy(buf, szFile, ext - szFile - 3); buf[ext - szFile - 3] = 0;
 			wchar_t buf1[32];
-			swprintf(buf1, 32, L".%02d", x);
+			swprintf_s(buf1, L".%02d", x);
 			wcscat(buf, buf1);
 			wcscat(buf, ext);
 			if (!FileExist(buf)) break;
@@ -716,7 +716,7 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 	*s = 0;
 
 	wchar_t buf[20];
-	swprintf(buf, 20, L"%%0%dd", digit1 - digit0 + 1);
+	swprintf_s(buf, L"%%0%dd", digit1 - digit0 + 1);
 
 	wcsncpy(dst, path, digit0);
 	dst[digit0] = 0;
@@ -728,7 +728,7 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 
 	wchar_t test[MAX_PATH];
 	while (1) {
-		swprintf(test, MAX_PATH, dst, *start + n);
+		swprintf_s(test, dst, *start + n);
 		if (GetFileAttributesW(test) == (DWORD)-1) break;
 		n++;
 	}

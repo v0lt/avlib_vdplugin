@@ -1044,7 +1044,7 @@ void ConfigBase::notify_bits_change(int bits_new, int bits_old)
 {
 	if (idc_message != -1) {
 		wchar_t buf[80];
-		swprintf(buf, std::size(buf), L"(!) Bit depth adjusted (was %d)", bits_old);
+		swprintf_s(buf, L"(!) Bit depth adjusted (was %d)", bits_old);
 		SetDlgItemTextW(mhdlg, idc_message, buf);
 	}
 }

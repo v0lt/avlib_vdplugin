@@ -46,7 +46,7 @@ void av_log_func(void* obj, int type, const char* msg, va_list arg)
 	}
 
 	char buf[1024];
-	vsprintf(buf, msg, arg);
+	vsprintf_s(buf, msg, arg);
 	OutputDebugStringA(buf);
 	//DebugBreak();
 }
@@ -262,7 +262,7 @@ void saveConfig()
 	WritePrivateProfileStringW(L"decode_model", L"disable_cache", config_disable_cache ? L"1" : L"0", buf);
 
 	wchar_t buf2[128];
-	swprintf(buf2, 128, L"%g", config_cache_size);
+	swprintf_s(buf2, L"%g", config_cache_size);
 	WritePrivateProfileStringW(L"decode_model", L"cache_size", buf2, buf);
 
 	WritePrivateProfileStringW(0, 0, 0, buf);
