@@ -10,7 +10,7 @@ avutil-58.dll
 swresample-4.dll
 swscale-7.dll 
 
-FFMpeg 6.0 binaries used: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-6.0-full_build-shared.7z
+FFMpeg 6.1 binaries used: https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-6.1-full_build-shared.7z
 
 # Links
 
