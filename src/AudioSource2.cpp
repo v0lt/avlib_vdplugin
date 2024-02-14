@@ -135,7 +135,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 
-	if (m_pCodecCtx->ch_layout.order != AV_CHANNEL_ORDER_NATIVE) {
+	if (m_pCodecCtx->ch_layout.order > AV_CHANNEL_ORDER_NATIVE || (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC && m_pCodecCtx->ch_layout.nb_channels > 2)) {
 		mContext.mpCallbacks->SetError("FFMPEG: Unsupported channel layout.");
 		return -1;
 	}
