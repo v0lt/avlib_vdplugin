@@ -251,6 +251,7 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 	if (err != 0) return -1;
 	if (strcmp(ctx->iformat->name, "avisynth") == 0) {
 		// ignore AviSynth scripts
+		avformat_close_input(&ctx);
 		return -1;
 	}
 	err = avformat_find_stream_info(ctx, 0);
