@@ -13,13 +13,11 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
-// English (U.S.) resources
+// English (United States) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
-#ifdef _WIN32
 LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 #pragma code_page(1252)
-#endif //_WIN32
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -27,7 +25,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 #ifdef APSTUDIO_INVOKED
-GUIDELINES DESIGNINFO 
+GUIDELINES DESIGNINFO
 BEGIN
     IDD_FF_INFO, DIALOG
     BEGIN
@@ -262,7 +260,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,113,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,113,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_LEVEL,7,7,46,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     COMBOBOX        IDC_COLORSPACE,57,7,85,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
@@ -293,7 +291,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth:",IDC_STATIC,7,43,35,10
@@ -327,15 +325,15 @@ BEGIN
     PUSHBUTTON      "Cancel",IDCANCEL,153,117,50,14
     GROUPBOX        "Always handle specific formats with FFMPEG decoders",IDC_STATIC,7,7,196,56
     CONTROL         "raw (v210, b64a etc) - default off, pass to VD core",IDC_DECODE_RAW,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,20,179,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,20,185,10
     CONTROL         "MagicYUV - default off, pass to official codec",IDC_DECODE_MAGIC,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,33,159,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,33,165,10
     CONTROL         "Always use frame threading - default off, auto",IDC_FORCE_THREAD,
-                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,69,165,10
-    CONTROL         "Disable cache",IDC_DISABLE_CACHE2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,82,59,10
+                    "Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,69,171,10
+    CONTROL         "Disable cache",IDC_DISABLE_CACHE2,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,14,82,62,10
     EDITTEXT        IDC_CACHE_SIZE,14,95,32,12,ES_AUTOHSCROLL
     CONTROL         "",IDC_CACHE_SPIN,"msctls_updown32",UDS_SETBUDDYINT | UDS_ALIGNRIGHT | UDS_AUTOBUDDY | UDS_ARROWKEYS,38,96,11,11
-    LTEXT           "Max cache memory, GB",IDC_STATIC,51,96,76,8
+    LTEXT           "Max cache memory, GB",IDC_STATIC,51,96,81,8
 END
 
 IDD_ENC_PRORES DIALOGEX 0, 0, 316, 119
@@ -346,7 +344,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth: 10",IDC_STATIC,7,25,49,10
@@ -365,7 +363,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Quality (high-low)",IDC_QUALITY_LABEL,14,73,58,8
@@ -382,7 +380,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Quality (high-low)",IDC_QUALITY_LABEL,14,73,58,8
@@ -397,7 +395,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth: 8",-1,7,25,49,10
@@ -412,7 +410,7 @@ CAPTION "Input Driver Options"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
     DEFPUSHBUTTON   "OK",IDOK,77,101,50,14
-    CONTROL         "Disable cache",IDC_DISABLE_CACHE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,14,59,10
+    CONTROL         "Disable cache",IDC_DISABLE_CACHE,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,16,14,62,10
     PUSHBUTTON      "System options",IDC_SYS_OPTIONS,7,76,59,14
     LTEXT           "System options are not associated with specific files.",IDC_STATIC,73,74,130,19
 END
@@ -425,7 +423,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,101,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,101,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth:",IDC_STATIC,7,31,35,10
@@ -451,7 +449,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth:",IDC_STATIC,7,31,35,10
@@ -471,7 +469,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
@@ -491,7 +489,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Compression (fast-slow)",IDC_QUALITY_LABEL,14,73,78,8
@@ -507,7 +505,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",IDC_STATIC,151,3,158,75
-    CONTROL         105,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,IDC_STATIC,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_BITRATE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,47,139,12
     LTEXT           "Bitrate",IDC_STATIC,14,61,22,8
@@ -527,7 +525,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Compression (fast-slow)",IDC_QUALITY_LABEL,14,73,78,8
@@ -542,7 +540,7 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,193,98,50,14
     PUSHBUTTON      "Cancel",IDCANCEL,259,98,50,14
     GROUPBOX        "Encoder",-1,151,3,158,75
-    CONTROL         105,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
+    CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Quality (high-low)",IDC_QUALITY_LABEL,14,73,58,8
@@ -589,7 +587,8 @@ END
 //
 
 IDB_FFMPEG              BITMAP                  "ffmpeg.bmp"
-#endif    // English (U.S.) resources
+
+#endif    // English (United States) resources
 /////////////////////////////////////////////////////////////////////////////
 
 
