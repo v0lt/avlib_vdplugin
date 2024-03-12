@@ -227,15 +227,17 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	}
 	else {
-		const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+		int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
 
 		if (nb_index_entries < 2) {
 			// try to force loading index
-			// works for 2017-04-07 08-53-48.flv
+			// works for FLV and MKV
 			int64_t pos = m_pStreamCtx->duration;
 			if (pos == AV_NOPTS_VALUE) pos = int64_t(sample_count) * time_base.den / time_base.num;
 			seek_frame(m_pFormatCtx, m_streamIndex, pos, AVSEEK_FLAG_BACKWARD);
 			seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
+			// get the number of index entries again
+			nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
 		}
 		trust_index = false;
 		sparse_index = false;
