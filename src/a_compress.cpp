@@ -25,16 +25,16 @@ VDFFAudio::~VDFFAudio()
 void VDFFAudio::cleanup()
 {
 	if (ctx) {
-		avcodec_close(ctx);
-		av_free(ctx);
-		ctx = nullptr;
+		av_freep(&ctx->extradata);
+		avcodec_free_context(&ctx);
 	}
 	if (frame) {
 		av_frame_free(&frame);
-		frame = nullptr;
 	}
 	av_packet_unref(pkt);
-	if (swr) swr_free(&swr);
+	if (swr) {
+		swr_free(&swr);
+	}
 	if (sample_buf) {
 		av_freep(&sample_buf[0]);
 		free(sample_buf);

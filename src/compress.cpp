@@ -821,14 +821,12 @@ struct CodecBase : public CodecClass {
 	LRESULT compress_end()
 	{
 		if (ctx) {
-			avcodec_close(ctx);
-			av_free(ctx);
-			ctx = nullptr;
+			av_freep(&ctx->extradata);
+			avcodec_free_context(&ctx);
 		}
 		if (frame) {
 			av_freep(&frame->data[0]);
 			av_frame_free(&frame);
-			frame = nullptr;
 		}
 		return ICERR_OK;
 	}
