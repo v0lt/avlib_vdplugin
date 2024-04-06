@@ -21,8 +21,6 @@
 #define DO_MAKE_STR(x) #x
 #define MAKE_STR(x)    DO_MAKE_STR(x)
 
-#define VER_RELEASE    0
-
 #define VER_MAJOR      0
 #define VER_MINOR      6
 #define VER_BUILD      1

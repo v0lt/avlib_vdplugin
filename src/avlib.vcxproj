@@ -52,7 +52,7 @@
     <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>C:\Soft\VirtualDub2_test\plugins64\</OutDir>
+    <OutDir>.\..\bin64\</OutDir>
     <IntDir>$(Platform)\$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
     <TargetName>avlib-1</TargetName>
