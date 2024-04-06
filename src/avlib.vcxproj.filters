@@ -40,6 +40,7 @@
     <ClInclude Include="mov_mp4.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="VideoSource2.h" />
+    <ClInclude Include="Version.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vd2\VDXFrame\VideoFilter.cpp">

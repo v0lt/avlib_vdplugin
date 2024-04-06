@@ -191,6 +191,7 @@
     <ClInclude Include="..\vd2\VDXFrame\VideoFilter.h" />
     <ClInclude Include="..\vd2\VDXFrame\VideoFilterDialog.h" />
     <ClInclude Include="..\vd2\VDXFrame\VideoFilterEntry.h" />
+    <ClInclude Include="Version.h" />
     <ClInclude Include="VideoSource2.h" />
   </ItemGroup>
   <ItemGroup>
