@@ -11,3 +11,4 @@ obj64
 *.user
 *.log
 *.VC.db
+/revision.h
