@@ -274,12 +274,18 @@ void VDFFAudioSource::reset_swr()
 		swr_free(&m_pSwrCtx);
 	}
 	m_pSwrCtx = swr_alloc();
+
+	const int in_ch = av_popcount64(in_layout);
+	const int out_ch = av_popcount64(out_layout);
+	const AVChannelLayout in_ch_layout = { AV_CHANNEL_ORDER_NATIVE, in_ch, in_layout };
+	const AVChannelLayout out_ch_layout = { AV_CHANNEL_ORDER_NATIVE, out_ch, out_layout };
+
 	int ret = 0;
-	ret = av_opt_set_int(m_pSwrCtx, "in_channel_layout", in_layout, 0);
+	ret = av_opt_set_chlayout(m_pSwrCtx, "in_chlayout", &in_ch_layout, 0);
 	ret = av_opt_set_int(m_pSwrCtx, "in_sample_rate", m_pCodecCtx->sample_rate, 0);
 	ret = av_opt_set_sample_fmt(m_pSwrCtx, "in_sample_fmt", m_pCodecCtx->sample_fmt, 0);
 
-	ret = av_opt_set_int(m_pSwrCtx, "out_channel_layout", out_layout, 0);
+	ret = av_opt_set_chlayout(m_pSwrCtx, "out_chlayout", &out_ch_layout, 0);
 	ret = av_opt_set_int(m_pSwrCtx, "out_sample_rate", m_pCodecCtx->sample_rate, 0);
 	ret = av_opt_set_sample_fmt(m_pSwrCtx, "out_sample_fmt", out_fmt, 0);
 
