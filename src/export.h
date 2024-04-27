@@ -58,7 +58,7 @@ struct IOWBuffer {
 		free(data);
 	}
 
-	static int Write(void* obj, uint8_t* buf, int buf_size) {
+	static int Write(void* obj, const uint8_t* buf, int buf_size) {
 		IOWBuffer* t = (IOWBuffer*)obj;
 		int64_t pos = t->pos;
 		if (t->size < pos + buf_size) {

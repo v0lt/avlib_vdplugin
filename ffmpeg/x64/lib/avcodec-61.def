@@ -99,7 +99,6 @@ EXPORTS
     avcodec_align_dimensions
     avcodec_align_dimensions2
     avcodec_alloc_context3
-    avcodec_chroma_pos_to_enum
     avcodec_close
     avcodec_configuration
     avcodec_dct_alloc
@@ -115,7 +114,6 @@ EXPORTS
     avcodec_descriptor_get_by_name
     avcodec_descriptor_next
     avcodec_encode_subtitle
-    avcodec_enum_to_chroma_pos
     avcodec_fill_audio_frame
     avcodec_find_best_pix_fmt_of_list
     avcodec_find_decoder
@@ -159,8 +157,6 @@ EXPORTS
     avpriv_fits_header_parse_line
     avpriv_get_raw_pix_fmt_tags
     avpriv_h264_has_num_reorder_frames
-    avpriv_kbd_window_init
-    avpriv_kbd_window_init_fixed
     avpriv_mpeg4audio_get_config2
     avpriv_mpegaudio_decode_header
     avpriv_packet_list_free

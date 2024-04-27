@@ -1,5 +1,10 @@
 avlib.vdplugin history
 
+0.7.0.x dev
+----------------------
+FFmpeg 7.0 is now supported.
+
+
 0.6.1.70 - 2024-04-06
 ----------------------
 The "VirtualDub2 cch_input" code (https://sourceforge.net/p/vdfiltermod/cch_input/ci/master/tree/) from 2020-03-15 was forked and adapted for Visual Studio 2017/2019/2022.
