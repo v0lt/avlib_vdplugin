@@ -195,7 +195,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	if (!pDecoder) {
 		char buf[AV_FOURCC_MAX_STRING_SIZE];
 		av_fourcc_make_string(buf, m_pStreamCtx->codecpar->codec_tag);
-		mContext.mpCallbacks->SetError("FFMPEG: Unsupported codec (%s)", buf);
+		mContext.mpCallbacks->SetError("FFMPEG: Unsupported video codec (%s)", buf);
 		return -1;
 	}
 	m_pCodecCtx = avcodec_alloc_context3(pDecoder);
@@ -359,7 +359,9 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
 	if (ret < 0) {
-		mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
+		char errstr[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, errstr, std::size(errstr));
+		mContext.mpCallbacks->SetError("FFMPEG video decoder error: %s.", errstr);
 		return -1;
 	}
 
@@ -385,7 +387,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	init_format();
 	next_frame = 0;
-	if (frame_fmt == -1) {
+	if (frame_fmt == AV_PIX_FMT_NONE) {
 		//! unable to reserve buffers for unknown format
 		mContext.mpCallbacks->SetError("FFMPEG: Unknown picture format.");
 		return -1;

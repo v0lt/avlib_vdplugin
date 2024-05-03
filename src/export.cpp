@@ -448,10 +448,10 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 		if (err < 0) {
 			char buf[1024];
-			char buf2[1024];
-			av_strerror(err, buf2, 1024);
+			char errstr[AV_ERROR_MAX_STRING_SIZE];
+			av_strerror(err, errstr, std::size(errstr));
 			strcpy(buf, "Operation failed.\nInternal error (FFMPEG): ");
-			strcat(buf, buf2);
+			strcat(buf, errstr);
 			MessageBoxA(progress.getHwnd(), buf, "Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
 		}
@@ -478,10 +478,10 @@ FFOutputFile::~FFOutputFile()
 void FFOutputFile::av_error(int err)
 {
 	char buf[1024];
-	char buf2[1024];
-	av_strerror(err, buf2, 1024);
+	char errstr[AV_ERROR_MAX_STRING_SIZE];
+	av_strerror(err, errstr, std::size(errstr));
 	strcpy(buf, "Internal error (FFMPEG): ");
-	strcat(buf, buf2);
+	strcat(buf, errstr);
 	mContext.mpCallbacks->SetError(buf);
 }
 

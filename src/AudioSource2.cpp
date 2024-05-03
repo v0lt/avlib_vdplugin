@@ -64,7 +64,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	const AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
 	if (!pDecoder) {
-		mContext.mpCallbacks->SetError("FFMPEG: Unsupported codec (%d)", m_pStreamCtx->codecpar->codec_id);
+		mContext.mpCallbacks->SetError("FFMPEG: Unsupported audio codec (%d)", m_pStreamCtx->codecpar->codec_id);
 		return -1;
 	}
 	m_pCodecCtx = avcodec_alloc_context3(pDecoder);
@@ -76,7 +76,9 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
 	if (ret < 0) {
-		mContext.mpCallbacks->SetError("FFMPEG: Decoder error.");
+		char errstr[AV_ERROR_MAX_STRING_SIZE];
+		av_strerror(ret, errstr, std::size(errstr));
+		mContext.mpCallbacks->SetError("FFMPEG audio decoder error: %s.", errstr);
 		return -1;
 	}
 
