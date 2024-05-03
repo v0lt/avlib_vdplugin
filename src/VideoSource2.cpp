@@ -203,6 +203,9 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 	m_pCodecCtx->flags2 = AV_CODEC_FLAG2_SHOW_ALL;
+	if (m_pStreamCtx->codecpar->codec_id == AV_CODEC_ID_VVC) {
+		m_pCodecCtx->strict_std_compliance = FF_COMPLIANCE_EXPERIMENTAL;
+	}
 	avcodec_parameters_to_context(m_pCodecCtx, m_pStreamCtx->codecpar);
 
 	AVRational r_fr = m_pStreamCtx->r_frame_rate;
