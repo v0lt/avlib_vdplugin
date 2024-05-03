@@ -42,35 +42,17 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <_ProjectFileVersion>14.0.25431.1</_ProjectFileVersion>
+    <IntDir>$(SolutionDir)_obj\$(Configuration)_$(PlatformShortName)\</IntDir>
+    <TargetName>avlib-1</TargetName>
+    <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>.\..\bin\</OutDir>
-    <IntDir>.\$(Configuration)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)_Debug\</OutDir>
     <LinkIncremental>true</LinkIncremental>
-    <TargetName>avlib-1</TargetName>
-    <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
-    <OutDir>.\..\bin64\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental>true</LinkIncremental>
-    <TargetName>avlib-1</TargetName>
-    <TargetExt>.vdplugin</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>.\..\bin\</OutDir>
-    <IntDir>.\$(Configuration)\</IntDir>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)\</OutDir>
     <LinkIncremental>false</LinkIncremental>
-    <TargetName>avlib-1</TargetName>
-    <TargetExt>.vdplugin</TargetExt>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <OutDir>.\..\bin64\</OutDir>
-    <IntDir>$(Platform)\$(Configuration)\</IntDir>
-    <LinkIncremental>false</LinkIncremental>
-    <TargetName>avlib-1</TargetName>
-    <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -87,6 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
+      <OutputFile>$(OutDir)avlib-1.vdplugin</OutputFile>
     </Link>
     <PreBuildEvent>
       <Command>..\update_revision.cmd</Command>
@@ -120,7 +103,6 @@
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <OutputFile>$(OutDir)avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DataExecutionPrevention />
@@ -141,7 +123,6 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <OutputFile>.\..\bin\avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
@@ -168,7 +149,6 @@
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <OutputFile>.\..\bin64\avlib-1.vdplugin</OutputFile>
       <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
