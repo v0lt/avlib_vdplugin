@@ -119,7 +119,9 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		// try to force loading index
 		// works for FLV and MKV
 		int64_t pos = m_pStreamCtx->duration;
-		if (pos == AV_NOPTS_VALUE) pos = int64_t(sample_count) * time_base.den / time_base.num;
+		if (pos == AV_NOPTS_VALUE) {
+			pos = int64_t(sample_count) * time_base.den / time_base.num;
+		}
 		seek_frame(m_pFormatCtx, m_streamIndex, pos, AVSEEK_FLAG_BACKWARD);
 		seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
 		// get the number of index entries again

@@ -874,7 +874,9 @@ int seek_frame(AVFormatContext* s, int stream_index, int64_t timestamp, int flag
 	int r = av_seek_frame(s, stream_index, timestamp, flags);
 	if (r == -1 && timestamp == AV_SEEK_START) {
 		AVStream* st = s->streams[stream_index];
-		if (avformat_index_get_entries_count(st) > 0) timestamp = avformat_index_get_entry(st, 0)->timestamp;
+		if (avformat_index_get_entries_count(st) > 0) {
+			timestamp = avformat_index_get_entry(st, 0)->timestamp;
+		}
 		r = av_seek_frame(s, stream_index, timestamp, flags);
 	}
 	return r;
