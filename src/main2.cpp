@@ -168,7 +168,7 @@ VDXInputDriverDefinition ff_video = {
 	ff_create
 };
 
-#define option_image_init L"FFMpeg : images|*.tiff;*.dpx;*.jxl"
+#define option_image_init L"FFMpeg : images|*.jpg;*jpeg;*.png;*.tif;*.tiff;*.jxl;*.webp;*.dpx"
 std::wstring option_image = option_image_init;
 
 VDXInputDriverDefinition ff_image = {
