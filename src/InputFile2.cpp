@@ -605,64 +605,85 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 	is_image = false;
 	is_image_list = false;
 	is_anim_image = false;
-	if (strcmp(fmt->iformat->name, "image2") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "bmp_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "dds_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "dpx_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "exr_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "j2k_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "jpeg_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "jpegls_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pam_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pbm_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pcx_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pgmyuv_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pgm_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "pictor_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "png_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "ppm_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "psd_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "qdraw_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "sgi_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "sunrast_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "tiff_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "webp_pipe") == 0) is_image = true;
-	if (strcmp(fmt->iformat->name, "apng") == 0) { is_image = true; single_file_mode = true; }
-	if (strcmp(fmt->iformat->name, "gif") == 0) { is_image = true; single_file_mode = true; }
-	if (strcmp(fmt->iformat->name, "fits") == 0) { is_image = true; single_file_mode = true; }
-
-	const AVInputFormat* fmt_image2 = av_find_input_format("image2");
-
-	if (is_image && fmt_image2 && !single_file_mode) {
-		AVRational r_fr = fmt->streams[0]->r_frame_rate;
-		wchar_t list_path[MAX_PATH];
-		int start, count;
-		if (detect_image_list(list_path, MAX_PATH, &start, &count)) {
-			is_image_list = true;
-			auto_append = false;
-			avformat_close_input(&fmt);
-			widechar_to_utf8(ff_path, ff_path_size, list_path);
-			AVDictionary* options = nullptr;
-			av_dict_set_int(&options, "start_number", start, 0);
-			if (r_fr.num != 0) {
-				char buf[32];
-				sprintf_s(buf, "%d/%d", r_fr.num, r_fr.den);
-				av_dict_set(&options, "framerate", buf, 0);
+	const char* image_names[] = {
+		"image2",
+		"bmp_pipe",
+		"dds_pipe",
+		"dpx_pipe",
+		"exr_pipe",
+		"j2k_pipe",
+		"jpeg_pipe",
+		"jpegls_pipe",
+		"pam_pipe",
+		"pbm_pipe",
+		"pcx_pipe",
+		"pgmyuv_pipe",
+		"pgm_pipe",
+		"pictor_pipe",
+		"png_pipe",
+		"ppm_pipe",
+		"psd_pipe",
+		"qdraw_pipe",
+		"sgi_pipe",
+		"sunrast_pipe",
+		"tiff_pipe",
+		"webp_pipe",
+		"jpegxl_pipe",
+	};
+	const char* single_image_names[] = {
+		"apng",
+		"gif",
+		"fits"
+	};
+	for (const auto& img_name : image_names) {
+		if (strcmp(fmt->iformat->name, img_name) == 0) {
+			is_image = true;
+			break;
+		}
+	}
+	if (!is_image) {
+		for (const auto& img_name : single_image_names) {
+			if (strcmp(fmt->iformat->name, img_name) == 0) {
+				is_image = true;
+				single_file_mode = true;
+				break;
 			}
-			err = avformat_open_input(&fmt, ff_path, fmt_image2, &options);
-			av_dict_free(&options);
-			if (err != 0) {
-				mContext.mpCallbacks->SetError("FFMPEG: Unable to open image sequence.");
-				return 0;
-			}
-			err = avformat_find_stream_info(fmt, 0);
-			if (err < 0) {
-				mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
-				return 0;
-			}
+		}
+	}
 
-			AVStream& st = *fmt->streams[0];
-			st.nb_frames = count;
+	if (is_image && !single_file_mode) {
+		const AVInputFormat* fmt_image2 = av_find_input_format("image2");
+		if (fmt_image2) {
+			AVRational r_fr = fmt->streams[0]->r_frame_rate;
+			wchar_t list_path[MAX_PATH];
+			int start, count;
+			if (detect_image_list(list_path, MAX_PATH, &start, &count)) {
+				is_image_list = true;
+				auto_append = false;
+				avformat_close_input(&fmt);
+				widechar_to_utf8(ff_path, ff_path_size, list_path);
+				AVDictionary* options = nullptr;
+				av_dict_set_int(&options, "start_number", start, 0);
+				if (r_fr.num != 0) {
+					char buf[32];
+					sprintf_s(buf, "%d/%d", r_fr.num, r_fr.den);
+					av_dict_set(&options, "framerate", buf, 0);
+				}
+				err = avformat_open_input(&fmt, ff_path, fmt_image2, &options);
+				av_dict_free(&options);
+				if (err != 0) {
+					mContext.mpCallbacks->SetError("FFMPEG: Unable to open image sequence.");
+					return 0;
+				}
+				err = avformat_find_stream_info(fmt, 0);
+				if (err < 0) {
+					mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
+					return 0;
+				}
+
+				AVStream& st = *fmt->streams[0];
+				st.nb_frames = count;
+			}
 		}
 	}
 
