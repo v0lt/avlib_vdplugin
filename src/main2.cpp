@@ -150,7 +150,7 @@ bool VDXAPIENTRY ff_create(const VDXInputDriverContext* pContext, IVDXInputFileD
 	return true;
 }
 
-#define option_video_init L"FFMpeg : video|*.mov;*.mp4;*.avi"
+#define option_video_init L"FFMpeg : video|*.mp4;*.mov;*.mkv;*.webm;*.flv;*.avi;*.nut"
 std::wstring option_video = option_video_init;
 //std::wstring pattern_video; // example "*.mov|*.mp4|*.avi"
 
