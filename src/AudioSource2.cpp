@@ -91,14 +91,6 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	} else {
 		trust_sample_pos = false;
 	}
-	use_keys = false;
-	const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
-	for (int i = 0; i < nb_index_entries; i++) {
-		if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
-			use_keys = true;
-			break;
-		}
-	}
 
 	if (m_pStreamCtx->duration == AV_NOPTS_VALUE) {
 		/*
@@ -119,6 +111,26 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	}
 	else {
 		sample_count = (m_pStreamCtx->duration * time_base.num + time_base.den / 2) / time_base.den;
+	}
+
+	use_keys = false;
+	int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+	if (nb_index_entries < 60) {
+		// try to force loading index
+		// works for FLV and MKV
+		int64_t pos = m_pStreamCtx->duration;
+		if (pos == AV_NOPTS_VALUE) pos = int64_t(sample_count) * time_base.den / time_base.num;
+		seek_frame(m_pFormatCtx, m_streamIndex, pos, AVSEEK_FLAG_BACKWARD);
+		seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
+		// get the number of index entries again
+		nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+	}
+
+	for (int i = 0; i < nb_index_entries; i++) {
+		if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+			use_keys = true;
+			break;
+		}
 	}
 
 	// lazy initialized by init_start_time
