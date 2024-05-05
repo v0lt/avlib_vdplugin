@@ -41,6 +41,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="VideoSource2.h" />
     <ClInclude Include="Version.h" />
+    <ClInclude Include="Utils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\vd2\VDXFrame\VideoFilter.cpp">
@@ -72,6 +73,7 @@
     <ClCompile Include="mov_mp4.cpp" />
     <ClCompile Include="VideoSource2.cpp" />
     <ClCompile Include="nut.cpp" />
+    <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />
