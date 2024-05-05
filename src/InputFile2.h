@@ -56,22 +56,32 @@ public:
 		bool disable_cache;
 
 		Data() { clear(); }
-		void clear() { version = opt_version; disable_cache = false; }
+		void clear() {
+			version = opt_version;
+			disable_cache = false;
+		}
 	} data;
 #pragma pack(pop)
 
 	bool Read(const void* src, uint32_t len) {
-		if (len <= sizeof(int)) return false;
+		if (len <= sizeof(int)) {
+			return false;
+		}
 		Data* d = (Data*)src;
-		if (d->version > opt_version || d->version < 1) return false;
+		if (d->version > opt_version || d->version < 1) {
+			return false;
+		}
 		data.clear();
 		if (d->version >= 2) {
 			data.disable_cache = d->disable_cache;
 		}
 		return true;
 	}
+
 	uint32_t VDXAPIENTRY Write(void* buf, uint32_t buflen) {
-		if (buflen < sizeof(Data) || !buf) return sizeof(Data);
+		if (buflen < sizeof(Data) || !buf) {
+			return sizeof(Data);
+		}
 		memcpy(buf, &data, sizeof(Data));
 		return sizeof(Data);
 	}
@@ -108,8 +118,9 @@ public:
 
 	void* VDXAPIENTRY AsInterface(uint32_t iid)
 	{
-		if (iid == IFilterModFileTool::kIID)
+		if (iid == IFilterModFileTool::kIID) {
 			return static_cast<IFilterModFileTool*>(this);
+		}
 
 		return vdxunknown<IVDXInputFile>::AsInterface(iid);
 	}
