@@ -121,10 +121,12 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		// the opening of a large file with a large number of audio tracks.
 		// works for MKV and FLV
 		const AVIndexEntry* ie = avformat_index_get_entry(m_pStreamCtx, nb_index_entries - 1);
-		seek_frame(m_pFormatCtx, m_streamIndex, ie->pos, AVSEEK_FLAG_BACKWARD);
-		seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
-		// get the number of index entries again
-		nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+		if (ie) {
+			seek_frame(m_pFormatCtx, m_streamIndex, ie->pos, AVSEEK_FLAG_BACKWARD);
+			seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
+			// get the number of index entries again
+			nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+		}
 	}
 
 	for (int i = 0; i < nb_index_entries; i++) {
