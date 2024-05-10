@@ -4,6 +4,7 @@
 #include "AudioSource2.h"
 #include "resource.h"
 #include "gopro.h"
+#include "Utils.h"
 
 #include <string>
 
@@ -310,13 +311,33 @@ struct MetaInfo {
 
 bool skip_useless_meta(MetaInfo& info, AVDictionaryEntry* t)
 {
-	if (strcmp(t->key, "language") == 0) return true;
-	if (strcmp(t->key, "handler_name") == 0) return true;
-	if (strcmp(t->key, "creation_time") == 0) {
-		if (info.creation_time) return true;
-		info.creation_time = true;
+	const char* useful_metas[] = {
+		"major_brand",
+		"minor_version",
+		"compatible_brands",
+		"title",
+		"TITLE",
+		"comment",
+		"COMMENT",
+		"encoder",
+		"description",
+		"language",
+		"software",
+	};
+	for (const auto& meta : useful_metas) {
+		if (strcmp(t->key, meta) == 0) {
+			return false;
+		}
 	}
-	return false;
+
+	if (strcmp(t->key, "creation_time") == 0) {
+		if (!info.creation_time) {
+			info.creation_time = true;
+			return false;
+		}
+	}
+
+	return true;
 }
 
 void VDFFInputFileInfoDialog::print_metadata()
@@ -327,49 +348,38 @@ void VDFFInputFileInfoDialog::print_metadata()
 	if (segment->video_source) pVideoStream = segment->video_source->m_pStreamCtx;
 	if (segment->audio_source) pAudioStream = segment->audio_source->m_pStreamCtx;
 
-	char buf[1024];
-
-	std::string s;
+	std::wstring s;
 
 	MetaInfo info = { 0 };
 
 	if (pFormatCtx && pFormatCtx->metadata) {
 		AVDictionaryEntry* t = nullptr;
-		bool header = true;
+		s += L"File:\r\n";
 		while (t = av_dict_get(pFormatCtx->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
-			if (skip_useless_meta(info, t)) continue;
-			if (header) {
-				s += "File:";
-				header = false;
+			if (skip_useless_meta(info, t)) {
+				continue;
 			}
-			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
-			s += buf;
+			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";
 		}
 	}
 	if (pVideoStream && pVideoStream->metadata) {
 		AVDictionaryEntry* t = nullptr;
-		bool header = true;
+		s += L"Video:\r\n";
 		while (t = av_dict_get(pVideoStream->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
-			if (skip_useless_meta(info, t)) continue;
-			if (header) {
-				s += "Video:";
-				header = false;
+			if (skip_useless_meta(info, t)) {
+				continue;
 			}
-			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
-			s += buf;
+			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";;
 		}
 	}
 	if (pAudioStream && pAudioStream->metadata) {
 		AVDictionaryEntry* t = nullptr;
-		bool header = true;
+		s += L"Audio:\r\n";
 		while (t = av_dict_get(pAudioStream->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
-			if (skip_useless_meta(info, t)) continue;
-			if (header) {
-				s += "Audio:";
-				header = false;
+			if (skip_useless_meta(info, t)) {
+				continue;
 			}
-			sprintf_s(buf, "\t%s = %s\r\n", t->key, t->value);
-			s += buf;
+			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";;
 		}
 	}
 
@@ -377,18 +387,14 @@ void VDFFInputFileInfoDialog::print_metadata()
 	gi.find_info(segment->path);
 
 	if (gi.type) {
-		sprintf_s(buf, "GoPro info:\t%s\r\n", gi.type->Name);
-		s += buf;
-		sprintf_s(buf, "\tfirmware = %s\r\n", gi.firmware);
-		s += buf;
-		sprintf_s(buf, "\tserial# = %s\r\n", gi.cam_serial);
-		s += buf;
-		s += gi.setup_info;
+		s += L"GoPro info: " + A2WStr(gi.type->Name) + L"\r\n";
+		s += L"    firmware = " + A2WStr(gi.firmware) + L"\r\n";
+		s += L"    tserial# = " + A2WStr(gi.cam_serial) + L"\r\n";
 	}
 
 	int tab[2] = { 42,90 };
 	SendDlgItemMessageW(mhdlg, IDC_METADATA, EM_SETTABSTOPS, 2, (LPARAM)tab);
-	SetDlgItemTextA(mhdlg, IDC_METADATA, s.c_str());
+	SetDlgItemTextW(mhdlg, IDC_METADATA, s.c_str());
 }
 
 void VDFFInputFileInfoDialog::print_performance()
