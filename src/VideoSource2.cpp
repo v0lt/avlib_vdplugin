@@ -390,6 +390,21 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	frame_type = (char*)malloc(ft_size);
 	memset(frame_type, ' ', ft_size);
 
+	if (m_pCodecCtx->pix_fmt == AV_PIX_FMT_NONE) {
+		// read the first frame to get the correct pix_fmt
+		// works for VVC
+		std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
+
+		while(av_read_frame(m_pFormatCtx, pkt.get()) == 0) {
+			if (pkt->stream_index == m_streamIndex) {
+				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
+				av_packet_unref(pkt.get());
+				break;
+			}
+			av_packet_unref(pkt.get());
+		}
+	}
+
 	init_format();
 	next_frame = 0;
 	if (frame_fmt == AV_PIX_FMT_NONE) {
