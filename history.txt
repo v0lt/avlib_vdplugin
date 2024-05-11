@@ -4,8 +4,10 @@ avlib.vdplugin history
 ----------------------
 FFmpeg 7.0 is now supported.
 Added support for JPEG XL images.
+Added support for VVC videos.
 Improved navigation support for long FLVs and MKVs with audio.
 More default formats for the "FFMpeg : video" and "FFMpeg : images" groups.
+Changed the display of the "Metadata" field in "File Information".
 
 0.6.1.70 - 2024-04-06
 ----------------------
