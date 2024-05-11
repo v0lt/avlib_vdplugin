@@ -351,15 +351,23 @@ void VDFFInputFileInfoDialog::print_metadata()
 	std::wstring s;
 
 	MetaInfo info = { 0 };
+	bool bValueAnsi = false;
+	
+	auto ConverMetaValue = [&bValueAnsi](char* value)
+	{
+		return bValueAnsi ? ConvertAnsiToWide(value) : ConvertUtf8ToWide(value);
+	};
 
 	if (pFormatCtx && pFormatCtx->metadata) {
+		bValueAnsi = (pFormatCtx->iformat && strcmp(pFormatCtx->iformat->name, "avi") == 0);
 		AVDictionaryEntry* t = nullptr;
+
 		s += L"File:\r\n";
 		while (t = av_dict_get(pFormatCtx->metadata, "", t, AV_DICT_IGNORE_SUFFIX)) {
 			if (skip_useless_meta(info, t)) {
 				continue;
 			}
-			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";
+			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";
 		}
 	}
 	if (pVideoStream && pVideoStream->metadata) {
@@ -369,7 +377,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 			if (skip_useless_meta(info, t)) {
 				continue;
 			}
-			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";;
+			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";;
 		}
 	}
 	if (pAudioStream && pAudioStream->metadata) {
@@ -379,7 +387,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 			if (skip_useless_meta(info, t)) {
 				continue;
 			}
-			s += L"    " + A2WStr(t->key) + L" = " + ConvertUtf8ToWide(t->value) + L"\r\n";;
+			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";;
 		}
 	}
 
