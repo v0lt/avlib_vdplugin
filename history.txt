@@ -1,6 +1,6 @@
 avlib.vdplugin history
 
-0.7.0.x dev
+0.7.0.91 - 2024-05-26
 ----------------------
 FFmpeg 7.0 is now supported.
 Added support for JPEG XL images.
