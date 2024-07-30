@@ -6,6 +6,7 @@
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include "resource.h"
 #include <commctrl.h>
+#include "Utils.h"
 
 void init_av();
 extern HINSTANCE hInstance;
@@ -161,7 +162,11 @@ void VDFFAudio::select_fmt(AVSampleFormat* list)
 void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 {
 	cleanup();
-	if (!format) return;
+	if (!format) {
+		return;
+	}
+
+	std::string errstr;
 
 	init_av();
 	CreateCodec();
@@ -173,9 +178,13 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	ctx->sample_fmt = codec->sample_fmts[0];
 
 	AVSampleFormat in_fmt = AV_SAMPLE_FMT_S16;
-	if (format->mBitsPerSample == 8) in_fmt = AV_SAMPLE_FMT_U8;
-	if (format->mFormatTag == WAVE_FORMAT_IEEE_FLOAT) in_fmt = AV_SAMPLE_FMT_FLT;
-	if (format->mFormatTag == WAVE_FORMAT_EXTENSIBLE) {
+	if (format->mBitsPerSample == 8) {
+		in_fmt = AV_SAMPLE_FMT_U8;
+	}
+	if (format->mFormatTag == WAVE_FORMAT_IEEE_FLOAT) {
+		in_fmt = AV_SAMPLE_FMT_FLT;
+	}
+	else if (format->mFormatTag == WAVE_FORMAT_EXTENSIBLE) {
 		WAVEFORMATEXTENSIBLE* fx = (WAVEFORMATEXTENSIBLE*)(format);
 		if (fx->dwChannelMask && av_popcount(fx->dwChannelMask) == format->mChannels) {
 			av_channel_layout_from_mask(&ctx->ch_layout, fx->dwChannelMask);
@@ -214,7 +223,8 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	int ret = avcodec_open2(ctx, codec, nullptr);
 	if (ret < 0) {
-		mContext.mpCallbacks->SetError("FFMPEG: Cannot open codec.");
+		errstr = AVError2Str(ret);
+		mContext.mpCallbacks->SetError("FFMPEG: Cannot open codec (%s).", errstr.c_str());
 		cleanup();
 		return;
 	}
@@ -227,16 +237,21 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	}
 
 	swr = swr_alloc();
-	av_opt_set_int(swr, "in_channel_layout", ctx->ch_layout.u.mask, 0);
-	av_opt_set_int(swr, "in_sample_rate", ctx->sample_rate, 0);
-	av_opt_set_sample_fmt(swr, "in_sample_fmt", in_fmt, 0);
 
-	av_opt_set_int(swr, "out_channel_layout", ctx->ch_layout.u.mask, 0);
-	av_opt_set_int(swr, "out_sample_rate", ctx->sample_rate, 0);
-	av_opt_set_sample_fmt(swr, "out_sample_fmt", ctx->sample_fmt, 0);
-	int rr = swr_init(swr);
-	if (rr < 0) {
-		mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error.");
+	const AVChannelLayout ch_layout = { AV_CHANNEL_ORDER_NATIVE, ctx->ch_layout.nb_channels, ctx->ch_layout.u.mask };
+
+	ret = av_opt_set_chlayout(swr, "in_chlayout", &ch_layout, 0);
+	ret = av_opt_set_int(swr, "in_sample_rate", ctx->sample_rate, 0);
+	ret = av_opt_set_sample_fmt(swr, "in_sample_fmt", in_fmt, 0);
+
+	ret = av_opt_set_chlayout(swr, "out_chlayout", &ch_layout, 0);
+	ret = av_opt_set_int(swr, "out_sample_rate", ctx->sample_rate, 0);
+	ret = av_opt_set_sample_fmt(swr, "out_sample_fmt", ctx->sample_fmt, 0);
+
+	ret = swr_init(swr);
+	if (ret < 0) {
+		errstr = AVError2Str(ret);
+		mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error (%s).", errstr.c_str());
 		cleanup();
 		return;
 	}

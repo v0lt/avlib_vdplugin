@@ -1,5 +1,10 @@
 avlib.vdplugin history
 
+0.7.0 dev
+----------------------
+Fixed the use of audio encoders.
+
+
 0.7.0.93 - 2024-05-26
 ----------------------
 FFmpeg 7.0.1 is now supported.
