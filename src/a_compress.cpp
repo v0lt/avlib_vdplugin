@@ -238,13 +238,11 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	swr = swr_alloc();
 
-	const AVChannelLayout ch_layout = { AV_CHANNEL_ORDER_NATIVE, ctx->ch_layout.nb_channels, ctx->ch_layout.u.mask };
-
-	ret = av_opt_set_chlayout(swr, "in_chlayout", &ch_layout, 0);
+	ret = av_opt_set_chlayout(swr, "in_chlayout", &ctx->ch_layout, 0);
 	ret = av_opt_set_int(swr, "in_sample_rate", ctx->sample_rate, 0);
 	ret = av_opt_set_sample_fmt(swr, "in_sample_fmt", in_fmt, 0);
 
-	ret = av_opt_set_chlayout(swr, "out_chlayout", &ch_layout, 0);
+	ret = av_opt_set_chlayout(swr, "out_chlayout", &ctx->ch_layout, 0);
 	ret = av_opt_set_int(swr, "out_sample_rate", ctx->sample_rate, 0);
 	ret = av_opt_set_sample_fmt(swr, "out_sample_fmt", ctx->sample_fmt, 0);
 
