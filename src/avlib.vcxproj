@@ -22,6 +22,7 @@
     <ProjectGuid>{F9A8C873-74FF-4AE6-8F55-F94136F8B716}</ProjectGuid>
     <RootNamespace>avlib</RootNamespace>
     <Keyword>Win32Proj</Keyword>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <Import Project="$(SolutionDir)\platform.props" />
@@ -47,7 +48,7 @@
     <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)_Debug\</OutDir>
+    <OutDir>C:\Soft\VirtualDub2_v2.1\plugins64</OutDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
