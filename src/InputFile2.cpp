@@ -8,6 +8,7 @@
 #include <vfw.h>
 #include <aviriff.h>
 #include "resource.h"
+#include "Utils.h"
 
 typedef struct AVCodecTag {
 	enum AVCodecID id;
@@ -296,10 +297,24 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature2(VDXMediaInfo& info, cons
 
 int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName)
 {
-	int avi_q = detect_avi(info, pHeader, nHeaderSize);
+	const wchar_t* p = wcsrchr(fileName, '.');
+	if (p) {
+		std::wstring ext(p);
+		str_tolower(ext);
+		if (ext == L".avs") {
+			// ignore AviSynth scripts by extension
+			// because avformat_open_input can take a very long time to open a file (FFmpegSource2)
+			return kDC_None;
+		}
+	}
 
-	if (avi_q == 1) return kDC_High;
-	if (avi_q == 0) return kDC_Moderate;
+	int avi_q = detect_avi(info, pHeader, nHeaderSize);
+	if (avi_q == 1) {
+		return kDC_High;
+	}
+	if (avi_q == 0) {
+		return kDC_Moderate;
+	}
 
 	if (detect_mp4_mov(pHeader, nHeaderSize, nFileSize) == 1) {
 		wcscpy(info.format_name, L"iso media");
@@ -307,8 +322,12 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 	}
 
 	int ff_q = detect_ff(info, pHeader, nHeaderSize, fileName);
-	if (ff_q == 1) return kDC_Moderate;
-	if (ff_q == 0) return kDC_VeryLow;
+	if (ff_q == 1) {
+		return kDC_Moderate;
+	}
+	if (ff_q == 0) {
+		return kDC_VeryLow;
+	}
 
 	return kDC_None;
 }

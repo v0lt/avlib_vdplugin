@@ -1,6 +1,18 @@
 #pragma once
 
 #include <string>
+#include <algorithm>
+
+inline void str_tolower(std::string& s)
+{
+	std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
+	// char for std::tolower should be converted to unsigned char
+}
+
+inline void str_tolower(std::wstring& s)
+{
+	std::transform(s.begin(), s.end(), s.begin(), ::tolower);
+}
 
 inline std::wstring A2WStr(const std::string_view sv)
 {
