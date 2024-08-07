@@ -12,3 +12,13 @@ obj64
 *.log
 *.VC.db
 /revision.h
+_bin/
+_obj/
+_lib/
+*.exe
+*.pdb
+*.lib
+*.map
+*.idb
+*.dll
+*.vdi
