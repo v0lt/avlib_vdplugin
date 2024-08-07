@@ -48,7 +48,7 @@
     <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <OutDir>C:\Soft\VirtualDub2_v2.1\plugins64</OutDir>
+    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)\</OutDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
