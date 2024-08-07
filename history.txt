@@ -2,6 +2,7 @@ avlib.vdplugin history
 
 0.7.0 dev
 ----------------------
+FFmpeg 7.0.2 is now supported.
 Fixed the use of audio encoders.
 Improved ignoring of AviSynth scripts to prevent VirtualDub 2 interface from freezing in some situations.
 
