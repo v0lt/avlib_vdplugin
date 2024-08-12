@@ -1362,76 +1362,80 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		if(fo==AV_FIELD_BB) format = kPixFormat_YUV420ib_Planar;
 	}*/
 
-	if (!skip_colorspace && m_pCodecCtx->color_range == AVCOL_RANGE_JPEG) switch (format) {
-	case kPixFormat_YUV420_Planar:
-		format = kPixFormat_YUV420_Planar_FR;
-		break;
-	case kPixFormat_YUV420it_Planar:
-		format = kPixFormat_YUV420it_Planar_FR;
-		break;
-	case kPixFormat_YUV420ib_Planar:
-		format = kPixFormat_YUV420ib_Planar_FR;
-		break;
-	case kPixFormat_YUV422_Planar:
-		format = kPixFormat_YUV422_Planar_FR;
-		break;
-	case kPixFormat_YUV444_Planar:
-		format = kPixFormat_YUV444_Planar_FR;
-		break;
-	case kPixFormat_YUV422_UYVY:
-		format = kPixFormat_YUV422_UYVY_FR;
-		break;
-	case kPixFormat_YUV422_YUYV:
-		format = kPixFormat_YUV422_YUYV_FR;
-		break;
-	case kPixFormat_Y8:
-		format = kPixFormat_Y8_FR;
-		break;
+	if (!skip_colorspace && m_pCodecCtx->color_range == AVCOL_RANGE_JPEG) {
+		switch (format) {
+		case kPixFormat_YUV420_Planar:
+			format = kPixFormat_YUV420_Planar_FR;
+			break;
+		case kPixFormat_YUV420it_Planar:
+			format = kPixFormat_YUV420it_Planar_FR;
+			break;
+		case kPixFormat_YUV420ib_Planar:
+			format = kPixFormat_YUV420ib_Planar_FR;
+			break;
+		case kPixFormat_YUV422_Planar:
+			format = kPixFormat_YUV422_Planar_FR;
+			break;
+		case kPixFormat_YUV444_Planar:
+			format = kPixFormat_YUV444_Planar_FR;
+			break;
+		case kPixFormat_YUV422_UYVY:
+			format = kPixFormat_YUV422_UYVY_FR;
+			break;
+		case kPixFormat_YUV422_YUYV:
+			format = kPixFormat_YUV422_YUYV_FR;
+			break;
+		case kPixFormat_Y8:
+			format = kPixFormat_Y8_FR;
+			break;
+		}
 	}
 
-	if (!skip_colorspace && m_pCodecCtx->colorspace == AVCOL_SPC_BT709) switch (format) {
-	case kPixFormat_YUV420_Planar:
-		format = kPixFormat_YUV420_Planar_709;
-		break;
-	case kPixFormat_YUV420_Planar_FR:
-		format = kPixFormat_YUV420_Planar_709_FR;
-		break;
-	case kPixFormat_YUV420it_Planar:
-		format = kPixFormat_YUV420it_Planar_709;
-		break;
-	case kPixFormat_YUV420it_Planar_FR:
-		format = kPixFormat_YUV420it_Planar_709_FR;
-		break;
-	case kPixFormat_YUV420ib_Planar:
-		format = kPixFormat_YUV420ib_Planar_709;
-		break;
-	case kPixFormat_YUV420ib_Planar_FR:
-		format = kPixFormat_YUV420ib_Planar_709_FR;
-		break;
-	case kPixFormat_YUV422_Planar:
-		format = kPixFormat_YUV422_Planar_709;
-		break;
-	case kPixFormat_YUV422_Planar_FR:
-		format = kPixFormat_YUV422_Planar_709_FR;
-		break;
-	case kPixFormat_YUV444_Planar:
-		format = kPixFormat_YUV444_Planar_709;
-		break;
-	case kPixFormat_YUV444_Planar_FR:
-		format = kPixFormat_YUV444_Planar_709_FR;
-		break;
-	case kPixFormat_YUV422_UYVY:
-		format = kPixFormat_YUV422_UYVY_709;
-		break;
-	case kPixFormat_YUV422_UYVY_FR:
-		format = kPixFormat_YUV422_UYVY_709_FR;
-		break;
-	case kPixFormat_YUV422_YUYV:
-		format = kPixFormat_YUV422_YUYV_709;
-		break;
-	case kPixFormat_YUV422_YUYV_FR:
-		format = kPixFormat_YUV422_YUYV_709_FR;
-		break;
+	if (!skip_colorspace && m_pCodecCtx->colorspace == AVCOL_SPC_BT709) {
+		switch (format) {
+		case kPixFormat_YUV420_Planar:
+			format = kPixFormat_YUV420_Planar_709;
+			break;
+		case kPixFormat_YUV420_Planar_FR:
+			format = kPixFormat_YUV420_Planar_709_FR;
+			break;
+		case kPixFormat_YUV420it_Planar:
+			format = kPixFormat_YUV420it_Planar_709;
+			break;
+		case kPixFormat_YUV420it_Planar_FR:
+			format = kPixFormat_YUV420it_Planar_709_FR;
+			break;
+		case kPixFormat_YUV420ib_Planar:
+			format = kPixFormat_YUV420ib_Planar_709;
+			break;
+		case kPixFormat_YUV420ib_Planar_FR:
+			format = kPixFormat_YUV420ib_Planar_709_FR;
+			break;
+		case kPixFormat_YUV422_Planar:
+			format = kPixFormat_YUV422_Planar_709;
+			break;
+		case kPixFormat_YUV422_Planar_FR:
+			format = kPixFormat_YUV422_Planar_709_FR;
+			break;
+		case kPixFormat_YUV444_Planar:
+			format = kPixFormat_YUV444_Planar_709;
+			break;
+		case kPixFormat_YUV444_Planar_FR:
+			format = kPixFormat_YUV444_Planar_709_FR;
+			break;
+		case kPixFormat_YUV422_UYVY:
+			format = kPixFormat_YUV422_UYVY_709;
+			break;
+		case kPixFormat_YUV422_UYVY_FR:
+			format = kPixFormat_YUV422_UYVY_709_FR;
+			break;
+		case kPixFormat_YUV422_YUYV:
+			format = kPixFormat_YUV422_YUYV_709;
+			break;
+		case kPixFormat_YUV422_YUYV_FR:
+			format = kPixFormat_YUV422_YUYV_709_FR;
+			break;
+		}
 	}
 
 	if (head && head->m_pixmap.format != format) {
@@ -1544,74 +1548,76 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 
 		int proxy_max_value = 0;
 		AVPixelFormat proxy_fmt = AV_PIX_FMT_NONE;
-		if (format == kPixFormat_XRGB64) switch (src_fmt) {
-		case AV_PIX_FMT_GBRP9LE:
-			proxy_max_value = 0x01FF;
-			proxy_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
-		case AV_PIX_FMT_GBRP10LE:
-			proxy_max_value = 0x03FF;
-			proxy_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
-		case AV_PIX_FMT_GBRP12LE:
-			proxy_max_value = 0x0FFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
-		case AV_PIX_FMT_GBRP14LE:
-			proxy_max_value = 0x3FFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
-		case AV_PIX_FMT_GBRP16LE:
-			proxy_max_value = 0xFFFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
+		if (format == kPixFormat_XRGB64) {
+			switch (src_fmt) {
+			case AV_PIX_FMT_GBRP9LE:
+				proxy_max_value = 0x01FF;
+				proxy_fmt = AV_PIX_FMT_GBRP16LE;
+				break;
+			case AV_PIX_FMT_GBRP10LE:
+				proxy_max_value = 0x03FF;
+				proxy_fmt = AV_PIX_FMT_GBRP16LE;
+				break;
+			case AV_PIX_FMT_GBRP12LE:
+				proxy_max_value = 0x0FFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16LE;
+				break;
+			case AV_PIX_FMT_GBRP14LE:
+				proxy_max_value = 0x3FFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16LE;
+				break;
+			case AV_PIX_FMT_GBRP16LE:
+				proxy_max_value = 0xFFFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16LE;
+				break;
 
-		case AV_PIX_FMT_GBRP9BE:
-			proxy_max_value = 0x01FF;
-			proxy_fmt = AV_PIX_FMT_GBRP16BE;
-			break;
-		case AV_PIX_FMT_GBRP10BE:
-			proxy_max_value = 0x03FF;
-			proxy_fmt = AV_PIX_FMT_GBRP16BE;
-			break;
-		case AV_PIX_FMT_GBRP12BE:
-			proxy_max_value = 0x0FFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16BE;
-			break;
-		case AV_PIX_FMT_GBRP14BE:
-			proxy_max_value = 0x3FFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16BE;
-			break;
-		case AV_PIX_FMT_GBRP16BE:
-			proxy_max_value = 0xFFFF;
-			proxy_fmt = AV_PIX_FMT_GBRP16BE;
-			break;
+			case AV_PIX_FMT_GBRP9BE:
+				proxy_max_value = 0x01FF;
+				proxy_fmt = AV_PIX_FMT_GBRP16BE;
+				break;
+			case AV_PIX_FMT_GBRP10BE:
+				proxy_max_value = 0x03FF;
+				proxy_fmt = AV_PIX_FMT_GBRP16BE;
+				break;
+			case AV_PIX_FMT_GBRP12BE:
+				proxy_max_value = 0x0FFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16BE;
+				break;
+			case AV_PIX_FMT_GBRP14BE:
+				proxy_max_value = 0x3FFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16BE;
+				break;
+			case AV_PIX_FMT_GBRP16BE:
+				proxy_max_value = 0xFFFF;
+				proxy_fmt = AV_PIX_FMT_GBRP16BE;
+				break;
 
-		case AV_PIX_FMT_GBRAP10LE:
-			proxy_max_value = 0x03FF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16LE;
-			break;
-		case AV_PIX_FMT_GBRAP12LE:
-			proxy_max_value = 0x0FFF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16LE;
-			break;
-		case AV_PIX_FMT_GBRAP16LE:
-			proxy_max_value = 0xFFFF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16LE;
-			break;
+			case AV_PIX_FMT_GBRAP10LE:
+				proxy_max_value = 0x03FF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16LE;
+				break;
+			case AV_PIX_FMT_GBRAP12LE:
+				proxy_max_value = 0x0FFF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16LE;
+				break;
+			case AV_PIX_FMT_GBRAP16LE:
+				proxy_max_value = 0xFFFF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16LE;
+				break;
 
-		case AV_PIX_FMT_GBRAP10BE:
-			proxy_max_value = 0x03FF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16BE;
-			break;
-		case AV_PIX_FMT_GBRAP12BE:
-			proxy_max_value = 0x0FFF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16BE;
-			break;
-		case AV_PIX_FMT_GBRAP16BE:
-			proxy_max_value = 0xFFFF;
-			proxy_fmt = AV_PIX_FMT_GBRAP16BE;
-			break;
+			case AV_PIX_FMT_GBRAP10BE:
+				proxy_max_value = 0x03FF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16BE;
+				break;
+			case AV_PIX_FMT_GBRAP12BE:
+				proxy_max_value = 0x0FFF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16BE;
+				break;
+			case AV_PIX_FMT_GBRAP16BE:
+				proxy_max_value = 0xFFFF;
+				proxy_fmt = AV_PIX_FMT_GBRAP16BE;
+				break;
+			}
 		}
 		if (proxy_fmt != AV_PIX_FMT_NONE) {
 			m_pixmap_info.ref_r = proxy_max_value;
