@@ -1180,14 +1180,14 @@ bool VDXAPIENTRY ff_create_output(const VDXInputDriverContext* pContext, IVDXOut
 VDXOutputDriverDefinition ff_output = {
 	sizeof(VDXOutputDriverDefinition),
 	0, //flags
-	L"FFMpeg (all formats)",
+	L"FFmpeg (all formats)",
 	L"ffmpeg",
 	ff_create_output
 };
 
 VDXPluginInfo ff_output_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg output",
+	L"FFmpeg output",
 	L"Anton Shekhovtsov",
 	L"Save files through ffmpeg libs.",
 	1,

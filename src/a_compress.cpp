@@ -532,14 +532,14 @@ bool VDXAPIENTRY ff_create_aacenc(const VDXInputDriverContext* pContext, IVDXAud
 VDXAudioEncDefinition ff_aacenc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg AAC",
+	L"FFmpeg AAC",
 	"ffmpeg_aac",
 	ff_create_aacenc
 };
 
 VDXPluginInfo ff_aacenc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg AAC",
+	L"FFmpeg AAC",
 	L"Anton Shekhovtsov",
 	L"Encode audio to AAC format.",
 	1,
@@ -683,14 +683,14 @@ bool VDXAPIENTRY ff_create_mp3enc(const VDXInputDriverContext* pContext, IVDXAud
 VDXAudioEncDefinition ff_mp3enc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg Lame MP3",
+	L"FFmpeg Lame MP3",
 	"ffmpeg_mp3",
 	ff_create_mp3enc
 };
 
 VDXPluginInfo ff_mp3enc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg Lame MP3",
+	L"FFmpeg Lame MP3",
 	L"Anton Shekhovtsov",
 	L"Encode audio to MP3 format.",
 	1,
@@ -739,14 +739,14 @@ bool VDXAPIENTRY ff_create_flacenc(const VDXInputDriverContext* pContext, IVDXAu
 VDXAudioEncDefinition ff_flacenc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg FLAC lossless",
+	L"FFmpeg FLAC lossless",
 	"ffmpeg_flac",
 	ff_create_flacenc
 };
 
 VDXPluginInfo ff_flacenc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg FLAC",
+	L"FFmpeg FLAC lossless",
 	L"Anton Shekhovtsov",
 	L"Encode audio to FLAC format.",
 	1,
@@ -856,14 +856,14 @@ bool VDXAPIENTRY ff_create_alacenc(const VDXInputDriverContext* pContext, IVDXAu
 VDXAudioEncDefinition ff_alacenc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg ALAC (Apple Lossless)",
+	L"FFmpeg ALAC (Apple Lossless)",
 	"ffmpeg_alac",
 	ff_create_alacenc
 };
 
 VDXPluginInfo ff_alacenc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg ALAC (Apple Lossless)",
+	L"FFmpeg ALAC (Apple Lossless)",
 	L"Anton Shekhovtsov",
 	L"Encode audio to ALAC format.",
 	1,
@@ -1072,14 +1072,14 @@ bool VDXAPIENTRY ff_create_vorbisenc(const VDXInputDriverContext* pContext, IVDX
 VDXAudioEncDefinition ff_vorbisenc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg Vorbis (libvorbis)",
+	L"FFmpeg Vorbis (libvorbis)",
 	"ffmpeg_vorbis",
 	ff_create_vorbisenc
 };
 
 VDXPluginInfo ff_vorbisenc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg Vorbis (libvorbis)",
+	L"FFmpeg Vorbis (libvorbis)",
 	L"Anton Shekhovtsov",
 	L"Encode audio to Vorbis format.",
 	1,
@@ -1227,14 +1227,14 @@ bool VDXAPIENTRY ff_create_opusenc(const VDXInputDriverContext* pContext, IVDXAu
 VDXAudioEncDefinition ff_opusenc = {
 	sizeof(VDXAudioEncDefinition),
 	0, //flags
-	L"FFMpeg Opus (libopus)",
+	L"FFmpeg Opus (libopus)",
 	"ffmpeg_opus",
 	ff_create_opusenc
 };
 
 VDXPluginInfo ff_opusenc_info = {
 	sizeof(VDXPluginInfo),
-	L"FFMpeg Opus (libopus)",
+	L"FFmpeg Opus (libopus)",
 	L"Anton Shekhovtsov",
 	L"Encode audio to Opus format.",
 	1,

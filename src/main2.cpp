@@ -150,7 +150,7 @@ bool VDXAPIENTRY ff_create(const VDXInputDriverContext* pContext, IVDXInputFileD
 	return true;
 }
 
-#define option_video_init L"FFMpeg : video|*.mp4;*.mov;*.mkv;*.webm;*.flv;*.avi;*.nut"
+#define option_video_init L"FFmpeg : video|*.mp4;*.mov;*.mkv;*.webm;*.flv;*.avi;*.nut"
 std::wstring option_video = option_video_init;
 //std::wstring pattern_video; // example "*.mov|*.mp4|*.avi"
 
@@ -168,7 +168,7 @@ VDXInputDriverDefinition ff_video = {
 	ff_create
 };
 
-#define option_image_init L"FFMpeg : images|*.jpg;*jpeg;*.png;*.tif;*.tiff;*.jxl;*.webp;*.dpx"
+#define option_image_init L"FFmpeg : images|*.jpg;*jpeg;*.png;*.tif;*.tiff;*.jxl;*.webp;*.dpx"
 std::wstring option_image = option_image_init;
 
 VDXInputDriverDefinition ff_image = {
@@ -185,7 +185,7 @@ VDXInputDriverDefinition ff_image = {
 	ff_create
 };
 
-#define option_audio_init L"FFMpeg : audio|*.wav;*.ogg"
+#define option_audio_init L"FFmpeg : audio|*.wav;*.ogg"
 std::wstring option_audio = option_audio_init;
 
 VDXInputDriverDefinition ff_audio = {
