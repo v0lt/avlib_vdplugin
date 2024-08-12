@@ -1534,7 +1534,7 @@ struct CodecProres : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy(info.szName, L"prores_ks");
-		wcscpy(info.szDescription, L"FFMPEG / Apple ProRes (iCodec Pro)");
+		wcscpy(info.szDescription, L"FFmpeg / Apple ProRes (iCodec Pro)");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
@@ -1703,7 +1703,7 @@ struct CodecH264 : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"x264_test");
-		wcscpy(info.szDescription, L"FFMPEG / x264");
+		wcscpy(info.szDescription, L"FFmpeg / x264");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
@@ -1841,7 +1841,7 @@ struct CodecH265 : public CodecBase {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"x265");
-		wcscpy(info.szDescription, L"FFMPEG / x265");
+		wcscpy(info.szDescription, L"FFmpeg / x265");
 	}
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
@@ -1895,7 +1895,7 @@ struct CodecH265LS : public CodecH265 {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"x265 lossless");
-		wcscpy(info.szDescription, L"FFMPEG / x265 lossless");
+		wcscpy(info.szDescription, L"FFmpeg / x265 lossless");
 	}
 
 	LRESULT configure(HWND parent)
@@ -2032,7 +2032,7 @@ struct CodecVP8 : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"vp8");
-		wcscpy(info.szDescription, L"FFMPEG / VP8");
+		wcscpy(info.szDescription, L"FFmpeg / VP8");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
@@ -2159,7 +2159,7 @@ struct CodecVP9 : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"vp9");
-		wcscpy(info.szDescription, L"FFMPEG / VP9");
+		wcscpy(info.szDescription, L"FFmpeg / VP9");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
