@@ -18,7 +18,7 @@ void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src);
 
 void edit_changed(HWND wnd)
 {
-	WPARAM id = GetWindowLongW(wnd, GWL_ID);
+	WPARAM id = GetWindowLongPtrW(wnd, GWL_ID);
 	SendMessageW(GetParent(wnd), WM_EDIT_CHANGED, id, (LPARAM)wnd);
 }
 

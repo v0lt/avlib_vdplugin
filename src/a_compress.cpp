@@ -464,7 +464,7 @@ void VDFFAudio_aac::InitContext()
 class AConfigAAC : public AConfigBase
 {
 public:
-	VDFFAudio_aac::Config* codec_config;
+	VDFFAudio_aac::Config* codec_config = nullptr;
 
 	AConfigAAC() { dialog_id = IDD_ENC_AAC; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -579,7 +579,7 @@ void VDFFAudio_mp3::InitContext()
 class AConfigMp3 : public AConfigBase
 {
 public:
-	VDFFAudio_mp3::Config* codec_config;
+	VDFFAudio_mp3::Config* codec_config = nullptr;
 
 	AConfigMp3() { dialog_id = IDD_ENC_MP3; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -763,7 +763,7 @@ VDXPluginInfo ff_flacenc_info = {
 class AConfigFlac : public AConfigBase
 {
 public:
-	VDFFAudio_flac::Config* codec_config;
+	VDFFAudio_flac::Config* codec_config = nullptr;
 
 	AConfigFlac() { dialog_id = IDD_ENC_FLAC; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -880,7 +880,7 @@ VDXPluginInfo ff_alacenc_info = {
 class AConfigAlac : public AConfigBase
 {
 public:
-	VDFFAudio_alac::Config* codec_config;
+	VDFFAudio_alac::Config* codec_config = nullptr;
 
 	AConfigAlac() { dialog_id = IDD_ENC_ALAC; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -973,7 +973,7 @@ void VDFFAudio_vorbis::InitContext()
 class AConfigVorbis : public AConfigBase
 {
 public:
-	VDFFAudio_vorbis::Config* codec_config;
+	VDFFAudio_vorbis::Config* codec_config = nullptr;
 
 	AConfigVorbis() { dialog_id = IDD_ENC_VORBIS; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
@@ -1121,7 +1121,7 @@ void VDFFAudio_opus::InitContext()
 class AConfigOpus : public AConfigBase
 {
 public:
-	VDFFAudio_opus::Config* codec_config;
+	VDFFAudio_opus::Config* codec_config = nullptr;
 
 	AConfigOpus() { dialog_id = IDD_ENC_OPUS; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);

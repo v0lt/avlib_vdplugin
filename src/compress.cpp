@@ -481,25 +481,32 @@ struct CodecBase : public CodecClass {
 
 	LRESULT compress_get_format(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout)
 	{
-		BITMAPINFOHEADER* outhdr = &lpbiOutput->bmiHeader;
 		int extra_size = 0;
 		if (ctx) extra_size = (ctx->extradata_size + 1) & ~1;
 
-		if (!lpbiOutput) return sizeof(BITMAPINFOHEADER) + extra_size;
+		if (!lpbiOutput) {
+			return sizeof(BITMAPINFOHEADER) + extra_size;
+		}
 
-		if (layout->format != compress_input_format(0)) return ICERR_BADFORMAT;
+		if (layout->format != compress_input_format(0)) {
+			return ICERR_BADFORMAT;
+		}
 		int iWidth = layout->w;
 		int iHeight = layout->h;
+		if (iWidth <= 0 || iHeight <= 0) {
+			return ICERR_BADFORMAT;
+		}
 
-		if (iWidth <= 0 || iHeight <= 0) return ICERR_BADFORMAT;
-
+		BITMAPINFOHEADER* outhdr = &lpbiOutput->bmiHeader;
 		memset(outhdr, 0, sizeof(BITMAPINFOHEADER));
 		outhdr->biSize = sizeof(BITMAPINFOHEADER);
 		outhdr->biWidth = iWidth;
 		outhdr->biHeight = iHeight;
 		outhdr->biPlanes = 1;
 		outhdr->biBitCount = 32;
-		if (layout->format == nsVDXPixmap::kPixFormat_XRGB64) outhdr->biBitCount = 48;
+		if (layout->format == nsVDXPixmap::kPixFormat_XRGB64) {
+			outhdr->biBitCount = 48;
+		}
 		outhdr->biCompression = codec_tag;
 		outhdr->biSizeImage = iWidth * iHeight * 8;
 		if (ctx) {
@@ -515,21 +522,26 @@ struct CodecBase : public CodecClass {
 
 	LRESULT compress_query(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout)
 	{
-		BITMAPINFOHEADER* outhdr = &lpbiOutput->bmiHeader;
+		if (!lpbiOutput) {
+			return ICERR_OK;
+		}
 
-		if (layout->format != compress_input_format(0)) return ICERR_BADFORMAT;
+		if (layout->format != compress_input_format(0)) {
+			return ICERR_BADFORMAT;
+		}
 		int iWidth = layout->w;
 		int iHeight = layout->h;
-
-		if (iWidth <= 0 || iHeight <= 0) return ICERR_BADFORMAT;
-
-		if (!lpbiOutput) return ICERR_OK;
-
-		if (iWidth != outhdr->biWidth || iHeight != outhdr->biHeight)
+		if (iWidth <= 0 || iHeight <= 0) {
 			return ICERR_BADFORMAT;
+		}
 
-		if (outhdr->biCompression != codec_tag)
+		BITMAPINFOHEADER* outhdr = &lpbiOutput->bmiHeader;
+		if (iWidth != outhdr->biWidth || iHeight != outhdr->biHeight) {
 			return ICERR_BADFORMAT;
+		}
+		if (outhdr->biCompression != codec_tag) {
+			return ICERR_BADFORMAT;
+		}
 
 		return ICERR_OK;
 	}
@@ -2263,15 +2275,17 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		}
 
 		CodecBase* new_codec = nullptr;
-		if (icopen->fccHandler == 0) new_codec = new CodecFFV1;
-		if (icopen->fccHandler == CodecFFV1::tag) new_codec = new CodecFFV1;
-		if (icopen->fccHandler == CodecHUFF::tag) new_codec = new CodecHUFF;
-		if (icopen->fccHandler == CodecProres::tag) new_codec = new CodecProres;
-		if (icopen->fccHandler == CodecVP8::tag) new_codec = new CodecVP8;
-		if (icopen->fccHandler == CodecVP9::tag) new_codec = new CodecVP9;
-		if (icopen->fccHandler == CodecH265::id_tag) new_codec = new CodecH265;
-		if (icopen->fccHandler == CodecH265LS::id_tag) new_codec = new CodecH265LS;
-		if (icopen->fccHandler == CodecH264::tag) new_codec = new CodecH264;
+		switch (icopen->fccHandler) {
+		case 0:
+		case CodecFFV1::tag:      new_codec = new CodecFFV1;   break;
+		case CodecHUFF::tag:      new_codec = new CodecHUFF;   break;
+		case CodecProres::tag:    new_codec = new CodecProres; break;
+		case CodecVP8::tag:       new_codec = new CodecVP8;    break;
+		case CodecVP9::tag:       new_codec = new CodecVP9;    break;
+		case CodecH265::id_tag:   new_codec = new CodecH265;   break;
+		case CodecH265LS::id_tag: new_codec = new CodecH265LS; break;
+		case CodecH264::tag:      new_codec = new CodecH264;   break;
+		}
 		if (new_codec) {
 			if (!new_codec->init()) {
 				delete new_codec;

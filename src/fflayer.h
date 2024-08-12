@@ -37,7 +37,7 @@ class LogoFilter;
 
 class LogoDialog : public VDXVideoFilterDialog {
 public:
-	LogoFilter* filter;
+	LogoFilter* filter = nullptr;
 	LogoParam old_param;
 	IVDXFilterPreview* const ifp;
 
