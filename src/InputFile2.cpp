@@ -297,14 +297,16 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature2(VDXMediaInfo& info, cons
 
 int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName)
 {
-	const wchar_t* p = wcsrchr(fileName, '.');
-	if (p) {
-		std::wstring ext(p);
-		str_tolower(ext);
-		if (ext == L".avs") {
-			// ignore AviSynth scripts by extension
-			// because avformat_open_input can take a very long time to open a file (FFmpegSource2)
-			return kDC_None;
+	if (fileName) {
+		const wchar_t* p = wcsrchr(fileName, L'.');
+		if (p) {
+			std::wstring ext(p);
+			str_tolower(ext);
+			if (ext == L".avs") {
+				// ignore AviSynth scripts by extension
+				// because avformat_open_input can take a very long time to open a file (FFmpegSource2)
+				return kDC_None;
+			}
 		}
 	}
 
