@@ -1249,7 +1249,7 @@ struct CodecFFV1 : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy(info.szName, L"FFV1");
-		wcscpy(info.szDescription, L"FFMPEG FFV1 lossless codec");
+		wcscpy(info.szDescription, L"FFmpeg / FFV1 lossless codec");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
@@ -1412,7 +1412,7 @@ struct CodecHUFF : public CodecBase {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy(info.szName, L"FFVHUFF");
-		wcscpy(info.szDescription, L"FFMPEG Huffyuv lossless codec");
+		wcscpy(info.szDescription, L"FFmpeg / Huffyuv lossless codec");
 	}
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
