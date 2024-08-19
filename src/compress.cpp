@@ -243,8 +243,11 @@ struct CodecBase : public CodecClass {
 	}
 
 	bool init() {
-		if (codec_id != AV_CODEC_ID_NONE) codec = avcodec_find_encoder(codec_id);
-		else codec = avcodec_find_encoder_by_name(codec_name);
+		if (codec_id != AV_CODEC_ID_NONE) {
+			codec = avcodec_find_encoder(codec_id);
+		} else {
+			codec = avcodec_find_encoder_by_name(codec_name);
+		}
 		return codec != 0;
 	}
 
@@ -256,9 +259,13 @@ struct CodecBase : public CodecClass {
 
 	virtual bool load_config(void* data, size_t size) {
 		size_t rsize = config_size();
-		if (size != rsize) return false;
+		if (size != rsize) {
+			return false;
+		}
 		int src_version = *(int*)data;
-		if (src_version != config->version) return false;
+		if (src_version != config->version) {
+			return false;
+		}
 		memcpy(config, data, rsize);
 		return true;
 	}
@@ -988,10 +995,10 @@ void ConfigBase::init_format()
 		"Gray",
 	};
 
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < 9; i++)
-		SendDlgItemMessageA(mhdlg, IDC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
 }
 
 void ConfigBase::adjust_bits()
@@ -1031,18 +1038,18 @@ void ConfigBase::change_format(int sel)
 void ConfigBase::init_bits()
 {
 	int format = codec->config->format;
-	EnableWindow(GetDlgItem(mhdlg, IDC_8_BIT), codec->test_bits(format, 8));
-	EnableWindow(GetDlgItem(mhdlg, IDC_9_BIT), codec->test_bits(format, 9));
-	EnableWindow(GetDlgItem(mhdlg, IDC_10_BIT), codec->test_bits(format, 10));
-	EnableWindow(GetDlgItem(mhdlg, IDC_12_BIT), codec->test_bits(format, 12));
-	EnableWindow(GetDlgItem(mhdlg, IDC_14_BIT), codec->test_bits(format, 14));
-	EnableWindow(GetDlgItem(mhdlg, IDC_16_BIT), codec->test_bits(format, 16));
-	CheckDlgButton(mhdlg, IDC_8_BIT, codec->config->bits == 8 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_9_BIT, codec->config->bits == 9 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_10_BIT, codec->config->bits == 10 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_12_BIT, codec->config->bits == 12 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_14_BIT, codec->config->bits == 14 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_16_BIT, codec->config->bits == 16 ? BST_CHECKED : BST_UNCHECKED);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_8_BIT), codec->test_bits(format, 8));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_9_BIT), codec->test_bits(format, 9));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_10_BIT), codec->test_bits(format, 10));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_12_BIT), codec->test_bits(format, 12));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_14_BIT), codec->test_bits(format, 14));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_16_BIT), codec->test_bits(format, 16));
+	CheckDlgButton(mhdlg, IDC_ENC_8_BIT, codec->config->bits == 8 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_9_BIT, codec->config->bits == 9 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_10_BIT, codec->config->bits == 10 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_12_BIT, codec->config->bits == 12 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_14_BIT, codec->config->bits == 14 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_16_BIT, codec->config->bits == 16 ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void ConfigBase::notify_hide()
@@ -1082,27 +1089,27 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			EndDialog(mhdlg, false);
 			return TRUE;
 
-		case IDC_COLORSPACE:
+		case IDC_ENC_COLORSPACE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				int sel = (int)SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_GETCURSEL, 0, 0);
+				int sel = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_GETCURSEL, 0, 0);
 				change_format(sel);
 				return TRUE;
 			}
 			break;
 
-		case IDC_8_BIT:
-		case IDC_9_BIT:
-		case IDC_10_BIT:
-		case IDC_12_BIT:
-		case IDC_14_BIT:
-		case IDC_16_BIT:
+		case IDC_ENC_8_BIT:
+		case IDC_ENC_9_BIT:
+		case IDC_ENC_10_BIT:
+		case IDC_ENC_12_BIT:
+		case IDC_ENC_14_BIT:
+		case IDC_ENC_16_BIT:
 			notify_hide();
-			if (IsDlgButtonChecked(mhdlg, IDC_8_BIT)) codec->config->bits = 8;
-			if (IsDlgButtonChecked(mhdlg, IDC_9_BIT)) codec->config->bits = 9;
-			if (IsDlgButtonChecked(mhdlg, IDC_10_BIT)) codec->config->bits = 10;
-			if (IsDlgButtonChecked(mhdlg, IDC_12_BIT)) codec->config->bits = 12;
-			if (IsDlgButtonChecked(mhdlg, IDC_14_BIT)) codec->config->bits = 14;
-			if (IsDlgButtonChecked(mhdlg, IDC_16_BIT)) codec->config->bits = 16;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_8_BIT)) codec->config->bits = 8;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_9_BIT)) codec->config->bits = 9;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_10_BIT)) codec->config->bits = 10;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_12_BIT)) codec->config->bits = 12;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_14_BIT)) codec->config->bits = 14;
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_16_BIT)) codec->config->bits = 16;
 			change_bits();
 			break;
 		}
@@ -1134,7 +1141,7 @@ int ffv1_slice_tab[] = { 0,4,6,9,12,16,24,30,36,42 };
 
 class ConfigFFV1 : public ConfigBase {
 public:
-	ConfigFFV1() { dialog_id = IDD_ENC_FFV1; idc_message = IDC_MESSAGE; }
+	ConfigFFV1() { dialog_id = IDD_ENC_FFV1; idc_message = IDC_ENC_MESSAGE; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void apply_level();
 	void init_slices();
@@ -1276,8 +1283,8 @@ void ConfigFFV1::apply_level()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
 
-	EnableWindow(GetDlgItem(mhdlg, IDC_SLICES), config->level >= 3);
-	EnableWindow(GetDlgItem(mhdlg, IDC_SLICECRC), config->level >= 3);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_SLICES), config->level >= 3);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_SLICECRC), config->level >= 3);
 	if (config->level < 3) {
 		config->slice = 0;
 		config->slicecrc = 0;
@@ -1297,21 +1304,21 @@ void ConfigFFV1::init_slices()
 			x = i;
 		}
 	}
-	SendDlgItemMessageW(mhdlg, IDC_SLICES, CB_SETCURSEL, x, 0);
-	CheckDlgButton(mhdlg, IDC_SLICECRC, config->slicecrc == 1 ? BST_CHECKED : BST_UNCHECKED);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_SETCURSEL, x, 0);
+	CheckDlgButton(mhdlg, IDC_ENC_SLICECRC, config->slicecrc == 1 ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void ConfigFFV1::init_coder()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
-	CheckDlgButton(mhdlg, IDC_CODER0, config->coder == 0 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_CODER1, config->coder == 1 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_CODER0, config->coder == 0 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_CODER1, config->coder == 1 ? BST_CHECKED : BST_UNCHECKED);
 }
 
 void ConfigFFV1::change_bits()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
-	EnableWindow(GetDlgItem(mhdlg, IDC_CODER0), config->bits == 8);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_CODER0), config->bits == 8);
 	if (config->bits > 8) config->coder = 1;
 	init_coder();
 	ConfigBase::change_bits();
@@ -1337,14 +1344,14 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		if (config->level == 3) x = 2;
 		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, x, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_SLICES, CB_RESETCONTENT, 0, 0);
-		SendDlgItemMessageW(mhdlg, IDC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
 		for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
 			wchar_t buf[10];
 			swprintf_s(buf, L"%d", ffv1_slice_tab[i]);
-			SendDlgItemMessageW(mhdlg, IDC_SLICES, CB_ADDSTRING, 0, (LPARAM)buf);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)buf);
 		}
-		CheckDlgButton(mhdlg, IDC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(mhdlg, IDC_ENC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
 		apply_level();
 		break;
 	}
@@ -1361,22 +1368,22 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 			break;
-		case IDC_SLICES:
+		case IDC_ENC_SLICES:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				int x = (int)SendDlgItemMessageW(mhdlg, IDC_SLICES, CB_GETCURSEL, 0, 0);
+				int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_GETCURSEL, 0, 0);
 				config->slice = ffv1_slice_tab[x];
 				return TRUE;
 			}
 			break;
-		case IDC_SLICECRC:
-			config->slicecrc = IsDlgButtonChecked(mhdlg, IDC_SLICECRC) ? 1 : 0;
+		case IDC_ENC_SLICECRC:
+			config->slicecrc = IsDlgButtonChecked(mhdlg, IDC_ENC_SLICECRC) ? 1 : 0;
 			break;
-		case IDC_CONTEXT:
-			config->context = IsDlgButtonChecked(mhdlg, IDC_CONTEXT) ? 1 : 0;
+		case IDC_ENC_CONTEXT:
+			config->context = IsDlgButtonChecked(mhdlg, IDC_ENC_CONTEXT) ? 1 : 0;
 			break;
-		case IDC_CODER0:
-		case IDC_CODER1:
-			config->coder = IsDlgButtonChecked(mhdlg, IDC_CODER0) ? 0 : 1;
+		case IDC_ENC_CODER0:
+		case IDC_ENC_CODER1:
+			config->coder = IsDlgButtonChecked(mhdlg, IDC_ENC_CODER0) ? 0 : 1;
 			break;
 		}
 	}
@@ -1387,7 +1394,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 class ConfigHUFF : public ConfigBase {
 public:
-	ConfigHUFF() { dialog_id = IDD_ENC_FFVHUFF; idc_message = IDC_MESSAGE; }
+	ConfigHUFF() { dialog_id = IDD_ENC_FFVHUFF; idc_message = IDC_ENC_MESSAGE; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 };
 
@@ -1578,28 +1585,28 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		init_profile();
 		CodecProres::Config* config = (CodecProres::Config*)codec->config;
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 2);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 31);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->qscale, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 2);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 31);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			CodecProres::Config* config = (CodecProres::Config*)codec->config;
-			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->qscale, false);
+			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 			break;
 		}
 		return false;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_PROFILE:
+		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				CodecProres::Config* config = (CodecProres::Config*)codec->config;
-				int v = (int)SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_GETCURSEL, 0, 0);
+				int v = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
 				if (config->format == CodecBase::format_yuva444) {
 					config->profile = v + 4;
 				}
@@ -1625,10 +1632,10 @@ void ConfigProres::init_profile()
 			"4444XQ",
 		};
 
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_RESETCONTENT, 0, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
 		for (int i = 0; i < 2; i++)
-			SendDlgItemMessageA(mhdlg, IDC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_SETCURSEL, config->profile - 4, 0);
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile - 4, 0);
 
 	}
 	else {
@@ -1641,10 +1648,10 @@ void ConfigProres::init_profile()
 			"4444XQ",
 		};
 
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_RESETCONTENT, 0, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
 		for (int i = 0; i < 6; i++)
-			SendDlgItemMessageA(mhdlg, IDC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_SETCURSEL, config->profile, 0);
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
 	}
 }
 
@@ -1656,13 +1663,13 @@ void ConfigProres::init_format()
 		"YUV 4:4:4 + Alpha",
 	};
 
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < 3; i++)
-		SendDlgItemMessageA(mhdlg, IDC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 1;
 	if (codec->config->format == CodecBase::format_yuva444) sel = 2;
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_SETCURSEL, sel, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigProres::change_format(int sel)
@@ -1678,29 +1685,51 @@ void ConfigProres::change_format(int sel)
 
 class ConfigH264 : public ConfigBase {
 public:
-	ConfigH264() { dialog_id = IDD_ENC_PRORES; }
+	ConfigH264() { dialog_id = IDD_ENC_X264; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	virtual void init_format();
+	virtual void change_format(int sel);
 };
 
 const char* x264_preset_names[] = {
+	"ultrafast",
+	"superfast",
+	"veryfast",
+	"faster",
 	"fast",
 	"medium",
 	"slow",
+	"slower",
+	"veryslow",
+};
+
+const char* x264_tune_names[] = {
+	"film",
+	"animation",
+	"grain",
+	"stillimage",
+	"fastdecode",
+	"zerolatency",
 };
 
 struct CodecH264 : public CodecBase {
 	enum { tag = MKTAG('H', '2', '6', '4') };
 	struct Config : public CodecBase::Config {
 		int preset;
+		int tune;
 		int crf; // 0-51
+		int flags; // reserved
 
 		Config() { set_default(); }
 		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
-			preset = 1;
-			crf = 23;
+			version = 1;
 			format = format_yuv420;
 			bits = 8;
+			preset = 5;
+			tune = 0;
+			crf = 23;
+			flags = 0;
 		}
 	} codec_config;
 
@@ -1716,7 +1745,7 @@ struct CodecH264 : public CodecBase {
 	void getinfo(ICINFO& info) {
 		info.fccHandler = codec_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
-		wcscpy(info.szName, L"x264_test");
+		wcscpy(info.szName, L"x264");
 		wcscpy(info.szDescription, L"FFmpeg / x264");
 	}
 
@@ -1727,9 +1756,13 @@ struct CodecH264 : public CodecBase {
 		ctx->max_b_frames = -1;
 		ctx->bit_rate = -1;
 
-		av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
-		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
-		av_opt_set(ctx->priv_data, "level", "3", 0);
+		int ret = 0;
+		ret = av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
+		if (codec_config.tune) {
+			ret = av_opt_set(ctx->priv_data, "tune", x264_tune_names[codec_config.tune], 0);
+		}
+		ret = av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
+		ret = av_opt_set(ctx->priv_data, "level", "3", 0);
 		return true;
 	}
 
@@ -1747,36 +1780,79 @@ INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 3; i++)
-			SendDlgItemMessageA(mhdlg, IDC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x264_preset_names[i]);
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_SETCURSEL, config->preset, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+		for (int i = 0; i < std::size(x264_preset_names); i++) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x264_preset_names[i]);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+
+		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_RESETCONTENT, 0, 0);
+		for (int i = 0; i < std::size(x264_tune_names); i++) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)x264_tune_names[i]);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
+
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
 		return false;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_PROFILE:
+		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_GETCURSEL, 0, 0);
+				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
+				return TRUE;
+			}
+			break;
+		case IDC_ENC_TUNE:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->tune = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}
 			break;
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
+}
+
+void ConfigH264::init_format()
+{
+	const char* color_names[] = {
+		"RGB",
+		"YUV 4:2:0",
+		"YUV 4:2:2",
+		"YUV 4:4:4",
+	};
+
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	for (int i = 0; i < 4; i++)
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	int sel = 0;
+	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
+	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
+	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
+}
+
+void ConfigH264::change_format(int sel)
+{
+	int format = CodecBase::format_rgb;
+	if (sel == 1) format = CodecBase::format_yuv420;
+	if (sel == 2) format = CodecBase::format_yuv422;
+	if (sel == 3) format = CodecBase::format_yuv444;
+	codec->config->format = format;
+	init_bits();
 }
 
 //---------------------------------------------------------------------------
@@ -1799,7 +1875,6 @@ const char* x265_preset_names[] = {
 	"slow",
 	"slower",
 	"veryslow",
-	"placebo",
 };
 
 const char* x265_tune_names[] = {
@@ -1823,11 +1898,11 @@ struct CodecH265 : public CodecBase {
 		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
 			version = 1;
-			preset = 4;
-			crf = 28;
 			format = format_yuv420;
 			bits = 8;
+			preset = 4;
 			tune = 0;
+			crf = 28;
 			flags = 0;
 		}
 	} codec_config;
@@ -1841,15 +1916,6 @@ struct CodecH265 : public CodecBase {
 	int config_size() { return sizeof(Config); }
 	void reset_config() { codec_config.clear(); }
 
-	virtual bool load_config(void* data, size_t size) {
-		if (size < 4) return false;
-		int src_version = *(int*)data;
-		if (src_version > 1) return false;
-
-		codec_config.set_default();
-		memcpy(&codec_config, data, size);
-		return true;
-	}
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
@@ -1880,9 +1946,12 @@ struct CodecH265 : public CodecBase {
 		ctx->max_b_frames = -1;
 		ctx->bit_rate = -1;
 
-		av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
-		if (codec_config.tune) av_opt_set(ctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
-		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
+		int ret = 0;
+		ret = av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
+		if (codec_config.tune) {
+			ret = av_opt_set(ctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
+		}
+		ret = av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
 		return true;
 	}
 
@@ -1900,8 +1969,10 @@ struct CodecH265LS : public CodecH265 {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		if (!CodecH265::init_ctx(layout)) return false;
-		av_opt_set(ctx->priv_data, "x265-params", "lossless=1", 0);
+		if (!CodecH265::init_ctx(layout)) {
+			return false;
+		}
+		int ret = av_opt_set(ctx->priv_data, "x265-params", "lossless=1", 0);
 		return true;
 	}
 
@@ -1927,42 +1998,44 @@ INT_PTR ConfigH265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 10; i++)
-			SendDlgItemMessageA(mhdlg, IDC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x265_preset_names[i]);
-		SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_SETCURSEL, config->preset, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+		for (int i = 0; i < std::size(x265_preset_names); i++) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x265_preset_names[i]);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_TUNE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 6; i++)
-			SendDlgItemMessageA(mhdlg, IDC_TUNE, CB_ADDSTRING, 0, (LPARAM)x265_tune_names[i]);
-		SendDlgItemMessageW(mhdlg, IDC_TUNE, CB_SETCURSEL, config->tune, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_RESETCONTENT, 0, 0);
+		for (int i = 0; i < std::size(x265_tune_names); i++) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)x265_tune_names[i]);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
 		return false;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_PROFILE:
+		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_PROFILE, CB_GETCURSEL, 0, 0);
+				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}
 			break;
-		case IDC_TUNE:
+		case IDC_ENC_TUNE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				config->tune = (int)SendDlgItemMessageW(mhdlg, IDC_TUNE, CB_GETCURSEL, 0, 0);
+				config->tune = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}
 			break;
@@ -1980,14 +2053,14 @@ void ConfigH265::init_format()
 		"YUV 4:4:4",
 	};
 
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < 4; i++)
-		SendDlgItemMessageA(mhdlg, IDC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_SETCURSEL, sel, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigH265::change_format(int sel)
@@ -2079,17 +2152,17 @@ INT_PTR ConfigVP8::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 4);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 63);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 4);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 63);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
 		return false;
@@ -2104,13 +2177,13 @@ void ConfigVP8::init_format()
 		"YUV 4:2:0 + Alpha",
 	};
 
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < 2; i++)
-		SendDlgItemMessageA(mhdlg, IDC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuva420) sel = 1;
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_SETCURSEL, sel, 0);
-	EnableWindow(GetDlgItem(mhdlg, IDC_COLORSPACE), false); //! need to pass side_data
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), false); //! need to pass side_data
 }
 
 void ConfigVP8::change_format(int sel)
@@ -2204,17 +2277,17 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 63);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 63);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, config->crf, false);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
 		return false;
@@ -2231,14 +2304,14 @@ void ConfigVP9::init_format()
 		"YUV 4:4:4",
 	};
 
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (int i = 0; i < 4; i++)
-		SendDlgItemMessageA(mhdlg, IDC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
-	SendDlgItemMessageW(mhdlg, IDC_COLORSPACE, CB_SETCURSEL, sel, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigVP9::change_format(int sel)
@@ -2308,8 +2381,12 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 	case ICM_GETSTATE:
 	{
 		int rsize = codec->config_size();
-		if (lParam1 == 0) return rsize;
-		if (lParam2 != rsize) return ICERR_BADSIZE;
+		if (lParam1 == 0) {
+			return rsize;
+		}
+		if (lParam2 != rsize) {
+			return ICERR_BADSIZE;
+		}
 		memcpy((void*)lParam1, codec->config, rsize);
 		return ICERR_OK;
 	}
@@ -2319,7 +2396,9 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 			codec->reset_config();
 			return 0;
 		}
-		if (!codec->load_config((void*)lParam1, lParam2)) return 0;
+		if (!codec->load_config((void*)lParam1, lParam2)) {
+			return 0;
+		}
 		return codec->config_size();
 
 	case ICM_GETINFO:

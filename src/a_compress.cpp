@@ -474,22 +474,22 @@ public:
 
 void AConfigAAC::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 288);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 288);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
 	wchar_t buf[80];
 	swprintf_s(buf, L"%d k", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+	SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 	SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate/channel");
 }
 
 void AConfigAAC::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	codec_config->bitrate = x & ~15;
 	wchar_t buf[80];
 	swprintf_s(buf, L"%d k", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+	SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 }
 
 INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -503,7 +503,7 @@ INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
@@ -594,35 +594,35 @@ void AConfigMp3::init_quality()
 		int x = 0;
 		for (; x < rate_count; x++) if (mp3_bitrate[x] == codec_config->bitrate) break;
 
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, rate_count - 1);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, x);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, rate_count - 1);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, x);
 		wchar_t buf[80];
 		swprintf_s(buf, L"%d k", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 9);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 9);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Quality (high-low)");
 	}
 }
 
 void AConfigMp3::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
 		codec_config->bitrate = mp3_bitrate[x];
 		wchar_t buf[80];
 		swprintf_s(buf, L"%d k", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 	}
 	else {
 		codec_config->quality = x;
-		SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 	}
 }
 
@@ -639,7 +639,7 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
@@ -773,17 +773,17 @@ public:
 
 void AConfigFlac::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 12);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 12);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 void AConfigFlac::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -798,7 +798,7 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
@@ -890,17 +890,17 @@ public:
 
 void AConfigAlac::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 2);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 2);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 void AConfigAlac::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -914,7 +914,7 @@ INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
@@ -985,39 +985,39 @@ void AConfigVorbis::init_quality()
 {
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
 		//! WTF is valid bitrate range? neither ffmpeg nor xiph tell anything but it will fail with error otherwise
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 240);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 240);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
 		wchar_t buf[80];
 		swprintf_s(buf, L"%dk", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 110);
-		SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, (100 - codec_config->quality / 10));
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 110);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, (100 - codec_config->quality / 10));
 		wchar_t buf[80];
 		swprintf_s(buf, L"%1.1f", codec_config->quality * 0.01);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Quality (high-low)");
 	}
 }
 
 void AConfigVorbis::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
 		codec_config->bitrate = x;
 		wchar_t buf[80];
 		swprintf_s(buf, L"%dk", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 	}
 	else {
 		codec_config->quality = (100 - x) * 10;
 		wchar_t buf[80];
 		swprintf_s(buf, L"%1.1f", codec_config->quality * 0.01);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_VALUE, buf);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 	}
 }
 
@@ -1033,7 +1033,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
@@ -1138,17 +1138,17 @@ void AConfigOpus::init_quality()
 	SendDlgItemMessageW(mhdlg, IDC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
 	SetDlgItemInt(mhdlg, IDC_BITRATE_VALUE, codec_config->bitrate, false);
 
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
-	SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 void AConfigOpus::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_QUALITY_VALUE, codec_config->quality, false);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
 }
 
 void AConfigOpus::change_bitrate()
@@ -1176,7 +1176,7 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			change_quality();
 			break;
 		}
