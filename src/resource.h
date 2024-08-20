@@ -4,22 +4,23 @@
 //
 #define IDOK                            1
 #define IDCANCEL                        2
-#define IDD_FF_INFO                     102
-#define IDD_FFLAYER                     103
-#define IDB_FFMPEG                      105
-#define IDD_EXPORT_PROGRESS             106
-#define IDD_SYS_INPUT_OPTIONS           107
-#define IDD_INPUT_OPTIONS               108
-#define IDD_FFLAYER_FILE                109
+
+#define IDB_FFMPEG                      101
+#define IDD_INPUT_OPTIONS               102
+#define IDD_SYS_INPUT_OPTIONS           103
+#define IDD_FF_INFO                     104
+#define IDD_EXPORT_PROGRESS             105
+#define IDD_FFLAYER                     106
+#define IDD_FFLAYER_FILE                107
 
 #define IDD_ENC_PRORES                  110
-#define IDD_ENC_VP8                     111
-#define IDD_ENC_VP9                     112
-#define IDD_ENC_X264                    113
-#define IDD_ENC_X265                    114
-#define IDD_ENC_X265LS                  115
-#define IDD_ENC_FFV1                    116
-#define IDD_ENC_FFVHUFF                 117
+#define IDD_ENC_FFV1                    111
+#define IDD_ENC_FFVHUFF                 112
+#define IDD_ENC_VP8                     113
+#define IDD_ENC_VP9                     114
+#define IDD_ENC_X264                    115
+#define IDD_ENC_X265                    116
+#define IDD_ENC_X265LS                  117
 
 #define IDD_ENC_OPUS                    120
 #define IDD_ENC_VORBIS                  121
@@ -73,7 +74,6 @@
 #define IDC_FILE_INFO                   1037
 #define IDC_ANIM_SINGLE                 1038
 #define IDC_ANIM_FOLLOW                 1039
-#define IDC_ENCODER_LABEL               1039
 #define IDC_REF_SINGLE                  1040
 #define IDC_REF_FOLLOW                  1041
 #define IDC_EXPORT_PROGRESS             1041
@@ -88,9 +88,6 @@
 #define IDC_DISABLE_CACHE               1046
 #define IDC_FORCE_THREAD2               1047
 #define IDC_DISABLE_CACHE2              1047
-#define IDC_STEREO                      1049
-#define IDC_CBR                         1050
-#define IDC_QUALITY_LABEL               1051
 #define IDC_SYS_OPTIONS                 1057
 #define IDC_DECODE_FFMPEG               1058
 #define IDC_CACHE_SIZE                  1059
@@ -98,26 +95,32 @@
 #define IDC_CACHE_SPIN                  1060
 #define IDC_THREADING                   1061
 #define IDC_LINK                        1062
-#define IDC_ABR                         1063
-#define IDC_BITRATE_VALUE               1064
 
-#define IDC_ENC_COLORSPACE              1070
-#define IDC_ENC_8_BIT                   1071
-#define IDC_ENC_9_BIT                   1072
-#define IDC_ENC_10_BIT                  1073
-#define IDC_ENC_12_BIT                  1074
-#define IDC_ENC_14_BIT                  1075
-#define IDC_ENC_16_BIT                  1076
-#define IDC_ENC_QUALITY                 1077
-#define IDC_ENC_QUALITY_VALUE           1078
-#define IDC_ENC_PROFILE                 1079
-#define IDC_ENC_TUNE                    1080
-#define IDC_ENC_SLICES                  1081
-#define IDC_ENC_SLICECRC                1082
-#define IDC_ENC_CODER0                  1083
-#define IDC_ENC_CODER1                  1084
-#define IDC_ENC_CONTEXT                 1085
-#define IDC_ENC_MESSAGE                 1086
+#define IDC_ENCODER_LABEL               1070
+#define IDC_ENC_COLORSPACE              1071
+#define IDC_ENC_8_BIT                   1072
+#define IDC_ENC_9_BIT                   1073
+#define IDC_ENC_10_BIT                  1074
+#define IDC_ENC_12_BIT                  1075
+#define IDC_ENC_14_BIT                  1076
+#define IDC_ENC_16_BIT                  1077
+#define IDC_ENC_QUALITY                 1078
+#define IDC_ENC_QUALITY_VALUE           1080
+#define IDC_ENC_PROFILE                 1081
+#define IDC_ENC_TUNE                    1082
+#define IDC_ENC_SLICES                  1083
+#define IDC_ENC_SLICECRC                1084
+#define IDC_ENC_CODER0                  1085
+#define IDC_ENC_CODER1                  1086
+#define IDC_ENC_CONTEXT                 1087
+#define IDC_ENC_MESSAGE                 1088
+
+#define IDC_ENC_QUALITY_LABEL           1090
+#define IDC_ENC_JOINT_STEREO            1091
+#define IDC_ENC_CBR                     1092
+#define IDC_ENC_ABR                     1093
+#define IDC_ENC_BITRATE                 1094
+#define IDC_ENC_BITRATE_VALUE           1095
 
 #define IDC_STATIC                      -1
 

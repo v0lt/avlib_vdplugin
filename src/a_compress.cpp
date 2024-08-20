@@ -480,7 +480,7 @@ void AConfigAAC::init_quality()
 	wchar_t buf[80];
 	swprintf_s(buf, L"%d k", codec_config->bitrate);
 	SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
-	SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate/channel");
+	SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate/channel");
 }
 
 void AConfigAAC::change_quality()
@@ -600,14 +600,14 @@ void AConfigMp3::init_quality()
 		wchar_t buf[80];
 		swprintf_s(buf, L"%d k", codec_config->bitrate);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate");
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 9);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Quality (high-low)");
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality (high-low)");
 	}
 }
 
@@ -633,8 +633,8 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_mp3::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_STEREO, codec_config->flags & VDFFAudio_mp3::flag_jointstereo);
-		CheckDlgButton(mhdlg, IDC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
+		CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->flags & VDFFAudio_mp3::flag_jointstereo);
+		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
 		break;
 	}
 
@@ -647,14 +647,14 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_STEREO:
+		case IDC_ENC_JOINT_STEREO:
 			codec_config->flags &= ~VDFFAudio_mp3::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_STEREO))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO))
 				codec_config->flags |= VDFFAudio_mp3::flag_jointstereo;
 			break;
-		case IDC_CBR:
+		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
 			init_quality();
 			break;
@@ -793,7 +793,7 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_flac::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_STEREO, codec_config->flags & VDFFAudio_flac::flag_jointstereo);
+		CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->flags & VDFFAudio_flac::flag_jointstereo);
 		break;
 	}
 
@@ -806,9 +806,9 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_STEREO:
+		case IDC_ENC_JOINT_STEREO:
 			codec_config->flags &= ~VDFFAudio_flac::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_STEREO))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO))
 				codec_config->flags |= VDFFAudio_flac::flag_jointstereo;
 			break;
 		}
@@ -991,7 +991,7 @@ void AConfigVorbis::init_quality()
 		wchar_t buf[80];
 		swprintf_s(buf, L"%dk", codec_config->bitrate);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Bitrate");
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
@@ -1000,7 +1000,7 @@ void AConfigVorbis::init_quality()
 		wchar_t buf[80];
 		swprintf_s(buf, L"%1.1f", codec_config->quality * 0.01);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
-		SetDlgItemTextW(mhdlg, IDC_QUALITY_LABEL, L"Quality (high-low)");
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality (high-low)");
 	}
 }
 
@@ -1028,7 +1028,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_vorbis::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
+		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
 		break;
 	}
 
@@ -1041,9 +1041,9 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_CBR:
+		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
 			init_quality();
 			break;
@@ -1133,10 +1133,10 @@ public:
 
 void AConfigOpus::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_BITRATE, TBM_SETRANGEMIN, FALSE, 500);
-	SendDlgItemMessageW(mhdlg, IDC_BITRATE, TBM_SETRANGEMAX, TRUE, 256000);
-	SendDlgItemMessageW(mhdlg, IDC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
-	SetDlgItemInt(mhdlg, IDC_BITRATE_VALUE, codec_config->bitrate, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 500);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 256000);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
+	SetDlgItemInt(mhdlg, IDC_ENC_BITRATE_VALUE, codec_config->bitrate, false);
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
@@ -1153,15 +1153,15 @@ void AConfigOpus::change_quality()
 
 void AConfigOpus::change_bitrate()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_BITRATE, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
 	codec_config->bitrate = x;
-	SetDlgItemInt(mhdlg, IDC_BITRATE_VALUE, codec_config->bitrate, false);
+	SetDlgItemInt(mhdlg, IDC_ENC_BITRATE_VALUE, codec_config->bitrate, false);
 }
 
 void AConfigOpus::init_flags()
 {
-	CheckDlgButton(mhdlg, IDC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
-	CheckDlgButton(mhdlg, IDC_ABR, codec_config->flags & VDFFAudio_opus::flag_limited_rate);
+	CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
+	CheckDlgButton(mhdlg, IDC_ENC_ABR, codec_config->flags & VDFFAudio_opus::flag_limited_rate);
 }
 
 INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -1180,7 +1180,7 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_BITRATE)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_BITRATE)) {
 			change_bitrate();
 			break;
 		}
@@ -1188,17 +1188,17 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_CBR:
+		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
 			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
 			init_flags();
 			break;
-		case IDC_ABR:
+		case IDC_ENC_ABR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
 			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ABR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_ABR))
 				codec_config->flags |= VDFFAudio_opus::flag_limited_rate;
 			init_flags();
 			break;
