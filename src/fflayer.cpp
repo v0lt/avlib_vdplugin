@@ -132,7 +132,7 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 		init_rate();
 		init_path();
 		init_buttons();
-		return true;
+		return TRUE;
 	}
 
 	case WM_DESTROY:
@@ -171,12 +171,12 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 			break;
 
 		case IDOK:
-			EndDialog(mhdlg, true);
+			EndDialog(mhdlg, TRUE);
 			return TRUE;
 
 		case IDCANCEL:
 			filter->param = old_param;
-			EndDialog(mhdlg, false);
+			EndDialog(mhdlg, FALSE);
 			return TRUE;
 
 		case IDC_ALPHABLEND:

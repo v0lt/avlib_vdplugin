@@ -164,7 +164,7 @@ INT_PTR ProgressDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		init_bytes(0);
 		SendMessageW(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETRANGE, 0, MAKELPARAM(0, 16384));
 		SetTimer(mhdlg, 1, 500, NULL);
-		return true;
+		return TRUE;
 	}
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {

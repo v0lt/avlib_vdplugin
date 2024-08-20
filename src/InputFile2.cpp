@@ -375,7 +375,7 @@ INT_PTR FileConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_SYS_OPTIONS:
 			StaticConfigureProc((VDXHWND)mhdlg);
-			return true;
+			return TRUE;
 
 		case IDC_DISABLE_CACHE:
 			data->disable_cache = IsDlgButtonChecked(mhdlg, IDC_DISABLE_CACHE) != 0;
@@ -390,7 +390,7 @@ INT_PTR FileConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 	}
-	return false;
+	return FALSE;
 }
 
 bool VDXAPIENTRY VDFFInputFile::PromptForOptions(VDXHWND parent, IVDXInputOptions** r)

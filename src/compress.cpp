@@ -996,8 +996,9 @@ void ConfigBase::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 9; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
 }
 
@@ -1006,7 +1007,7 @@ void ConfigBase::adjust_bits()
 	int format = codec->config->format;
 	int bits = codec->config->bits;
 	if (!codec->test_bits(format, bits)) {
-		int option[6] = {
+		int option[] = {
 			codec->test_bits(format,8) ? 8 : 0,
 			codec->test_bits(format,9) ? 9 : 0,
 			codec->test_bits(format,10) ? 10 : 0,
@@ -1016,7 +1017,7 @@ void ConfigBase::adjust_bits()
 		};
 
 		int bits1 = 0;
-		for (int i = 0; i < 6; i++) {
+		for (int i = 0; i < std::size(option); i++) {
 			int x = option[i];
 			if (x) bits1 = x;
 			if (x >= bits) break;
@@ -1075,18 +1076,18 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		init_format();
 		init_bits();
 		notify_hide();
-		return true;
+		return TRUE;
 	}
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
-			EndDialog(mhdlg, true);
+			EndDialog(mhdlg, TRUE);
 			return TRUE;
 
 		case IDCANCEL:
 			memcpy(codec->config, old_param, codec->config_size());
-			EndDialog(mhdlg, false);
+			EndDialog(mhdlg, FALSE);
 			return TRUE;
 
 		case IDC_ENC_COLORSPACE:
@@ -1299,7 +1300,7 @@ void ConfigFFV1::init_slices()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
 	int x = 0;
-	for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
+	for (int i = 1; i < std::size(ffv1_slice_tab); i++) {
 		if (ffv1_slice_tab[i] == config->slice) {
 			x = i;
 		}
@@ -1337,8 +1338,9 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			"FFV1.3",
 		};
 		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < std::size(v_names); i++) {
 			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_names[i]);
+		}
 		int x = 0;
 		if (config->level == 1) x = 1;
 		if (config->level == 3) x = 2;
@@ -1346,7 +1348,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
-		for (int i = 1; i < sizeof(ffv1_slice_tab) / sizeof(int); i++) {
+		for (int i = 1; i < std::size(ffv1_slice_tab); i++) {
 			wchar_t buf[10];
 			swprintf_s(buf, L"%d", ffv1_slice_tab[i]);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)buf);
@@ -1475,8 +1477,9 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 3; i++)
+		for (int i = 0; i < std::size(pred_names); i++) {
 			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_names[i]);
+		}
 		CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
 		break;
@@ -1599,7 +1602,7 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -1633,8 +1636,9 @@ void ConfigProres::init_profile()
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 2; i++)
+		for (int i = 0; i < std::size(profile_names); i++) {
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile - 4, 0);
 
 	}
@@ -1649,8 +1653,9 @@ void ConfigProres::init_profile()
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < 6; i++)
+		for (int i = 0; i < std::size(profile_names); i++) {
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
 	}
 }
@@ -1664,8 +1669,9 @@ void ConfigProres::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 3; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 1;
 	if (codec->config->format == CodecBase::format_yuva444) sel = 2;
@@ -1756,7 +1762,7 @@ struct CodecH264 : public CodecBase {
 		ctx->max_b_frames = -1;
 		ctx->bit_rate = -1;
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
 		if (codec_config.tune) {
 			ret = av_opt_set(ctx->priv_data, "tune", x264_tune_names[codec_config.tune], 0);
@@ -1805,7 +1811,7 @@ INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -1836,8 +1842,9 @@ void ConfigH264::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
@@ -1946,7 +1953,7 @@ struct CodecH265 : public CodecBase {
 		ctx->max_b_frames = -1;
 		ctx->bit_rate = -1;
 
-		int ret = 0;
+		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
 		if (codec_config.tune) {
 			ret = av_opt_set(ctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
@@ -2023,7 +2030,7 @@ INT_PTR ConfigH265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -2054,8 +2061,9 @@ void ConfigH265::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
@@ -2165,7 +2173,7 @@ INT_PTR ConfigVP8::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
-		return false;
+		return FALSE;
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
@@ -2178,8 +2186,9 @@ void ConfigVP8::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 2; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuva420) sel = 1;
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
@@ -2290,7 +2299,7 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
 			break;
 		}
-		return false;
+		return FALSE;
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
@@ -2305,8 +2314,9 @@ void ConfigVP9::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	}
 	int sel = 0;
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;

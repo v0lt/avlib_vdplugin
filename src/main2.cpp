@@ -129,7 +129,7 @@ INT_PTR ConfigureDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 		}
 	}
-	return false;
+	return FALSE;
 }
 
 bool VDXAPIENTRY StaticConfigureProc(VDXHWND parent)

@@ -419,18 +419,18 @@ INT_PTR AConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 	{
 		SetDlgItemTextA(mhdlg, IDC_ENCODER_LABEL, LIBAVCODEC_IDENT);
-		return true;
+		return TRUE;
 	}
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
-			EndDialog(mhdlg, true);
+			EndDialog(mhdlg, TRUE);
 			return TRUE;
 
 		case IDCANCEL:
 			memcpy(codec->config, old_param, codec->GetConfigSize());
-			EndDialog(mhdlg, false);
+			EndDialog(mhdlg, FALSE);
 			return TRUE;
 		}
 	}
@@ -507,7 +507,7 @@ INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		return false;
+		return FALSE;
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);
 }
@@ -590,12 +590,15 @@ public:
 void AConfigMp3::init_quality()
 {
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
-		int rate_count = sizeof(mp3_bitrate) / sizeof(int);
 		int x = 0;
-		for (; x < rate_count; x++) if (mp3_bitrate[x] == codec_config->bitrate) break;
+		for (; x < std::size(mp3_bitrate); x++) {
+			if (mp3_bitrate[x] == codec_config->bitrate) {
+				break;
+			}
+		}
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, rate_count - 1);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, std::size(mp3_bitrate) - 1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, x);
 		wchar_t buf[80];
 		swprintf_s(buf, L"%d k", codec_config->bitrate);
@@ -643,7 +646,7 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -802,7 +805,7 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -918,7 +921,7 @@ INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		return false;
+		return FALSE;
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);
 }
@@ -1037,7 +1040,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_quality();
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -1184,7 +1187,7 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			change_bitrate();
 			break;
 		}
-		return false;
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
