@@ -1672,7 +1672,7 @@ void ConfigProres::init_format()
 	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
-	int sel = 0;
+	int sel = 0; // format_yuv422
 	if (codec->config->format == CodecBase::format_yuv444) sel = 1;
 	if (codec->config->format == CodecBase::format_yuva444) sel = 2;
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
@@ -1836,7 +1836,6 @@ INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 void ConfigH264::init_format()
 {
 	const char* color_names[] = {
-		"RGB",
 		"YUV 4:2:0",
 		"YUV 4:2:2",
 		"YUV 4:4:4",
@@ -1846,19 +1845,17 @@ void ConfigH264::init_format()
 	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
-	int sel = 0;
-	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
-	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
-	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
+	int sel = 0; // format_yuv420
+	if (codec->config->format == CodecBase::format_yuv422) sel = 1;
+	if (codec->config->format == CodecBase::format_yuv444) sel = 2;
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigH264::change_format(int sel)
 {
-	int format = CodecBase::format_rgb;
-	if (sel == 1) format = CodecBase::format_yuv420;
-	if (sel == 2) format = CodecBase::format_yuv422;
-	if (sel == 3) format = CodecBase::format_yuv444;
+	int format = CodecBase::format_yuv420;
+	if (sel == 1) format = CodecBase::format_yuv422;
+	if (sel == 2) format = CodecBase::format_yuv444;
 	codec->config->format = format;
 	init_bits();
 }
@@ -2065,7 +2062,7 @@ void ConfigH265::init_format()
 	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
-	int sel = 0;
+	int sel = 0; // format_rgb
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
@@ -2190,7 +2187,7 @@ void ConfigVP8::init_format()
 	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
-	int sel = 0;
+	int sel = 0; // format_yuv420
 	if (codec->config->format == CodecBase::format_yuva420) sel = 1;
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), false); //! need to pass side_data
@@ -2318,7 +2315,7 @@ void ConfigVP9::init_format()
 	for (int i = 0; i < std::size(color_names); i++) {
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
-	int sel = 0;
+	int sel = 0; // format_rgb
 	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
 	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
 	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
