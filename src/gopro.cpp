@@ -46,9 +46,9 @@ const char* strs_pt_sharpness[] = { "Low","Medium","High*" };
 const char* strs_pt_ev[] = { "+2","+1.5","+1","+0.5","0","-0.5","-1","-1.5","-2" };
 const char str_unknown[] = "Unknown";
 
-const char* DecipherValue(const char** strarray, int max, int value)
+const char* DecipherValue(const char** strarray, size_t count, unsigned int value)
 {
-	if (value < max)
+	if (value < count)
 		return(strarray[value]);
 	else
 		return str_unknown;
