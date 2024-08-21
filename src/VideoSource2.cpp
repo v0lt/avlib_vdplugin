@@ -1009,7 +1009,6 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	AVPixelFormat perfect_av_fmt = frame_fmt;
 	AVPixelFormat src_fmt = frame_fmt;
 	bool perfect_bitexact = false;
-	bool skip_colorspace = false;
 
 	convertInfo.req_format = opt_format;
 	convertInfo.req_dib = useDIBAlignment;
@@ -1021,6 +1020,18 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	convertInfo.in_yuv = !(desc->flags & AV_PIX_FMT_FLAG_RGB) && desc->nb_components >= 3;
 	convertInfo.in_subs = convertInfo.in_yuv && (desc->log2_chroma_w + desc->log2_chroma_h) > 0;
 	int src_max_value = (1 << desc->comp[0].depth) - 1;
+
+	bool colorspaceBT709 = false; // BT.601
+	switch (m_pCodecCtx->colorspace) {
+	case AVCOL_SPC_UNSPECIFIED:
+		if (m_pCodecCtx->width <= 1024 && m_pCodecCtx->height <= 576) {
+			break;
+		}
+	case AVCOL_SPC_BT709:
+	case AVCOL_SPC_BT2020_NCL: // VirtualDub does not support BT.2020
+	case AVCOL_SPC_BT2020_CL:
+		colorspaceBT709 = true;
+	}
 
 	switch (frame_fmt) {
 	case AV_PIX_FMT_AYUV64LE:
@@ -1362,7 +1373,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		if(fo==AV_FIELD_BB) format = kPixFormat_YUV420ib_Planar;
 	}*/
 
-	if (!skip_colorspace && m_pCodecCtx->color_range == AVCOL_RANGE_JPEG) {
+	if (m_pCodecCtx->color_range == AVCOL_RANGE_JPEG) {
 		switch (format) {
 		case kPixFormat_YUV420_Planar:
 			format = kPixFormat_YUV420_Planar_FR;
@@ -1391,7 +1402,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		}
 	}
 
-	if (!skip_colorspace && m_pCodecCtx->colorspace == AVCOL_SPC_BT709) {
+	if (colorspaceBT709) {
 		switch (format) {
 		case kPixFormat_YUV420_Planar:
 			format = kPixFormat_YUV420_Planar_709;
