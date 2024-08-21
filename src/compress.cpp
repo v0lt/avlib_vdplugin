@@ -1710,6 +1710,7 @@ const char* x264_preset_names[] = {
 };
 
 const char* x264_tune_names[] = {
+	"none",
 	"film",
 	"animation",
 	"grain",
