@@ -206,15 +206,15 @@ void VDFFInputFileInfoDialog::print_video()
 			const char* spc = "?";
 			const char* r = nullptr;
 			if (pVideoCtx->colorspace == AVCOL_SPC_UNSPECIFIED) spc = nullptr;
-			if (pVideoCtx->colorspace == AVCOL_SPC_BT709) spc = "709";
-			if (pVideoCtx->colorspace == AVCOL_SPC_BT470BG) spc = "601";
-			if (pVideoCtx->colorspace == AVCOL_SPC_SMPTE170M) spc = "601";
-			if (pVideoCtx->colorspace == AVCOL_SPC_SMPTE240M) spc = "601";
+			if (pVideoCtx->colorspace == AVCOL_SPC_BT709) spc = "bt.709";
+			if (pVideoCtx->colorspace == AVCOL_SPC_BT470BG) spc = "bt.601";
+			if (pVideoCtx->colorspace == AVCOL_SPC_SMPTE170M) spc = "bt.601";
+			if (pVideoCtx->colorspace == AVCOL_SPC_SMPTE240M) spc = "bt.601";
 			if (pVideoCtx->colorspace == AVCOL_SPC_FCC) spc = "FCC";
-			if (pVideoCtx->colorspace == AVCOL_SPC_YCOCG) spc = "SG16";
-			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_NCL) spc = "2020";
-			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_CL) spc = "2020";
-			if (pVideoCtx->color_range == AVCOL_RANGE_JPEG) r = "FR";
+			if (pVideoCtx->colorspace == AVCOL_SPC_YCOCG) spc = "YCoCg";
+			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_NCL) spc = "bt.2020-ncl";
+			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_CL) spc = "bt.2020-cl";
+			if (pVideoCtx->color_range == AVCOL_RANGE_JPEG) r = "full";
 			if (spc) {
 				strcat(bufA, " (");
 				strcat(bufA, spc);
