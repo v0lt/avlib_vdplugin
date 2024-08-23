@@ -239,7 +239,7 @@ void VDFFInputFileInfoDialog::print_video()
 	}
 	else {
 		VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
-		swprintf_s(buf, L"%u x %u, %.2f fps", pVideoCtx->width, pVideoCtx->height, fr.mNumerator / double(fr.mDenominator));
+		swprintf_s(buf, L"%u x %u, %.3f fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
 		if (segment->video_source->average_fr) {
 			wcscat(buf, L" (average)");
 		}
@@ -377,7 +377,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 			if (skip_useless_meta(info, t)) {
 				continue;
 			}
-			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";;
+			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";
 		}
 	}
 	if (pAudioStream && pAudioStream->metadata) {
@@ -387,7 +387,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 			if (skip_useless_meta(info, t)) {
 				continue;
 			}
-			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";;
+			s += L"    " + A2WStr(t->key) + L" = " + ConverMetaValue(t->value) + L"\r\n";
 		}
 	}
 

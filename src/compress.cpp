@@ -226,7 +226,7 @@ struct CodecBase : public CodecClass {
 	AVRational time_base;
 	int keyint = 1;
 	LONG frame_total;
-	AVColorRange color_range = AVCOL_RANGE_UNSPECIFIED;;
+	AVColorRange color_range = AVCOL_RANGE_UNSPECIFIED;
 	AVColorSpace colorspace  = AVCOL_SPC_UNSPECIFIED;
 
 	AVCodecID codec_id     = AV_CODEC_ID_NONE;
