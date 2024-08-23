@@ -61,30 +61,42 @@ DWORD fcc_toupper(DWORD a)
 	return r;
 }
 
-int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
+IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 {
-	if (nHeaderSize < 64) return -1;
+	if (nHeaderSize < 64) {
+		return IVDXInputFileDriver::kDC_None;
+	}
 	uint8_t* data = (uint8_t*)pHeader;
 	int rsize = nHeaderSize;
 
 	RIFFCHUNK chunk;
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x46464952) return -1; //RIFF
+	if (chunk.fcc != 0x46464952) { //RIFF
+		return IVDXInputFileDriver::kDC_None;
+	}
 	DWORD fmt;
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
-	if (fmt != 0x20495641) return -1; //AVI
+	if (fmt != 0x20495641) { //AVI
+		return IVDXInputFileDriver::kDC_None;
+	}
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x5453494C) return -1; //LIST
+	if (chunk.fcc != 0x5453494C) { //LIST
+		return IVDXInputFileDriver::kDC_None;
+	}
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
-	if (fmt != 0x6C726468) return -1; //hdrl
+	if (fmt != 0x6C726468) { //hdrl
+		return IVDXInputFileDriver::kDC_None;
+	}
 
 	memcpy(&chunk, data, sizeof(chunk));
-	if (chunk.fcc != ckidMAINAVIHEADER) return -1; //avih
+	if (chunk.fcc != ckidMAINAVIHEADER) { //avih
+		return IVDXInputFileDriver::kDC_None;
+	}
 
 	if (rsize < sizeof(AVIMAINHEADER)) {
 		AVIMAINHEADER mh = { 0 };
 		memcpy(&mh, data, rsize); data += rsize; rsize = 0;
-		return 1;
+		return IVDXInputFileDriver::kDC_High;
 	}
 
 	AVIMAINHEADER mh;
@@ -93,18 +105,30 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 	info.height = mh.dwHeight;
 	wcscpy(info.format_name, L"AVI");
 
-	if (rsize < sizeof(chunk)) return 1;
+	if (rsize < sizeof(chunk)) {
+		return IVDXInputFileDriver::kDC_High;
+	}
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x5453494C) return -1; //LIST
+	if (chunk.fcc != 0x5453494C) { //LIST
+		return IVDXInputFileDriver::kDC_None;
+	}
 
-	if (rsize < sizeof(fmt)) return 1;
+	if (rsize < sizeof(fmt)) {
+		return IVDXInputFileDriver::kDC_High;
+	}
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
-	if (fmt != ckidSTREAMLIST) return -1; //strl
+	if (fmt != ckidSTREAMLIST) { //strl
+		return IVDXInputFileDriver::kDC_None;
+	}
 
-	if (rsize < sizeof(AVISTREAMHEADER)) return 1;
+	if (rsize < sizeof(AVISTREAMHEADER)) {
+		return IVDXInputFileDriver::kDC_High;
+	}
 	AVISTREAMHEADER sh;
 	memcpy(&sh, data, sizeof(sh)); data += sizeof(sh); rsize -= sizeof(sh);
-	if (sh.fcc != ckidSTREAMHEADER) return -1; //strh
+	if (sh.fcc != ckidSTREAMHEADER) { //strh
+		return IVDXInputFileDriver::kDC_None;
+	}
 
 	// reject if there is unsupported video codec
 	if (sh.fccType == streamtypeVIDEO) {
@@ -129,41 +153,45 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 
 		// skip internally supported formats
 		if (!config_decode_raw) {
-			if (h1 == MKTAG('U', 'Y', 'V', 'Y')) return 0;
-			if (h1 == MKTAG('Y', 'U', 'Y', 'V')) return 0;
-			if (h1 == MKTAG('Y', 'U', 'Y', '2')) return 0;
-			if (h1 == MKTAG('Y', 'V', '2', '4')) return 0;
-			if (h1 == MKTAG('Y', 'V', '1', '6')) return 0;
-			if (h1 == MKTAG('Y', 'V', '1', '2')) return 0;
-			if (h1 == MKTAG('I', '4', '2', '0')) return 0;
-			if (h1 == MKTAG('I', 'Y', 'U', 'V')) return 0;
-			if (h1 == MKTAG('Y', 'V', 'U', '9')) return 0;
-			if (h1 == MKTAG('Y', '8', ' ', ' ')) return 0;
-			if (h1 == MKTAG('Y', '8', '0', '0')) return 0;
-			if (h1 == MKTAG('H', 'D', 'Y', 'C')) return 0;
-			if (h1 == MKTAG('N', 'V', '1', '2')) return 0;
-			if (h1 == MKTAG('v', '3', '0', '8')) return 0;
-
-			if (h1 == MKTAG('v', '2', '1', '0')) return 0;
-			if (h1 == MKTAG('b', '6', '4', 'a')) return 0;
-			if (h1 == MKTAG('B', 'R', 'A', 64)) return 0;
-			if (h1 == MKTAG('b', '4', '8', 'r')) return 0;
-			if (h1 == MKTAG('P', '0', '1', '0')) return 0;
-			if (h1 == MKTAG('P', '0', '1', '6')) return 0;
-			if (h1 == MKTAG('P', '2', '1', '0')) return 0;
-			if (h1 == MKTAG('P', '2', '1', '6')) return 0;
-			if (h1 == MKTAG('r', '2', '1', '0')) return 0;
-			if (h1 == MKTAG('R', '1', '0', 'k')) return 0;
-			if (h1 == MKTAG('v', '4', '1', '0')) return 0;
-			if (h1 == MKTAG('Y', '4', '1', '0')) return 0;
-			if (h1 == MKTAG('Y', '4', '1', '6')) return 0;
+			switch (h1) {
+			case MKTAG('U', 'Y', 'V', 'Y'):
+			case MKTAG('Y', 'U', 'Y', 'V'):
+			case MKTAG('Y', 'U', 'Y', '2'):
+			case MKTAG('Y', 'V', '2', '4'):
+			case MKTAG('Y', 'V', '1', '6'):
+			case MKTAG('Y', 'V', '1', '2'):
+			case MKTAG('I', '4', '2', '0'):
+			case MKTAG('I', 'Y', 'U', 'V'):
+			case MKTAG('Y', 'V', 'U', '9'):
+			case MKTAG('Y', '8', ' ', ' '):
+			case MKTAG('Y', '8', '0', '0'):
+			case MKTAG('H', 'D', 'Y', 'C'):
+			case MKTAG('N', 'V', '1', '2'):
+			case MKTAG('v', '3', '0', '8'):
+			case MKTAG('v', '2', '1', '0'):
+			case MKTAG('b', '6', '4', 'a'):
+			case MKTAG('B', 'R', 'A',  64):
+			case MKTAG('b', '4', '8', 'r'):
+			case MKTAG('P', '0', '1', '0'):
+			case MKTAG('P', '0', '1', '6'):
+			case MKTAG('P', '2', '1', '0'):
+			case MKTAG('P', '2', '1', '6'):
+			case MKTAG('r', '2', '1', '0'):
+			case MKTAG('R', '1', '0', 'k'):
+			case MKTAG('v', '4', '1', '0'):
+			case MKTAG('Y', '4', '1', '0'):
+			case MKTAG('Y', '4', '1', '6'):
+				return IVDXInputFileDriver::kDC_Moderate;
+			}
 		}
 
 		if (!have_codec) {
 			AVCodecTag* riff_tag = (AVCodecTag*)avformat_get_riff_video_tags();
 			while (riff_tag->id != AV_CODEC_ID_NONE) {
 				if (riff_tag->tag == h1 || fcc_toupper(riff_tag->tag) == fcc_toupper(h1)) {
-					if (riff_tag->id == AV_CODEC_ID_MAGICYUV && check_magic_vfw(h1)) return 0;
+					if (riff_tag->id == AV_CODEC_ID_MAGICYUV && check_magic_vfw(h1)) {
+						return IVDXInputFileDriver::kDC_Moderate;
+					}
 					have_codec = true;
 					break;
 				}
@@ -175,7 +203,9 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 			AVCodecTag* mov_tag = (AVCodecTag*)avformat_get_mov_video_tags();
 			while (mov_tag->id != AV_CODEC_ID_NONE) {
 				if (mov_tag->tag == h1 || fcc_toupper(mov_tag->tag) == fcc_toupper(h1)) {
-					if (mov_tag->id == AV_CODEC_ID_MAGICYUV && check_magic_vfw(h1)) return 0;
+					if (mov_tag->id == AV_CODEC_ID_MAGICYUV && check_magic_vfw(h1)) {
+						return IVDXInputFileDriver::kDC_Moderate;
+					}
 					have_codec = true;
 					break;
 				}
@@ -183,19 +213,25 @@ int detect_avi(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize)
 			}
 		}
 
-		if (!have_codec) return 0;
+		if (!have_codec) {
+			return IVDXInputFileDriver::kDC_Moderate;
+		}
 	}
 
-	return 1;
+	return IVDXInputFileDriver::kDC_High;
 }
 
-int detect_mp4_mov(const void* pHeader, int32_t nHeaderSize, int64_t nFileSize)
+IVDXInputFileDriver::DetectionConfidence detect_mp4_mov(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, int64_t nFileSize)
 {
 	MovParser parser(pHeader, nHeaderSize, nFileSize);
 
 	MovAtom a;
-	if (!parser.read(a)) return -1;
-	if (a.sz > nFileSize && nFileSize > 0) return -1;
+	if (!parser.read(a)) {
+		return IVDXInputFileDriver::kDC_None;
+	}
+	if (a.sz > nFileSize && nFileSize > 0) {
+		return IVDXInputFileDriver::kDC_None;
+	}
 
 	switch (a.t) {
 	case 'wide':
@@ -203,10 +239,11 @@ int detect_mp4_mov(const void* pHeader, int32_t nHeaderSize, int64_t nFileSize)
 	case 'skip':
 	case 'mdat':
 	case 'moov':
-		return 1;
+		wcscpy(info.format_name, L"iso media");
+		return IVDXInputFileDriver::kDC_High;
 	}
 
-	return -1;
+	return IVDXInputFileDriver::kDC_None;
 }
 
 void copyCharToWchar(wchar_t* dst, size_t dst_size, const char* src)
@@ -219,7 +256,7 @@ void copyCharToWchar(wchar_t* dst, size_t dst_size, const char* src)
 	dst[dst_size - 1] = 0;
 }
 
-int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, const wchar_t* fileName)
+IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, const wchar_t* fileName)
 {
 	init_av();
 
@@ -240,11 +277,15 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 	// tga is not detected, score is 0
 	// also tga is detected as mp3 with score 1
 
-	if (score == AVPROBE_SCORE_MAX) return 1;
+	if (score == AVPROBE_SCORE_MAX) {
+		return IVDXInputFileDriver::kDC_Moderate;
+	}
 
 	if (!fileName) {
-		if (score > 0) return 0;
-		return -1;
+		if (score > 0) {
+			return IVDXInputFileDriver::kDC_VeryLow;
+		}
+		return IVDXInputFileDriver::kDC_None;
 	}
 
 	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
@@ -254,22 +295,24 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 	AVFormatContext* ctx = nullptr;
 	int err = 0;
 	err = avformat_open_input(&ctx, ff_path, 0, 0);
-	if (err != 0) return -1;
+	if (err != 0) {
+		return IVDXInputFileDriver::kDC_None;
+	}
 	if (strcmp(ctx->iformat->name, "avisynth") == 0) {
 		// ignore AviSynth scripts
 		avformat_close_input(&ctx);
-		return -1;
+		return IVDXInputFileDriver::kDC_None;
 	}
 	err = avformat_find_stream_info(ctx, 0);
 	if (err < 0) {
 		avformat_close_input(&ctx);
-		return -1;
+		return IVDXInputFileDriver::kDC_None;
 	}
 	fmt = ctx->iformat;
 	copyCharToWchar(info.format_name, std::size(info.format_name), fmt->name);
 	avformat_close_input(&ctx);
 
-	return 1;
+	return IVDXInputFileDriver::kDC_Moderate;
 }
 
 //----------------------------------------------------------------------------------------------
@@ -308,28 +351,19 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 		}
 	}
 
-	int avi_q = detect_avi(info, pHeader, nHeaderSize);
-	if (avi_q == 1) {
-		return kDC_High;
-	}
-	if (avi_q == 0) {
-		return kDC_Moderate;
+	auto detConf = detect_avi(info, pHeader, nHeaderSize);
+	if (detConf >= kDC_Moderate) {
+		return detConf;
 	}
 
-	if (detect_mp4_mov(pHeader, nHeaderSize, nFileSize) == 1) {
-		wcscpy(info.format_name, L"iso media");
-		return kDC_High;
+	detConf = detect_mp4_mov(info, pHeader, nHeaderSize, nFileSize);
+	if (detConf >= kDC_Moderate) {
+		return detConf;
 	}
 
-	int ff_q = detect_ff(info, pHeader, nHeaderSize, fileName);
-	if (ff_q == 1) {
-		return kDC_Moderate;
-	}
-	if (ff_q == 0) {
-		return kDC_VeryLow;
-	}
+	detConf = detect_ff(info, pHeader, nHeaderSize, fileName);
 
-	return kDC_None;
+	return detConf;
 }
 
 bool VDXAPIENTRY VDFFInputFileDriver::CreateInputFile(uint32_t flags, IVDXInputFile** ppFile)
