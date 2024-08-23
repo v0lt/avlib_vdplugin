@@ -209,6 +209,16 @@ int detect_mp4_mov(const void* pHeader, int32_t nHeaderSize, int64_t nFileSize)
 	return -1;
 }
 
+void copyCharToWchar(wchar_t* dst, size_t dst_size, const char* src)
+{
+	for (size_t i = 0; i < dst_size; i++) {
+		int c = src[i];
+		dst[i] = c;
+		if (c == 0) break;
+	}
+	dst[dst_size - 1] = 0;
+}
+
 int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, const wchar_t* fileName)
 {
 	init_av();
@@ -222,12 +232,7 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 	int score = 0;
 	const AVInputFormat* fmt = av_probe_input_format3(&pd, true, &score);
 	if (fmt) {
-		for (int i = 0; i < 100; i++) {
-			int c = fmt->name[i];
-			info.format_name[i] = c;
-			if (c == 0) break;
-		}
-		info.format_name[99] = 0;
+		copyCharToWchar(info.format_name, std::size(info.format_name), fmt->name);
 	}
 	// some examples
 	// mpegts is detected with score 2, can be confused with arbitrary text file
@@ -261,14 +266,7 @@ int detect_ff(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, cons
 		return -1;
 	}
 	fmt = ctx->iformat;
-	for (int i = 0; i < 100; i++) {
-		int c = fmt->name[i];
-		info.format_name[i] = c;
-		if (c == 0) {
-			break;
-		}
-	}
-	info.format_name[99] = 0;
+	copyCharToWchar(info.format_name, std::size(info.format_name), fmt->name);
 	avformat_close_input(&ctx);
 
 	return 1;
