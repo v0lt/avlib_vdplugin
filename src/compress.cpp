@@ -221,11 +221,11 @@ struct CodecBase : public CodecClass {
 			format = format_rgb;
 			bits = 8;
 		}
-	}*config;
+	}*config = nullptr;;
 
-	AVRational time_base;
+	AVRational time_base = {};
 	int keyint = 1;
-	LONG frame_total;
+	LONG frame_total = 0;
 	AVColorRange color_range = AVCOL_RANGE_UNSPECIFIED;
 	AVColorSpace colorspace  = AVCOL_SPC_UNSPECIFIED;
 
@@ -954,7 +954,7 @@ class ConfigBase : public VDXVideoFilterDialog {
 public:
 	CodecBase* codec = nullptr;
 	void* old_param  = nullptr;
-	int dialog_id;
+	int dialog_id    = -1;
 	int idc_message  = -1;
 
 	virtual ~ConfigBase()

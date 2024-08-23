@@ -389,7 +389,7 @@ extern bool VDXAPIENTRY StaticConfigureProc(VDXHWND parent);
 class FileConfigureDialog : public VDXVideoFilterDialog
 {
 public:
-	VDFFInputFileOptions::Data* data;
+	VDFFInputFileOptions::Data* data = nullptr;
 
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	void Show(HWND parent) {

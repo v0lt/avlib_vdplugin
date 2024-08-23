@@ -394,7 +394,7 @@ class AConfigBase : public VDXVideoFilterDialog
 public:
 	VDFFAudio* codec = nullptr;
 	void* old_param  = nullptr;
-	int dialog_id;
+	int dialog_id    = -1;
 
 	virtual ~AConfigBase()
 	{

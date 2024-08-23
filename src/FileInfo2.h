@@ -25,8 +25,8 @@ private:
 	//AVStream* pAudioStream = nullptr;
 
 	VDFFInputFile* segment = nullptr;
-	int segment_pos;
-	int segment_count;
+	int segment_pos   = 0;
+	int segment_count = 0;
 
 	void load_segment();
 	void print_format();

@@ -46,20 +46,20 @@ public:
 
 private:
 	const VDXInputDriverContext& mContext;
-	WAVEFORMATEXTENSIBLE mRawFormat;
+	WAVEFORMATEXTENSIBLE mRawFormat = {};
 
-	VDFFInputFile* m_pSource;
-	AVRational time_base;
-	int64_t start_time;
-	int64_t time_adjust;
+	VDFFInputFile* m_pSource = nullptr;
+	AVRational time_base = {};
+	int64_t start_time   = 0;
+	int64_t time_adjust  = 0;
 
 	AVFormatContext* m_pFormatCtx = nullptr;
 public:
 	AVStream*        m_pStreamCtx = nullptr;
 	AVCodecContext*  m_pCodecCtx  = nullptr;
-	VDXStreamSourceInfo m_streamInfo;
-	int m_streamIndex;
-	int64_t sample_count;
+	VDXStreamSourceInfo m_streamInfo = {};
+	int m_streamIndex    = 0;
+	int64_t sample_count = 0;
 private:
 	SwrContext*      m_pSwrCtx    = nullptr;
 	AVFrame*         m_pFrame     = nullptr;
@@ -84,17 +84,17 @@ private:
 	};
 
 	BufferPage* buffer = nullptr;
-	int buffer_size; // in pages
-	int used_pages;
-	int used_pages_max;
-	int first_page;
-	int last_page;
+	int buffer_size    = 0; // in pages
+	int used_pages     = 0;
+	int used_pages_max = 0;
+	int first_page     = 0;
+	int last_page      = 0;
 
 	int64_t next_sample  = 0;
 	int64_t first_sample = AV_NOPTS_VALUE;
 	int discard_samples  = 0;
-	bool trust_sample_pos;
-	bool use_keys;
+	bool trust_sample_pos = false;;
+	bool use_keys = false;
 
 	struct ReadInfo {
 		int64_t first_sample = -1;
