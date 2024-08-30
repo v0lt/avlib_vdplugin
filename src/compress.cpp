@@ -2363,9 +2363,9 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		case CodecProres::tag:    new_codec = new CodecProres; break;
 		case CodecVP8::tag:       new_codec = new CodecVP8;    break;
 		case CodecVP9::tag:       new_codec = new CodecVP9;    break;
+		case CodecH264::tag:      new_codec = new CodecH264;   break;
 		case CodecH265::id_tag:   new_codec = new CodecH265;   break;
 		case CodecH265LS::id_tag: new_codec = new CodecH265LS; break;
-		case CodecH264::tag:      new_codec = new CodecH264;   break;
 		}
 		if (new_codec) {
 			if (!new_codec->init()) {
@@ -2452,9 +2452,9 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 		if (lParam1 == CodecHUFF::tag) return CodecProres::tag;
 		if (lParam1 == CodecProres::tag) return CodecVP8::tag;
 		if (lParam1 == CodecVP8::tag) return CodecVP9::tag;
-		if (lParam1 == CodecVP9::tag) return CodecH265::id_tag;
+		if (lParam1 == CodecVP9::tag) return CodecH264::tag;
+		if (lParam1 == CodecH264::tag) return CodecH265::id_tag;
 		if (lParam1 == CodecH265::id_tag) return CodecH265LS::id_tag;
-		if (lParam1 == CodecH265LS::id_tag) return CodecH264::tag;
 		return 0;
 
 	case VDICM_GETHANDLER:
