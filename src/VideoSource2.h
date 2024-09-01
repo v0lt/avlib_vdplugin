@@ -2,6 +2,7 @@
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
+#include <vector>
 
 
 extern "C"
@@ -147,8 +148,8 @@ private:
 
 	HANDLE mem         = nullptr;
 
-	BufferPage** frame_array = nullptr;
-	char* frame_type         = nullptr;
+	std::vector<BufferPage*> frame_array;
+	std::vector<char> frame_type;
 	int64_t desired_frame;
 	int required_count;
 	int last_request    = -1;

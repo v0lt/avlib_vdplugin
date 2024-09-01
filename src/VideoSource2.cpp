@@ -55,8 +55,6 @@ VDFFVideoSource::~VDFFVideoSource()
 	}
 	if (mem) CloseHandle(mem);
 	free(buffer);
-	free(frame_array);
-	free(frame_type);
 	free(m_pixmap_data);
 }
 
@@ -414,12 +412,10 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		buffer_reserve = sample_count;
 	}
 
-	int fa_size = sample_count * sizeof(void*);
-	frame_array = (BufferPage**)malloc(fa_size);
-	memset(frame_array, 0, fa_size);
-	int ft_size = sample_count;
-	frame_type = (char*)malloc(ft_size);
-	memset(frame_type, ' ', ft_size);
+	frame_array.clear();
+	frame_array.resize(sample_count);
+	frame_type.clear();
+	frame_type.resize(sample_count, ' ');
 
 	if (m_pCodecCtx->pix_fmt == AV_PIX_FMT_NONE) {
 		// read the first frame to get the correct pix_fmt
@@ -540,7 +536,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	const AVInputFormat* avi_format = av_find_input_format("avi");
 	if (m_pFormatCtx->iformat == avi_format) {
 		avi_drop_index = true;
-		memset(frame_type, 'D', ft_size);
+		std::fill(frame_type.begin(), frame_type.end(), 'D');
 
 		const int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
 
@@ -2242,7 +2238,7 @@ void VDFFVideoSource::free_buffers()
 		page.target = 0;
 	}
 
-	memset(frame_array, 0, sample_count * sizeof(void*));
+	std::fill(frame_array.begin(), frame_array.end(), nullptr);
 
 	dead_range_start = -1;
 	dead_range_end = -1;
