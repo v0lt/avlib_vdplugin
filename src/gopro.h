@@ -2,6 +2,7 @@
 #define gopro_header
 
 #include "mov_mp4.h"
+#include <string>
 
 struct GoproInfo {
 	enum CameraEnum {
@@ -19,7 +20,10 @@ struct GoproInfo {
 		HERO3_White,
 		HERO,
 		HEROP,
-		HEROP_LCD
+		HEROP_LCD,
+		HERO9,
+		HERO10,
+		HERO12,
 	};
 
 	struct CameraType {
@@ -29,16 +33,10 @@ struct GoproInfo {
 		const char ExifModel[25];
 	};
 
-	CameraType* type = nullptr;
-	char* cam_serial = nullptr;
-	char* firmware   = nullptr;
-	char* setup_info = nullptr;
-
-	~GoproInfo() {
-		free(cam_serial);
-		free(firmware);
-		free(setup_info);
-	}
+	const CameraType* type = nullptr;
+	std::string cam_serial;
+	std::string firmware;
+	std::string setup_info;
 
 	void find_info(const wchar_t* name);
 	void get_camera_type();

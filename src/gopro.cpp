@@ -1,32 +1,39 @@
 #include "gopro.h"
 #include <stdio.h>
 #include <iterator>
+#include <cassert>
+#include "Utils.h"
 
 // parts from GoProInfo - HYPOXIC
 
 void GoproInfo::get_camera_type()
 {
-	static CameraType types[] = {
-		{"HD6.01", HERO6_Black, "GoPro HERO6 Black", "HERO6 Black"},
+	static const CameraType types[] = {
+		{"HD6.01", HERO6_Black,   "GoPro HERO6 Black",   "HERO6 Black"},
 		{"HD5.03", HERO5_Session, "GoPro HERO5 Session", "HERO5 Session"},
-		{"HD5.02", HERO5_Black, "GoPro HERO5 Black", "Hero5-Black Edition"},
+		{"HD5.02", HERO5_Black,   "GoPro HERO5 Black",   "Hero5-Black Edition"},
 		{"HDX.01", HERO4_Session, "GoPro HERO4 Session", "Hero4-Session"},
-		{"HD4.02", HERO4_Black, "GoPro HERO4 Black", "Hero4-Black Edition"},
-		{"HD4.01", HERO4_Silver, "GoPro HERO4 Silver", "Hero4-Silver Edition"},
-		{"HD3.11", HERO3P_Black, "GoPro HERO3+ Black", "Hero3Plus-Black Edition"},
+		{"HD4.02", HERO4_Black,   "GoPro HERO4 Black",   "Hero4-Black Edition"},
+		{"HD4.01", HERO4_Silver,  "GoPro HERO4 Silver",  "Hero4-Silver Edition"},
+		{"HD3.11", HERO3P_Black,  "GoPro HERO3+ Black",  "Hero3Plus-Black Edition"},
 		{"HD3.10", HERO3P_Silver, "GoPro HERO3+ Silver", "Hero3Plus-Silver Edition"},
-		{"HD3.03", HERO3_Black, "GoPro HERO3 Black", "Hero3-Black Edition"},
-		{"HD3.02", HERO3_Silver, "GoPro HERO3 Silver", "Hero3-Silver Edition"},
-		{"HD3.01", HERO3_White, "GoPro HERO3 White", "Hero3-White Edition"},
-		{"HD3.20", HERO, "GoPro HERO", ""},
-		{"HD3.21", HEROP_LCD, "GoPro HERO+ LCD", ""},
-		{"HD3.22", HEROP, "GoPro HERO+", ""}
+		{"HD3.03", HERO3_Black,   "GoPro HERO3 Black",   "Hero3-Black Edition"},
+		{"HD3.02", HERO3_Silver,  "GoPro HERO3 Silver",  "Hero3-Silver Edition"},
+		{"HD3.01", HERO3_White,   "GoPro HERO3 White",   "Hero3-White Edition"},
+		{"HD3.20", HERO,          "GoPro HERO",          ""},
+		{"HD3.21", HEROP_LCD,     "GoPro HERO+ LCD",     ""},
+		{"HD3.22", HEROP,         "GoPro HERO+",         ""},
+		{"HD9.01", HERO9,         "GoPro HERO 9",        ""},
+		{"H21.01", HERO10,        "GoPro HERO 10",       ""},
+		{"H23.01", HERO12,        "GoPro HERO 12",       ""},
 	};
 
-	for (int i = 0; i < std::size(types); i++) {
-		if (memcmp(firmware, types[i].Compare, 6) == 0) {
-			type = &types[i];
-			break;
+	if (firmware.length() >= 6) {
+		for (int i = 0; i < std::size(types); i++) {
+			if (memcmp(firmware.data(), types[i].Compare, 6) == 0) {
+				type = &types[i];
+				break;
+			}
 		}
 	}
 }
@@ -54,6 +61,17 @@ const char* DecipherValue(const char** strarray, size_t count, unsigned int valu
 		return str_unknown;
 }
 
+template <typename... Args>
+inline int print_to_string(char* p, const char* fmt, Args&& ...args)
+{
+	int ret = sprintf(p, fmt, args...);
+	assert(ret > 0);
+	if (ret > 0) {
+		return ret;
+	}
+	return 0;
+};
+
 void GoproInfo::get_settings(unsigned int* sett, int n)
 {
 	unsigned int sett1 = sett[0];
@@ -79,39 +97,38 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 	unsigned int protune_wb = (sett2 >> 0x10) & ((1 << 2) - 1);
 	unsigned int broadcast_privacy = (sett2 >> 0x12) & ((1 << 2) - 1);
 
-	char* buf = (char*)malloc(1024);
-	buf[0] = 0;
-	char* p = buf;
+	setup_info.resize(1024);
+	char* p = setup_info.data();
 
 	// 0 video
 	if (mode) {
-		sprintf(p, "\tmode:\t%u\r\n", mode); p += strlen(p);
-		sprintf(p, "\tsubmode:\t%u\r\n", submode); p += strlen(p);
+		p += print_to_string(p, "\tmode:\t%u\r\n", mode);
+		p += print_to_string(p, "\tsubmode:\t%u\r\n", submode);
 	}
 	else {
-		sprintf(p, "\tmode:\t%s\r\n", DecipherValue(strs_vmode, std::size(strs_vmode), submode)); p += strlen(p);
+		p += print_to_string(p, "\tmode:\t%s\r\n", DecipherValue(strs_vmode, std::size(strs_vmode), submode));
 	}
 
-	sprintf(p, "\torientation:\t%s\r\n", DecipherValue(strs_orient, std::size(strs_orient), orientation)); p += strlen(p);
-	sprintf(p, "\tspotmeter:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), spotmeter)); p += strlen(p);
+	p += print_to_string(p, "\torientation:\t%s\r\n", DecipherValue(strs_orient, std::size(strs_orient), orientation));
+	p += print_to_string(p, "\tspotmeter:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), spotmeter));
 
 	if (n > 1) {
-		sprintf(p, "\tfov:\t%s\r\n", DecipherValue(strs_fov, std::size(strs_fov), fov)); p += strlen(p);
+		p += print_to_string(p, "\tfov:\t%s\r\n", DecipherValue(strs_fov, std::size(strs_fov), fov));
 
-		sprintf(p, "\tlowlight:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), lowlight)); p += strlen(p);
-		sprintf(p, "\tsuperview:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), superview)); p += strlen(p);
+		p += print_to_string(p, "\tlowlight:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), lowlight));
+		p += print_to_string(p, "\tsuperview:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), superview));
 	}
 
-	sprintf(p, "\tprotune:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), protune)); p += strlen(p);
+	p += print_to_string(p, "\tprotune:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), protune));
 	if (protune && n > 1) {
-		sprintf(p, "\tprotune_wb:\t%s\r\n", DecipherValue(strs_pt_wb, std::size(strs_pt_wb), protune_wb)); p += strlen(p);
-		sprintf(p, "\tprotune_color:\t%s\r\n", DecipherValue(strs_pt_color, std::size(strs_pt_color), protune_color)); p += strlen(p);
-		sprintf(p, "\tprotune_iso:\t%s\r\n", DecipherValue(strs_pt_iso_video, std::size(strs_pt_iso_video), protune_iso)); p += strlen(p);
-		sprintf(p, "\tprotune_sharpness:\t%s\r\n", DecipherValue(strs_pt_sharpness, std::size(strs_pt_sharpness), protune_sharpness)); p += strlen(p);
-		sprintf(p, "\tprotune_ev:\t%s\r\n", DecipherValue(strs_pt_ev, std::size(strs_pt_ev), protune_ev)); p += strlen(p);
+		p += print_to_string(p, "\tprotune_wb:\t%s\r\n", DecipherValue(strs_pt_wb, std::size(strs_pt_wb), protune_wb));
+		p += print_to_string(p, "\tprotune_color:\t%s\r\n", DecipherValue(strs_pt_color, std::size(strs_pt_color), protune_color));
+		p += print_to_string(p, "\tprotune_iso:\t%s\r\n", DecipherValue(strs_pt_iso_video, std::size(strs_pt_iso_video), protune_iso));
+		p += print_to_string(p, "\tprotune_sharpness:\t%s\r\n", DecipherValue(strs_pt_sharpness, std::size(strs_pt_sharpness), protune_sharpness));
+		p += print_to_string(p, "\tprotune_ev:\t%s\r\n", DecipherValue(strs_pt_ev, std::size(strs_pt_ev), protune_ev));
 	}
 
-	setup_info = (char*)realloc(buf, strlen(buf) + 1);
+	setup_info.erase(p - setup_info.data(), std::string::npos);
 }
 
 void GoproInfo::find_info(const wchar_t* name)
@@ -148,10 +165,10 @@ void GoproInfo::find_info(const wchar_t* name)
 							char* buf;
 							int size;
 							parser.read(c, buf, size);
-							cam_serial = (char*)malloc(size * 2 + 1);
+							cam_serial.resize(size * 2);
 							for (int i = 0; i < size; i++) {
 								unsigned val = ((unsigned char*)buf)[i];
-								sprintf(cam_serial + i * 2, "%02x", val);
+								print_to_string(cam_serial.data() + i * 2, "%02x", val);
 							}
 							free(buf);
 						}
