@@ -159,10 +159,10 @@ void GoproInfo::find_info(const wchar_t* name)
 						switch (c.t) {
 						case 'FIRM':
 						{
-							char* fw;
+							std::unique_ptr<char[]> buf;
 							int size;
-							parser.read(c, fw, size, 1);
-							firmware = fw;
+							parser.read(c, buf, size, 1);
+							firmware = buf.get();
 							get_camera_type();
 						}
 						break;
@@ -172,15 +172,14 @@ void GoproInfo::find_info(const wchar_t* name)
 
 						case 'CAME':
 						{
-							char* buf;
+							std::unique_ptr<char[]> buf;
 							int size;
 							parser.read(c, buf, size);
 							cam_serial.resize(size * 2);
 							for (int i = 0; i < size; i++) {
-								unsigned val = ((unsigned char*)buf)[i];
+								unsigned val = ((unsigned char*)buf.get())[i];
 								print_to_string(cam_serial.data() + i * 2, "%02x", val);
 							}
-							free(buf);
 						}
 						break;
 

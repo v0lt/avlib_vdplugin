@@ -3,6 +3,7 @@
 
 #include "windows.h"
 #include "inttypes.h"
+#include <memory>
 
 struct MovAtom {
 	__int64 sz;
@@ -60,16 +61,16 @@ struct MovParser {
 		return offset < a.pos + a.sz;
 	}
 
-	void read(MovAtom& a, char*& buf, int& size, int extra = 0) {
+	void read(MovAtom& a, std::unique_ptr<char[]>& buf, int& size, const int extra = 0) {
 		size = int(a.sz - a.hsize);
-		buf = (char*)malloc(size + extra);
-		memset(buf + size, 0, extra);
+		buf.reset(new char[size + extra]);
+		memset(buf.get() + size, 0, extra);
 		if (hfile) {
 			unsigned long w;
-			ReadFile(hfile, buf, size, &w, 0);
+			ReadFile(hfile, buf.get(), size, &w, 0);
 		}
 		else {
-			memcpy(buf, p, size); p += size;
+			memcpy(buf.get(), p, size); p += size;
 		}
 		offset += size;
 	}
