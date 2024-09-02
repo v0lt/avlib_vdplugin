@@ -24,13 +24,9 @@ VDFFAudioSource::~VDFFAudioSource()
 	if (m_pFormatCtx) {
 		avformat_close_input(&m_pFormatCtx);
 	}
-	if (buffer) {
-		for (int i = 0; i < buffer_size; i++) {
-			free(buffer[i].p);
-		}
-		free(buffer);
+	for (auto& page : buffer) {
+		free(page.p);
 	}
-
 }
 
 int VDFFAudioSource::AddRef()
@@ -163,9 +159,9 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	last_page      = 0;
 	used_pages     = 0;
 	used_pages_max = 1024;
-	buffer_size = (int)((sample_count + BufferPage::size - 1) / BufferPage::size);
-	buffer = (BufferPage*)malloc(buffer_size * sizeof(BufferPage));
-	memset(buffer, 0, buffer_size * sizeof(BufferPage));
+	size_t buffer_size = (int)((sample_count + BufferPage::size - 1) / BufferPage::size);
+	buffer.clear();
+	buffer.resize(buffer_size);
 
 	next_sample = AV_NOPTS_VALUE;
 	SetTargetFormat(0);
@@ -390,7 +386,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 	int px = (int)(start / BufferPage::size);
 	int s0 = start % BufferPage::size;
 
-	if (px < 0 || px >= buffer_size) {
+	if (px < 0 || px >= buffer.size()) {
 		*lBytesRead = 0;
 		*lSamplesRead = 0;
 		return false;
@@ -511,7 +507,9 @@ void VDFFAudioSource::insert_silence(int64_t start, uint32_t count)
 		int px = (int)(start / BufferPage::size);
 		int s0 = start % BufferPage::size;
 
-		if (px >= buffer_size) break;
+		if (px >= buffer.size()) {
+			break;
+		}
 		alloc_page(px);
 		BufferPage& bp = buffer[px];
 
@@ -533,7 +531,9 @@ void VDFFAudioSource::invalidate(int64_t start, uint32_t count)
 		int px = (int)(start / BufferPage::size);
 		int s0 = start % BufferPage::size;
 
-		if (px >= buffer_size) break;
+		if (px >= buffer.size()) {
+			break;
+		}
 		BufferPage& bp = buffer[px];
 		int n = s0 + count < BufferPage::size ? count : BufferPage::size - s0;
 		if (bp.a0 && s0 <= bp.a0) {
@@ -689,9 +689,9 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 
 void VDFFAudioSource::reset_cache()
 {
-	for (int i = 0; i < buffer_size; i++) {
-		free(buffer[i].p);
-		buffer[i].reset();
+	for (auto& page : buffer) {
+		free(page.p);
+		page = {};
 	}
 
 	first_page  = 0;
@@ -713,7 +713,7 @@ void VDFFAudioSource::alloc_page(int i)
 				if (buffer[last_page].p) {
 					if (buf) break;
 					buf = buffer[last_page].p;
-					buffer[last_page].reset();
+					buffer[last_page] = {};
 					used_pages--;
 				}
 				last_page--;
@@ -723,7 +723,7 @@ void VDFFAudioSource::alloc_page(int i)
 				if (buffer[first_page].p) {
 					if (buf) break;
 					buf = buffer[first_page].p;
-					buffer[first_page].reset();
+					buffer[first_page] = {};
 					used_pages--;
 				}
 				first_page++;

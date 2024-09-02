@@ -2,7 +2,7 @@
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
-#include <windows.h>
+#include <vector>
 #include <mmreg.h>
 #include "stdint.h"
 
@@ -73,18 +73,16 @@ private:
 	struct BufferPage {
 		enum { size = 0x8000 }; // max usable value 0xFFFF
 
-		uint16_t a0, a1; // range a
-		uint16_t b0, b1; // range b
-		uint8_t* p;
+		uint16_t a0 = 0, a1 = 0; // range a
+		uint16_t b0 = 0, b1 = 0; // range b
+		uint8_t* p = nullptr;
 
-		void reset() { a0 = 0; a1 = 0; b0 = 0; b1 = 0; p = 0; }
 		int copy(int s0, uint32_t count, void* dst, int sample_size);
 		int alloc(int s0, uint32_t count, int& changed);
 		int empty(int s0, uint32_t count);
 	};
 
-	BufferPage* buffer = nullptr;
-	int buffer_size    = 0; // in pages
+	std::vector<BufferPage> buffer;
 	int used_pages     = 0;
 	int used_pages_max = 0;
 	int first_page     = 0;
