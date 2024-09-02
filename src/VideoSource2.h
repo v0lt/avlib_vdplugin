@@ -107,7 +107,7 @@ private:
 	SwsContext* m_pSwsCtx = nullptr;
 	VDXPixmapAlpha m_pixmap = {};
 	FilterModPixmapInfo m_pixmap_info = {};
-	uint8_t* m_pixmap_data = nullptr;
+	uint8_t* m_pixmap_data = nullptr; // aligned for FFmpeg
 	int m_pixmap_frame = 0;
 
 public:
@@ -136,7 +136,7 @@ public:
 		int error  = 0;
 		volatile LONG access = 0;
 		void* map_base    = nullptr;
-		uint8_t* pic_data = nullptr;
+		uint8_t* pic_data = nullptr; // aligned for FFmpeg
 	};
 
 	BufferPage* buffer = nullptr;

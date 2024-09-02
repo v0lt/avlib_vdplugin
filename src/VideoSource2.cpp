@@ -14,10 +14,6 @@ const int line_align = 16; // should be ok with any usable filter down the pipel
 extern bool config_force_thread;
 extern float config_cache_size;
 
-uint8_t* align_buf(uint8_t* p)
-{
-	return (uint8_t*)(ptrdiff_t(p + line_align - 1) & ~(line_align - 1));
-}
 
 VDFFVideoSource::VDFFVideoSource(const VDXInputDriverContext& context)
 	:mContext(context)
@@ -55,7 +51,7 @@ VDFFVideoSource::~VDFFVideoSource()
 	}
 	if (mem) CloseHandle(mem);
 	free(buffer);
-	free(m_pixmap_data);
+	av_freep(m_pixmap_data);
 }
 
 int VDFFVideoSource::AddRef()
@@ -917,7 +913,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 	m_pixmap_info.frame_num = targetFrame;
 
 	open_read(page);
-	uint8_t* src = align_buf(page->pic_data);
+	uint8_t* src = page->pic_data;
 
 	if (convertInfo.direct_copy) {
 		set_pixmap_layout(src);
@@ -945,7 +941,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 		pic2.linesize[2] = int(m_pixmap.pitch3);
 		pic2.linesize[3] = int(m_pixmap.pitch4);
 		sws_scale(m_pSwsCtx, pic.data, pic.linesize, 0, h, pic2.data, pic2.linesize);
-		return align_buf(m_pixmap_data);
+		return m_pixmap_data;
 	}
 }
 
@@ -994,17 +990,25 @@ const FilterModPixmapInfo& VDFFVideoSource::GetFrameBufferInfo()
 
 const void* VDFFVideoSource::GetFrameBufferBase()
 {
-	if (m_pixmap_data) return align_buf(m_pixmap_data);
-	if (m_pixmap_frame == -1) return 0;
+	if (m_pixmap_data) {
+		return m_pixmap_data;
+	}
+	if (m_pixmap_frame == -1) {
+		return nullptr;
+	}
 
 	if (m_pixmap_frame >= sample_count) {
 		VDFFVideoSource* v1 = nullptr;
-		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
-		if (!v1) return 0;
+		if (m_pSource->next_segment) {
+			v1 = m_pSource->next_segment->video_source;
+		}
+		if (!v1) {
+			return nullptr;
+		}
 		return v1->GetFrameBufferBase();
 	}
 
-	return align_buf(frame_array[m_pixmap_frame]->pic_data);
+	return frame_array[m_pixmap_frame]->pic_data;
 }
 
 bool VDFFVideoSource::SetTargetFormat(int format, bool useDIBAlignment)
@@ -1574,14 +1578,12 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	}
 
 	if (convertInfo.direct_copy || convertInfo.out_garbage) {
-		free(m_pixmap_data);
-		m_pixmap_data = 0;
-
+		av_freep(m_pixmap_data);
 	}
 	else {
 		uint32_t size = av_image_get_buffer_size(convertInfo.av_fmt, w, h, line_align);
-		m_pixmap_data = (uint8_t*)realloc(m_pixmap_data, size + line_align - 1);
-		set_pixmap_layout(align_buf(m_pixmap_data));
+		m_pixmap_data = (uint8_t*)av_realloc(m_pixmap_data, size);
+		set_pixmap_layout(m_pixmap_data);
 		if (m_pSwsCtx) sws_freeContext(m_pSwsCtx);
 		int flags = 0;
 		if (convertInfo.in_subs) {
@@ -2193,7 +2195,7 @@ int VDFFVideoSource::handle_frame()
 			page->error = BufferPage::err_badformat;
 		}
 		else {
-			uint8_t* dst = align_buf(page->pic_data);
+			uint8_t* dst = page->pic_data;
 			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210)
 				memcpy(dst, m_pFrame->data[0], m_pFrame->linesize[0] * m_pFrame->height);
 			else
@@ -2299,8 +2301,10 @@ void VDFFVideoSource::alloc_page(int pos)
 				r = &buffer[i];
 				r->num = i;
 				if (!mem && !r->pic_data) {
-					r->pic_data = (uint8_t*)malloc(frame_size + line_align - 1);
-					if (!r->pic_data) mContext.mpCallbacks->SetErrorOutOfMemory();
+					r->pic_data = (uint8_t*)av_malloc(frame_size);
+					if (!r->pic_data) {
+						mContext.mpCallbacks->SetErrorOutOfMemory();
+					}
 				}
 				break;
 			}
@@ -2336,10 +2340,11 @@ void VDFFVideoSource::copy_page(int start, int end, BufferPage* p)
 
 void VDFFVideoSource::dealloc_page(BufferPage* p)
 {
-	if (p->map_base)
+	if (p->map_base) {
 		UnmapViewOfFile(p->map_base);
-	else
-		free(p->pic_data);
+	} else {
+		av_freep(p->pic_data);
+	}
 
 	p->map_base = nullptr;
 	p->pic_data = nullptr;
