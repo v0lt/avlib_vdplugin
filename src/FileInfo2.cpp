@@ -419,7 +419,7 @@ void VDFFInputFileInfoDialog::print_performance()
 	while (f1 && f1->video_source) {
 		VDFFVideoSource* v1 = f1->video_source;
 		buf_max += v1->buffer_reserve;
-		for (int i = 0; i < v1->buffer_count; i++) {
+		for (int i = 0; i < v1->buffer.size(); i++) {
 			if (v1->buffer[i].refs) {
 				buf_count++;
 			}

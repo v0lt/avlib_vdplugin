@@ -139,8 +139,7 @@ public:
 		uint8_t* pic_data = nullptr; // aligned for FFmpeg
 	};
 
-	BufferPage* buffer = nullptr;
-	int buffer_count   = 0;
+	std::vector<BufferPage> buffer;
 	int buffer_reserve = 0;
 
 private:

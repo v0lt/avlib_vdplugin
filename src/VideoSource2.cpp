@@ -43,14 +43,13 @@ VDFFVideoSource::~VDFFVideoSource()
 		sws_freeContext(m_pSwsCtx);
 	}
 
-	if (buffer) {
-		for (int i = 0; i < buffer_count; i++) {
-			BufferPage& p = buffer[i];
-			dealloc_page(&p);
-		}
+	for (int i = 0; i < buffer.size(); i++) {
+		BufferPage& p = buffer[i];
+		dealloc_page(&p);
 	}
-	if (mem) CloseHandle(mem);
-	free(buffer);
+	if (mem) {
+		CloseHandle(mem);
+	}
 	av_freep(&m_pixmap_data);
 }
 
@@ -495,9 +494,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	}
 #endif
 
-	buffer = (BufferPage*)malloc(sizeof(BufferPage) * buffer_reserve);
-	memset(buffer, 0, sizeof(BufferPage) * buffer_reserve);
-	buffer_count = buffer_reserve;
+	buffer.resize(buffer_reserve);
 
 	m_streamInfo.mFlags = 0;
 	m_streamInfo.mfccHandler = export_avi_fcc(m_pStreamCtx);
@@ -640,7 +637,7 @@ void VDFFVideoSource::init_format()
 		if (frame_size2 > frame_size) frame_size = frame_size2;
 	}
 	free_buffers();
-	for (int i = 0; i < buffer_count; i++)  {
+	for (int i = 0; i < buffer.size(); i++)  {
 		dealloc_page(&buffer[i]);
 	}
 }
@@ -730,8 +727,12 @@ void VDFFVideoSource::setCacheMode(bool v)
 		// 1 required +1 to handle dups
 		// and somewhere 10 to soften display triple-buffering, filter process-ahead or whatever
 		// (not strictly required but helps to recover from mode switching)
-		if (buffer_max < 16) buffer_max = 16;
-		if (buffer_max > buffer_count) buffer_max = buffer_count;
+		if (buffer_max < 16) {
+			buffer_max = 16;
+		}
+		if (buffer_max > buffer.size()) {
+			buffer_max = (int)buffer.size();
+		}
 		small_buffer_count = buffer_max;
 
 		if (mem && used_frames > buffer_max) {
@@ -2227,7 +2228,7 @@ void VDFFVideoSource::alloc_direct_buffer()
 
 void VDFFVideoSource::free_buffers()
 {
-	for (int i = 0; i < buffer_count; i++) {
+	for (int i = 0; i < buffer.size(); i++) {
 		BufferPage& page = buffer[i];
 		frame_array[page.target] = nullptr;
 		if (page.map_base) {
@@ -2291,12 +2292,16 @@ VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, 
 void VDFFVideoSource::alloc_page(int pos)
 {
 	BufferPage* r = nullptr;
-	int buffer_max = buffer_count;
-	if (m_small_cache_mode) buffer_max = small_buffer_count;
+	int buffer_max = (int)buffer.size();
+	if (m_small_cache_mode) {
+		buffer_max = small_buffer_count;
+	}
 
-	if (used_frames >= buffer_max) r = remove_page(pos);
+	if (used_frames >= buffer_max) {
+		r = remove_page(pos);
+	}
 	if (!r) {
-		for (int i = 0; i < buffer_count; i++) {
+		for (int i = 0; i < buffer.size(); i++) {
 			if (!buffer[i].refs) {
 				r = &buffer[i];
 				r->num = i;
@@ -2357,7 +2362,7 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 	if (!mem) return;
 	if (p->map_base && (p->access & flag)) return;
 
-	for (int i = 0; i < buffer_count; i++) {
+	for (int i = 0; i < buffer.size(); i++) {
 		BufferPage& p1 = buffer[i];
 		if (&p1 == p) continue;
 		if (!p1.map_base) continue;
