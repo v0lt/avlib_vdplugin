@@ -87,17 +87,17 @@ public:
 private:
 	//Internal
 	const VDXInputDriverContext& mContext;
-	VDFFInputFile* m_pSource;
+	VDFFInputFile* m_pSource = nullptr;
 
 	AVFormatContext* m_pFormatCtx = nullptr;
 public:
 	AVStream*        m_pStreamCtx = nullptr;
 	AVCodecContext*  m_pCodecCtx  = nullptr;
-	VDXStreamSourceInfoV3 m_streamInfo;
-	int m_streamIndex;
-	int sample_count;
-	AVRational time_base;
-	int64_t start_time;
+	VDXStreamSourceInfoV3 m_streamInfo = {};
+	int m_streamIndex    = 0;
+	int sample_count     = 0;
+	AVRational time_base = {};
+	int64_t start_time   = 0;
 
 private:
 	void* direct_format   = nullptr;
@@ -105,8 +105,8 @@ private:
 
 	AVFrame*    m_pFrame  = nullptr;
 	SwsContext* m_pSwsCtx = nullptr;
-	VDXPixmapAlpha m_pixmap;
-	FilterModPixmapInfo m_pixmap_info;
+	VDXPixmapAlpha m_pixmap = {};
+	FilterModPixmapInfo m_pixmap_info = {};
 	uint8_t* m_pixmap_data = nullptr;
 	int m_pixmap_frame = 0;
 
@@ -114,14 +114,14 @@ public:
 	struct ConvertInfo {
 		nsVDXPixmap::VDXPixmapFormat req_format = nsVDXPixmap::kPixFormat_Null;
 		nsVDXPixmap::VDXPixmapFormat ext_format = nsVDXPixmap::kPixFormat_Null;
-		bool req_dib;
+		bool req_dib = false;
 
 		AVPixelFormat av_fmt = AV_PIX_FMT_NONE;
-		bool direct_copy;
-		bool in_yuv;
-		bool in_subs;
-		bool out_rgb;
-		bool out_garbage;
+		bool direct_copy = false;
+		bool in_yuv      = false;
+		bool in_subs     = false;
+		bool out_rgb     = false;
+		bool out_garbage = false;
 	} convertInfo;
 
 	struct BufferPage {
@@ -130,13 +130,13 @@ public:
 			err_memory = 2
 		};
 
-		int i;
-		int target;
-		int refs;
-		int error;
-		volatile LONG access;
-		void* map_base;
-		uint8_t* p;
+		int num    = 0;
+		int target = 0;
+		int refs   = 0;
+		int error  = 0;
+		volatile LONG access = 0;
+		void* map_base    = nullptr;
+		uint8_t* pic_data = nullptr;
 	};
 
 	BufferPage* buffer = nullptr;
@@ -150,29 +150,29 @@ private:
 
 	std::vector<BufferPage*> frame_array;
 	std::vector<char> frame_type;
-	int64_t desired_frame;
-	int required_count;
-	int last_request    = -1;
-	int next_frame      = -1;
-	int first_frame;
-	int last_frame;
-	int last_seek_frame = -1;
-	int used_frames;
-	int fw_seek_threshold;
+	int64_t desired_frame = 0;
+	int required_count    = 0;
+	int last_request      = -1;
+	int next_frame        = -1;
+	int first_frame       = 0;
+	int last_frame        = 0;
+	int last_seek_frame   = -1;
+	int used_frames       = 0;
+	int fw_seek_threshold = 0;
 
-	AVPixelFormat frame_fmt;
-	int frame_width;
-	int frame_height;
+	AVPixelFormat frame_fmt = AV_PIX_FMT_NONE;
+	int frame_width  = 0;
+	int frame_height = 0;
 public:
-	int frame_size;
+	int frame_size = 0;
 
-	int keyframe_gap;
+	int keyframe_gap  = 0;
 	int decoded_count = 0;
 
-	bool trust_index;
-	bool sparse_index;
-	bool has_vfr;
-	bool average_fr;
+	bool trust_index  = false;
+	bool sparse_index = false;
+	bool has_vfr      = false;
+	bool average_fr   = false;
 
 private:
 	bool flip_image         = false;
@@ -185,8 +185,8 @@ private:
 	bool m_small_cache_mode = false;
 	bool enable_prefetch    = false;
 	int small_buffer_count  = 0;
-	int64_t dead_range_start;
-	int64_t dead_range_end;
+	int64_t dead_range_start = -1;
+	int64_t dead_range_end   = -1;
 
 	AVPacket* copy_pkt = nullptr;
 

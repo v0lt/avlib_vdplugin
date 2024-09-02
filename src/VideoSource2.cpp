@@ -917,7 +917,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 	m_pixmap_info.frame_num = targetFrame;
 
 	open_read(page);
-	uint8_t* src = align_buf(page->p);
+	uint8_t* src = align_buf(page->pic_data);
 
 	if (convertInfo.direct_copy) {
 		set_pixmap_layout(src);
@@ -1004,7 +1004,7 @@ const void* VDFFVideoSource::GetFrameBufferBase()
 		return v1->GetFrameBufferBase();
 	}
 
-	return align_buf(frame_array[m_pixmap_frame]->p);
+	return align_buf(frame_array[m_pixmap_frame]->pic_data);
 }
 
 bool VDFFVideoSource::SetTargetFormat(int format, bool useDIBAlignment)
@@ -2186,14 +2186,14 @@ int VDFFVideoSource::handle_frame()
 		open_write(page);
 		page->error = 0;
 
-		if (!page->p) {
+		if (!page->pic_data) {
 			page->error = BufferPage::err_memory;
 		}
 		else if (!check_frame_format()) {
 			page->error = BufferPage::err_badformat;
 		}
 		else {
-			uint8_t* dst = align_buf(page->p);
+			uint8_t* dst = align_buf(page->pic_data);
 			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210)
 				memcpy(dst, m_pFrame->data[0], m_pFrame->linesize[0] * m_pFrame->height);
 			else
@@ -2231,7 +2231,7 @@ void VDFFVideoSource::free_buffers()
 		if (page.map_base) {
 			UnmapViewOfFile(page.map_base);
 			page.map_base = nullptr;
-			page.p = nullptr;
+			page.pic_data = nullptr;
 		}
 		page.refs = 0;
 		page.access = 0;
@@ -2297,10 +2297,10 @@ void VDFFVideoSource::alloc_page(int pos)
 		for (int i = 0; i < buffer_count; i++) {
 			if (!buffer[i].refs) {
 				r = &buffer[i];
-				r->i = i;
-				if (!mem && !r->p) {
-					r->p = (uint8_t*)malloc(frame_size + line_align - 1);
-					if (!r->p) mContext.mpCallbacks->SetErrorOutOfMemory();
+				r->num = i;
+				if (!mem && !r->pic_data) {
+					r->pic_data = (uint8_t*)malloc(frame_size + line_align - 1);
+					if (!r->pic_data) mContext.mpCallbacks->SetErrorOutOfMemory();
 				}
 				break;
 			}
@@ -2339,10 +2339,10 @@ void VDFFVideoSource::dealloc_page(BufferPage* p)
 	if (p->map_base)
 		UnmapViewOfFile(p->map_base);
 	else
-		free(p->p);
+		free(p->pic_data);
 
 	p->map_base = nullptr;
-	p->p = nullptr;
+	p->pic_data = nullptr;
 	p->error = 0;
 	p->access = 0;
 }
@@ -2364,7 +2364,7 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 					if (!access2) {
 						UnmapViewOfFile(p1.map_base);
 						p1.map_base = nullptr;
-						p1.p = nullptr;
+						p1.pic_data = nullptr;
 					}
 					InterlockedExchange(&p1.access, access2);
 					break;
@@ -2378,13 +2378,13 @@ void VDFFVideoSource::open_page(BufferPage* p, int flag)
 		int access0 = p->access & 3;
 		if (InterlockedCompareExchange(&p->access, 4, access0) == access0) {
 			if (!p->map_base) {
-				uint64_t pos = uint64_t(frame_size) * p->i;
+				uint64_t pos = uint64_t(frame_size) * p->num;
 				uint64_t pos0 = pos & ~0xFFFF;
 				uint64_t pos1 = (pos + frame_size + 0xFFFF) & ~0xFFFF;
 
 				p->map_base = MapViewOfFile(mem, FILE_MAP_WRITE, pos0 >> 32, (DWORD)pos0, (SIZE_T)(pos1 - pos0));
 				if (p->map_base) {
-					p->p = (uint8_t*)(ptrdiff_t(p->map_base) + pos - pos0);
+					p->pic_data = (uint8_t*)(ptrdiff_t(p->map_base) + pos - pos0);
 				}
 				else {
 					mContext.mpCallbacks->SetErrorOutOfMemory();
