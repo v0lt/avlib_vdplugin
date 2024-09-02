@@ -51,7 +51,7 @@ VDFFVideoSource::~VDFFVideoSource()
 	}
 	if (mem) CloseHandle(mem);
 	free(buffer);
-	av_freep(m_pixmap_data);
+	av_freep(&m_pixmap_data);
 }
 
 int VDFFVideoSource::AddRef()
@@ -1578,7 +1578,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	}
 
 	if (convertInfo.direct_copy || convertInfo.out_garbage) {
-		av_freep(m_pixmap_data);
+		av_freep(&m_pixmap_data);
 	}
 	else {
 		uint32_t size = av_image_get_buffer_size(convertInfo.av_fmt, w, h, line_align);
@@ -2343,7 +2343,7 @@ void VDFFVideoSource::dealloc_page(BufferPage* p)
 	if (p->map_base) {
 		UnmapViewOfFile(p->map_base);
 	} else {
-		av_freep(p->pic_data);
+		av_freep(&p->pic_data);
 	}
 
 	p->map_base = nullptr;
