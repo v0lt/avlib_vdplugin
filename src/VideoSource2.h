@@ -3,6 +3,7 @@
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
 #include <vector>
+#include <memory>
 
 
 extern "C"
@@ -100,7 +101,7 @@ public:
 	int64_t start_time   = 0;
 
 private:
-	void* direct_format   = nullptr;
+	std::unique_ptr<uint8_t[]> direct_format;
 	int direct_format_len = 0;
 
 	AVFrame*    m_pFrame  = nullptr;
