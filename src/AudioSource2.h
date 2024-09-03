@@ -75,7 +75,7 @@ private:
 
 		uint16_t a0 = 0, a1 = 0; // range a
 		uint16_t b0 = 0, b1 = 0; // range b
-		uint8_t* p = nullptr;
+		uint8_t* aud_data = nullptr;
 
 		int copy(int s0, uint32_t count, void* dst, int sample_size);
 		int alloc(int s0, uint32_t count, int& changed);

@@ -25,7 +25,7 @@ VDFFAudioSource::~VDFFAudioSource()
 		avformat_close_input(&m_pFormatCtx);
 	}
 	for (auto& page : buffer) {
-		free(page.p);
+		free(page.aud_data);
 	}
 }
 
@@ -516,7 +516,7 @@ void VDFFAudioSource::insert_silence(int64_t start, uint32_t count)
 		int changed = 0;
 		int n = bp.alloc(s0, count, changed);
 		if (changed) {
-			uint8_t* dst = bp.p + s0 * mRawFormat.Format.nBlockAlign;
+			uint8_t* dst = bp.aud_data + s0 * mRawFormat.Format.nBlockAlign;
 			write_silence(dst, n);
 		}
 
@@ -662,7 +662,7 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 			int changed = 0;
 			int n = bp.alloc(s0, count, changed);
 			if (changed) {
-				uint8_t* dst = bp.p + s0 * mRawFormat.Format.nBlockAlign;
+				uint8_t* dst = bp.aud_data + s0 * mRawFormat.Format.nBlockAlign;
 				const uint8_t* src[32];
 				for (int i = 0; i < m_pFrame->ch_layout.nb_channels; i++) {
 					src[i] = m_pFrame->extended_data[i] + src_pos * src_linesize;
@@ -690,7 +690,7 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 void VDFFAudioSource::reset_cache()
 {
 	for (auto& page : buffer) {
-		free(page.p);
+		free(page.aud_data);
 		page = {};
 	}
 
@@ -703,26 +703,31 @@ void VDFFAudioSource::reset_cache()
 void VDFFAudioSource::alloc_page(int i)
 {
 	BufferPage& bp = buffer[i];
-	if (bp.p) return;
+	if (bp.aud_data) {
+		return;
+	}
 
-	uint8_t* buf = nullptr;
+	uint8_t* data = nullptr;
 
 	if (used_pages > used_pages_max) {
 		while (1) {
 			if (last_page > i) {
-				if (buffer[last_page].p) {
-					if (buf) break;
-					buf = buffer[last_page].p;
+				if (buffer[last_page].aud_data) {
+					if (data) {
+						break;
+					}
+					data = buffer[last_page].aud_data;
 					buffer[last_page] = {};
 					used_pages--;
 				}
 				last_page--;
-
 			}
 			else if (first_page < i) {
-				if (buffer[first_page].p) {
-					if (buf) break;
-					buf = buffer[first_page].p;
+				if (buffer[first_page].aud_data) {
+					if (data) {
+						break;
+					}
+					data = buffer[first_page].aud_data;
 					buffer[first_page] = {};
 					used_pages--;
 				}
@@ -731,13 +736,18 @@ void VDFFAudioSource::alloc_page(int i)
 		}
 	}
 
-	if (!buf) {
-		buf = (uint8_t*)malloc(BufferPage::size * mRawFormat.Format.nBlockAlign);
+	if (data) {
+		bp.aud_data = data;
+	} else {
+		bp.aud_data = (uint8_t*)malloc(BufferPage::size * mRawFormat.Format.nBlockAlign);
 	}
 
-	bp.p = buf;
-	if (i < first_page) first_page = i;
-	if (i > last_page) last_page = i;
+	if (i < first_page) {
+		first_page = i;
+	}
+	if (i > last_page) {
+		last_page = i;
+	}
 	used_pages++;
 }
 
@@ -746,13 +756,13 @@ int VDFFAudioSource::BufferPage::copy(int s0, uint32_t count, void* dst, int sam
 	if (a0 <= s0 && a1 > s0) {
 		// copy from range a
 		int n = s0 + count < a1 ? count : a1 - s0;
-		memcpy(dst, p + s0 * sample_size, n * sample_size);
+		memcpy(dst, aud_data + s0 * sample_size, n * sample_size);
 		return n;
 	}
 	if (b0 <= s0 && b1 > s0) {
 		// copy from range b
 		int n = s0 + count < b1 ? count : b1 - s0;
-		memcpy(dst, p + s0 * sample_size, n * sample_size);
+		memcpy(dst, aud_data + s0 * sample_size, n * sample_size);
 		return n;
 	}
 	return 0;
