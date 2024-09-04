@@ -234,13 +234,13 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 
 	av_samples_get_buffer_size(&src_linesize, m_pCodecCtx->ch_layout.nb_channels, 1, m_pCodecCtx->sample_fmt, 1);
 
-	mRawFormat.Format.wFormatTag = WAVE_FORMAT_PCM;
-	mRawFormat.Format.nChannels = av_popcount64(out_layout);
-	mRawFormat.Format.nSamplesPerSec = m_pCodecCtx->sample_rate;
-	mRawFormat.Format.wBitsPerSample = av_get_bytes_per_sample(out_fmt) * 8;
+	mRawFormat.Format.wFormatTag      = WAVE_FORMAT_PCM;
+	mRawFormat.Format.nChannels       = av_popcount64(out_layout);
+	mRawFormat.Format.nSamplesPerSec  = m_pCodecCtx->sample_rate;
+	mRawFormat.Format.wBitsPerSample  = av_get_bytes_per_sample(out_fmt) * 8;
 	mRawFormat.Format.nAvgBytesPerSec = mRawFormat.Format.nSamplesPerSec * mRawFormat.Format.nChannels * mRawFormat.Format.wBitsPerSample / 8;
-	mRawFormat.Format.nBlockAlign = mRawFormat.Format.nChannels * mRawFormat.Format.wBitsPerSample / 8;
-	mRawFormat.Format.cbSize = 0;
+	mRawFormat.Format.nBlockAlign     = mRawFormat.Format.nChannels * mRawFormat.Format.wBitsPerSample / 8;
+	mRawFormat.Format.cbSize          = 0;
 
 	if (mRawFormat.Format.wBitsPerSample > 16 || mRawFormat.Format.nChannels > 2) {
 		mRawFormat.Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;

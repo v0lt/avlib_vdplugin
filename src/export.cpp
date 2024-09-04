@@ -236,10 +236,10 @@ void ProgressDialog::check()
 
 	dwLastTime = dwTime;
 
-	while (PeekMessage(&msg, 0, 0, 0, PM_REMOVE)) {
-		if (!IsDialogMessage(mhdlg, &msg)) {
+	while (PeekMessageW(&msg, 0, 0, 0, PM_REMOVE)) {
+		if (!IsDialogMessageW(mhdlg, &msg)) {
 			TranslateMessage(&msg);
-			DispatchMessage(&msg);
+			DispatchMessageW(&msg);
 		}
 	}
 }

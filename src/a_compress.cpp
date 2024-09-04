@@ -118,16 +118,16 @@ cleanup:
 		// make our private descriptor
 		out_format_size = sizeof(WAVEFORMATEX_VDFF) + ctx->extradata_size;
 		out_format = (WAVEFORMATEXTENSIBLE*)malloc(out_format_size);
-		out_format->Format.wFormatTag = WAVE_FORMAT_EXTENSIBLE;
-		out_format->Format.nChannels = ctx->ch_layout.nb_channels;
-		out_format->Format.nSamplesPerSec = ctx->sample_rate;
-		out_format->Format.nAvgBytesPerSec = (DWORD)(ctx->bit_rate / 8);
-		out_format->Format.nBlockAlign = ctx->block_align;
-		out_format->Format.wBitsPerSample = ctx->bits_per_coded_sample;
-		out_format->Format.cbSize = WORD(out_format_size - sizeof(WAVEFORMATEX));
+		out_format->Format.wFormatTag        = WAVE_FORMAT_EXTENSIBLE;
+		out_format->Format.nChannels         = ctx->ch_layout.nb_channels;
+		out_format->Format.nSamplesPerSec    = ctx->sample_rate;
+		out_format->Format.nAvgBytesPerSec   = (DWORD)(ctx->bit_rate / 8);
+		out_format->Format.nBlockAlign       = ctx->block_align;
+		out_format->Format.wBitsPerSample    = ctx->bits_per_coded_sample;
+		out_format->Format.cbSize            = WORD(out_format_size - sizeof(WAVEFORMATEX));
 		out_format->Samples.wSamplesPerBlock = ctx->frame_size;
-		out_format->dwChannelMask = 0;
-		out_format->SubFormat = KSDATAFORMAT_SUBTYPE_VDFF;
+		out_format->dwChannelMask            = 0;
+		out_format->SubFormat                = KSDATAFORMAT_SUBTYPE_VDFF;
 
 		WAVEFORMATEX_VDFF* ff = (WAVEFORMATEX_VDFF*)out_format;
 		ff->codec_id = ctx->codec_id;
