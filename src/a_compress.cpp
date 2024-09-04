@@ -393,20 +393,20 @@ class AConfigBase : public VDXVideoFilterDialog
 {
 public:
 	VDFFAudio* codec = nullptr;
-	void* old_param  = nullptr;
+	std::unique_ptr<uint8_t> old_param;
+
 	int dialog_id    = -1;
 
 	virtual ~AConfigBase()
 	{
-		free(old_param);
 	}
 
 	void Show(HWND parent, VDFFAudio* codec)
 	{
 		this->codec = codec;
 		size_t rsize = codec->GetConfigSize();
-		old_param = malloc(rsize);
-		memcpy(old_param, codec->config, rsize);
+		old_param.reset(new uint8_t[rsize]);
+		memcpy(old_param.get(), codec->config, rsize);
 		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(dialog_id), parent);
 	}
 
@@ -429,7 +429,7 @@ INT_PTR AConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 
 		case IDCANCEL:
-			memcpy(codec->config, old_param, codec->GetConfigSize());
+			memcpy(codec->config, old_param.get(), codec->GetConfigSize());
 			EndDialog(mhdlg, FALSE);
 			return TRUE;
 		}

@@ -953,21 +953,20 @@ struct CodecBase : public CodecClass {
 class ConfigBase : public VDXVideoFilterDialog {
 public:
 	CodecBase* codec = nullptr;
-	void* old_param  = nullptr;
+	std::unique_ptr<uint8_t> old_param;
 	int dialog_id    = -1;
 	int idc_message  = -1;
 
 	virtual ~ConfigBase()
 	{
-		free(old_param);
 	}
 
 	void Show(HWND parent, CodecBase* codec)
 	{
 		this->codec = codec;
 		int rsize = codec->config_size();
-		old_param = malloc(rsize);
-		memcpy(old_param, codec->config, rsize);
+		old_param.reset(new uint8_t[rsize]);
+		memcpy(old_param.get(), codec->config, rsize);
 		VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(dialog_id), parent);
 	}
 
@@ -1086,7 +1085,7 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			return TRUE;
 
 		case IDCANCEL:
-			memcpy(codec->config, old_param, codec->config_size());
+			memcpy(codec->config, old_param.get(), codec->config_size());
 			EndDialog(mhdlg, FALSE);
 			return TRUE;
 
