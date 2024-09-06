@@ -393,7 +393,7 @@ class AConfigBase : public VDXVideoFilterDialog
 {
 public:
 	VDFFAudio* codec = nullptr;
-	std::unique_ptr<uint8_t> old_param;
+	std::unique_ptr<uint8_t[]> old_param;
 
 	int dialog_id    = -1;
 

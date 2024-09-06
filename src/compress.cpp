@@ -953,7 +953,7 @@ struct CodecBase : public CodecClass {
 class ConfigBase : public VDXVideoFilterDialog {
 public:
 	CodecBase* codec = nullptr;
-	std::unique_ptr<uint8_t> old_param;
+	std::unique_ptr<uint8_t[]> old_param;
 	int dialog_id    = -1;
 	int idc_message  = -1;
 
