@@ -46,7 +46,7 @@ bool logoOpenImage(HWND hwnd, wchar_t* path, int max_path) {
 	wchar_t szFile[MAX_PATH];
 
 	if (path)
-		wcscpy(szFile, path);
+		wcscpy_s(szFile, path);
 	else
 		szFile[0] = 0;
 
@@ -287,7 +287,7 @@ bool LogoDialog::modify_path()
 	wchar_t buf[MAX_PATH];
 	GetDlgItemTextW(mhdlg, IDC_LOGOFILE, buf, MAX_PATH);
 	if (wcscmp(buf, filter->param.path) != 0) {
-		wcscpy(filter->param.path, buf);
+		wcscpy_s(filter->param.path, buf);
 		return true;
 	}
 	return false;
@@ -395,7 +395,7 @@ void LogoFilter::ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* 
 	wchar_t buf[MAX_PATH];
 	utf8_to_widechar(buf, MAX_PATH, *argv[3].asString());
 	if (wcscmp(buf, param.path) != 0) {
-		wcscpy(param.path, buf);
+		wcscpy_s(param.path, buf);
 		file_dirty = true;
 	}
 }

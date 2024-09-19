@@ -83,7 +83,7 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	wchar_t szFile[MAX_PATH];
 
 	if (path)
-		wcscpy(szFile, path);
+		wcscpy_s(szFile, path);
 	else
 		szFile[0] = 0;
 
@@ -257,11 +257,11 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		wchar_t* ext0 = wcsrchr(path, '.');
 		wchar_t path2[MAX_PATH];
 		if (ext0) {
-			wcsncpy(path2, path, ext0 - path);
+			wcsncpy_s(path2, path, ext0 - path);
 			path2[ext0 - path] = 0;
 		}
 		else {
-			wcscpy(path2, path);
+			wcscpy_s(path2, path);
 		}
 		wcscat(path2, L"-01");
 		if (ext0) wcscat(path2, ext0);
@@ -450,7 +450,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			char buf[1024];
 			char errstr[AV_ERROR_MAX_STRING_SIZE];
 			av_strerror(err, errstr, sizeof(errstr));
-			strcpy(buf, "Operation failed.\nInternal error (FFMPEG): ");
+			strcpy_s(buf, "Operation failed.\nInternal error (FFMPEG): ");
 			strcat(buf, errstr);
 			MessageBoxA(progress.getHwnd(), buf, "Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
@@ -480,7 +480,7 @@ void FFOutputFile::av_error(int err)
 	char buf[1024];
 	char errstr[AV_ERROR_MAX_STRING_SIZE];
 	av_strerror(err, errstr, sizeof(errstr));
-	strcpy(buf, "Internal error (FFMPEG): ");
+	strcpy_s(buf, "Internal error (FFMPEG): ");
 	strcat(buf, errstr);
 	mContext.mpCallbacks->SetError(buf);
 }

@@ -103,7 +103,7 @@ IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const vo
 	memcpy(&mh, data, sizeof(mh)); data += sizeof(mh); rsize -= sizeof(mh);
 	info.width = mh.dwWidth;
 	info.height = mh.dwHeight;
-	wcscpy(info.format_name, L"AVI");
+	wcscpy_s(info.format_name, L"AVI");
 
 	if (rsize < sizeof(chunk)) {
 		return IVDXInputFileDriver::kDC_High;
@@ -239,7 +239,7 @@ IVDXInputFileDriver::DetectionConfidence detect_mp4_mov(VDXMediaInfo& info, cons
 	case 'skip':
 	case 'mdat':
 	case 'moov':
-		wcscpy(info.format_name, L"iso media");
+		wcscpy_s(info.format_name, L"iso media");
 		return IVDXInputFileDriver::kDC_High;
 	}
 
@@ -495,7 +495,7 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 
 	if (cfg_frame_buffers < 1) cfg_frame_buffers = 1;
 
-	wcscpy(path, szFile);
+	wcscpy_s(path, szFile);
 
 	init_av();
 	//! this context instance is granted to video stream: wasted in audio-only mode
@@ -521,7 +521,7 @@ void VDFFInputFile::do_auto_append(const wchar_t* szFile)
 		int x = 1;
 		while (1) {
 			wchar_t buf[MAX_PATH + 128];
-			wcsncpy(buf, szFile, ext - szFile - 3); buf[ext - szFile - 3] = 0;
+			wcsncpy_s(buf, szFile, ext - szFile - 3); buf[ext - szFile - 3] = 0;
 			wchar_t buf1[32];
 			swprintf_s(buf1, L".%02d", x);
 			wcscat(buf, buf1);
