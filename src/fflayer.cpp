@@ -86,7 +86,7 @@ bool logoOpenImage(HWND hwnd, wchar_t* path, int max_path) {
 	}
 
 	if (result) {
-		wcscpy(path, szFile);
+		wcscpy_s(path, max_path, szFile);
 		return true;
 	}
 

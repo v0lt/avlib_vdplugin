@@ -60,7 +60,7 @@ uint32 export_avi_fcc(AVStream* src)
 bool VDXAPIENTRY VDFFInputFile::GetExportMenuInfo(int id, char* name, int name_size, bool* enabled)
 {
 	if (id == 0) {
-		strncpy(name, "Stream copy...", name_size);
+		strncpy_s(name, 256, "Stream copy...", name_size);
 		*enabled = !is_image && !is_image_list;
 		return true;
 	}
@@ -71,7 +71,7 @@ bool VDXAPIENTRY VDFFInputFile::GetExportMenuInfo(int id, char* name, int name_s
 bool VDXAPIENTRY VDFFInputFile::GetExportCommandName(int id, char* name, int name_size)
 {
 	if (id == 0) {
-		strncpy(name, "Export.StreamCopy", name_size);
+		strncpy_s(name, 128, "Export.StreamCopy", name_size);
 		return true;
 	}
 
@@ -111,7 +111,7 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	ofn.Flags = OFN_EXPLORER | OFN_HIDEREADONLY | OFN_ENABLESIZING | OFN_OVERWRITEPROMPT;
 
 	if (GetSaveFileNameW(&ofn)) {
-		wcscpy(path, szFile);
+		wcscpy_s(path, max_path, szFile);
 		wchar_t* p1 = wcsrchr(szFile, '.');
 		if (!p1) wcscat(path, ext.c_str());
 		return true;
@@ -1104,65 +1104,65 @@ bool VDXAPIENTRY VDFFOutputFileDriver::EnumFormats(int i, wchar_t* filter, wchar
 {
 	switch (i) {
 	case f_avi:
-		wcscpy(filter, L"AVI handled by FFMPEG (*.avi)");
-		wcscpy(ext, L"*.avi");
-		strcpy(name, "avi");
+		wcscpy_s(filter, 128, L"AVI handled by FFMPEG (*.avi)");
+		wcscpy_s(ext, 128, L"*.avi");
+		strcpy_s(name, 128, "avi");
 		return true;
 	case f_mkv:
-		wcscpy(filter, L"Matroska (*.mkv)");
-		wcscpy(ext, L"*.mkv");
-		strcpy(name, "matroska");
+		wcscpy_s(filter, 128, L"Matroska (*.mkv)");
+		wcscpy_s(ext, 128, L"*.mkv");
+		strcpy_s(name, 128, "matroska");
 		return true;
 	case f_mka:
-		wcscpy(filter, L"Matroska Audio (*.mka)");
-		wcscpy(ext, L"*.mka");
-		strcpy(name, "matroska");
+		wcscpy_s(filter, 128, L"Matroska Audio (*.mka)");
+		wcscpy_s(ext, 128, L"*.mka");
+		strcpy_s(name, 128, "matroska");
 		return true;
 	case f_webm:
-		wcscpy(filter, L"WebM (*.webm)");
-		wcscpy(ext, L"*.webm");
-		strcpy(name, "webm");
+		wcscpy_s(filter, 128, L"WebM (*.webm)");
+		wcscpy_s(ext, 128, L"*.webm");
+		strcpy_s(name, 128, "webm");
 		return true;
 	case f_mov:
-		wcscpy(filter, L"QuickTime / MOV (*.mov)");
-		wcscpy(ext, L"*.mov");
-		strcpy(name, "mov");
+		wcscpy_s(filter, 128, L"QuickTime / MOV (*.mov)");
+		wcscpy_s(ext, 128, L"*.mov");
+		strcpy_s(name, 128, "mov");
 		return true;
 	case f_mov_faststart:
-		wcscpy(filter, L"MOV +faststart (*.mov)");
-		wcscpy(ext, L"*.mov");
-		strcpy(name, "mov+faststart");
+		wcscpy_s(filter, 128, L"MOV +faststart (*.mov)");
+		wcscpy_s(ext, 128, L"*.mov");
+		strcpy_s(name, 128, "mov+faststart");
 		return true;
 	case f_mp4:
-		wcscpy(filter, L"MP4 (MPEG-4 Part 14) (*.mp4)");
-		wcscpy(ext, L"*.mp4");
-		strcpy(name, "mp4");
+		wcscpy_s(filter, 128, L"MP4 (MPEG-4 Part 14) (*.mp4)");
+		wcscpy_s(ext, 128, L"*.mp4");
+		strcpy_s(name, 128, "mp4");
 		return true;
 	case f_mp4_faststart:
-		wcscpy(filter, L"MP4 +faststart (*.mp4)");
-		wcscpy(ext, L"*.mp4");
-		strcpy(name, "mp4+faststart");
+		wcscpy_s(filter, 128, L"MP4 +faststart (*.mp4)");
+		wcscpy_s(ext, 128, L"*.mp4");
+		strcpy_s(name, 128, "mp4+faststart");
 		return true;
 	case f_m4a:
-		wcscpy(filter, L"M4A (MPEG-4 Part 14) (*.m4a)");
-		wcscpy(ext, L"*.m4a");
-		strcpy(name, "ipod");
+		wcscpy_s(filter, 128, L"M4A (MPEG-4 Part 14) (*.m4a)");
+		wcscpy_s(ext, 128, L"*.m4a");
+		strcpy_s(name, 128, "ipod");
 		return true;
 	case f_aiff:
-		wcscpy(filter, L"Audio IFF (*.aiff)");
-		wcscpy(ext, L"*.aiff");
-		strcpy(name, "aiff");
+		wcscpy_s(filter, 128, L"Audio IFF (*.aiff)");
+		wcscpy_s(ext, 128, L"*.aiff");
+		strcpy_s(name, 128, "aiff");
 		return true;
 	case f_nut:
-		wcscpy(filter, L"NUT (*.nut)");
-		wcscpy(ext, L"*.nut");
-		strcpy(name, "nut");
+		wcscpy_s(filter, 128, L"NUT (*.nut)");
+		wcscpy_s(ext, 128, L"*.nut");
+		strcpy_s(name, 128, "nut");
 		return true;
 	case f_ext:
 	case f_exta:
-		wcscpy(filter, L"any format by FFMPEG (*.*)");
-		wcscpy(ext, L"*.*");
-		strcpy(name, "");
+		wcscpy_s(filter, 128, L"any format by FFMPEG (*.*)");
+		wcscpy_s(ext, 128, L"*.*");
+		strcpy_s(name, 128, "");
 		return true;
 	}
 	return false;

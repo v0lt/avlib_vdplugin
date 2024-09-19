@@ -198,7 +198,7 @@ void VDFFInputFileInfoDialog::print_video()
 	if (pVideoCtx->pix_fmt != AV_PIX_FMT_NONE)
 	{
 		char bufA[256];
-		strncpy(bufA, av_get_pix_fmt_name(pVideoCtx->pix_fmt), 128);
+		strcpy_s(bufA, av_get_pix_fmt_name(pVideoCtx->pix_fmt));
 		const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get(pVideoCtx->pix_fmt);
 		bool is_rgb = (desc->flags & AV_PIX_FMT_FLAG_RGB) != 0;
 

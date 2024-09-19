@@ -797,7 +797,7 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 	wchar_t buf[20];
 	swprintf_s(buf, L"%%0%dd", digit1 - digit0 + 1);
 
-	wcsncpy(dst, path, digit0);
+	wcsncpy_s(dst, dst_count, path, digit0);
 	dst[digit0] = 0;
 	wcscat(dst, buf);
 	wcscat(dst, path + digit1 + 1);
