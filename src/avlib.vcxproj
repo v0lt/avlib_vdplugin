@@ -57,7 +57,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
-      <AdditionalIncludeDirectories>.;..;..\ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)vd2\h;$(SolutionDir)vd2\VDXFrame\include;$(SolutionDir)ffmpeg\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <StringPooling>true</StringPooling>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <BufferSecurityCheck>false</BufferSecurityCheck>
@@ -79,13 +79,13 @@
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NOMINMAX;FFDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;FFDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader />
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DataExecutionPrevention />
       <TargetMachine>MachineX86</TargetMachine>
@@ -97,14 +97,14 @@
     </Midl>
     <ClCompile>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>NOMINMAX;FFDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;FFDEBUG;WIN32;NDEBUG;_WINDOWS;_USRDLL;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
       <PrecompiledHeader />
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <DataExecutionPrevention />
       <TargetMachine>MachineX64</TargetMachine>
@@ -116,7 +116,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_USRDLL;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -124,7 +124,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ffmpeg\win32\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -141,7 +141,7 @@
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <OmitFramePointers>true</OmitFramePointers>
-      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_USRDLL;_CRT_SECURE_NO_WARNINGS;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NOMINMAX;WIN32;NDEBUG;_WINDOWS;_USRDLL;__STDC_CONSTANT_MACROS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <EnableEnhancedInstructionSet>NotSet</EnableEnhancedInstructionSet>
       <FloatingPointModel>Fast</FloatingPointModel>
       <FloatingPointExceptions>false</FloatingPointExceptions>
@@ -150,7 +150,7 @@
       <DisableSpecificWarnings>26451;26812;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
-      <AdditionalLibraryDirectories>..\ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(SolutionDir)ffmpeg\x64\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OptimizeReferences>true</OptimizeReferences>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -159,6 +159,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilter.h" />
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilterDialog.h" />
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilterEntry.h" />
     <ClInclude Include="AudioSource2.h" />
     <ClInclude Include="a_compress.h" />
     <ClInclude Include="compress.h" />
@@ -169,17 +172,18 @@
     <ClInclude Include="InputFile2.h" />
     <ClInclude Include="mov_mp4.h" />
     <ClInclude Include="resource.h" />
-    <ClInclude Include="..\vd2\plugin\vdinputdriver.h" />
-    <ClInclude Include="..\vd2\plugin\vdplugin.h" />
-    <ClInclude Include="..\vd2\VDXFrame\Unknown.h" />
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilter.h" />
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilterDialog.h" />
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilterEntry.h" />
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h" />
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdplugin.h" />
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdvideofilt.h" />
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\Unknown.h" />
     <ClInclude Include="Utils.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="VideoSource2.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilter.cpp" />
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilterDialog.cpp" />
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilterEntry.cpp" />
     <ClCompile Include="AudioSource2.cpp" />
     <ClCompile Include="a_compress.cpp" />
     <ClCompile Include="compress.cpp" />
@@ -191,9 +195,6 @@
     <ClCompile Include="InputFile2.cpp" />
     <ClCompile Include="main2.cpp" />
     <ClCompile Include="mov_mp4.cpp" />
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilter.cpp" />
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilterDialog.cpp" />
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilterEntry.cpp" />
     <ClCompile Include="Utils.cpp" />
     <ClCompile Include="vfmain.cpp" />
     <ClCompile Include="VideoSource2.cpp" />

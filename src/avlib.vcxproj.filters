@@ -1,32 +1,14 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="vd">
-      <UniqueIdentifier>{bc38372b-47df-4cf4-8cce-4f36c757006c}</UniqueIdentifier>
-    </Filter>
     <Filter Include="videoFilter">
       <UniqueIdentifier>{65a3815f-6028-45d7-8975-78c179f3d824}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VirtualDub2">
+      <UniqueIdentifier>{bc38372b-47df-4cf4-8cce-4f36c757006c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\vd2\VDXFrame\Unknown.h">
-      <Filter>vd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\vd2\plugin\vdinputdriver.h">
-      <Filter>vd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\vd2\plugin\vdplugin.h">
-      <Filter>vd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilter.h">
-      <Filter>vd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilterDialog.h">
-      <Filter>vd</Filter>
-    </ClInclude>
-    <ClInclude Include="..\vd2\VDXFrame\VideoFilterEntry.h">
-      <Filter>vd</Filter>
-    </ClInclude>
     <ClInclude Include="fflayer.h">
       <Filter>videoFilter</Filter>
     </ClInclude>
@@ -42,17 +24,29 @@
     <ClInclude Include="VideoSource2.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="Utils.h" />
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdplugin.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\plugin\vdvideofilt.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\Unknown.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilter.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilterDialog.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilterEntry.h">
+      <Filter>VirtualDub2</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilter.cpp">
-      <Filter>vd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilterDialog.cpp">
-      <Filter>vd</Filter>
-    </ClCompile>
-    <ClCompile Include="..\vd2\VDXFrame\VideoFilterEntry.cpp">
-      <Filter>vd</Filter>
-    </ClCompile>
     <ClCompile Include="fflayer.cpp">
       <Filter>videoFilter</Filter>
     </ClCompile>
@@ -73,6 +67,15 @@
     <ClCompile Include="mov_mp4.cpp" />
     <ClCompile Include="VideoSource2.cpp" />
     <ClCompile Include="nut.cpp" />
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilter.cpp">
+      <Filter>VirtualDub2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilterDialog.cpp">
+      <Filter>VirtualDub2</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vd2\VDXFrame\source\VideoFilterEntry.cpp">
+      <Filter>VirtualDub2</Filter>
+    </ClCompile>
     <ClCompile Include="Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
