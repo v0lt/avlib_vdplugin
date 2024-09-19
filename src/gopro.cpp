@@ -88,23 +88,23 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 	unsigned int sett2 = sett[1];
 
 	// setting 1
-	unsigned int mode = sett1 & 0xf;
-	unsigned int submode = (sett1 >> 4) & ((1 << 4) - 1);
-	unsigned int timelapse_rate = (sett1 >> 8) & ((1 << 4) - 1);
-	unsigned int orientation = (sett1 >> 16) & ((1 << 1) - 1);
-	unsigned int spotmeter = (sett1 >> 17) & ((1 << 1) - 1);
-	unsigned int protune = (sett1 >> 30) & ((1 << 1) - 1);
+	unsigned int mode           =  sett1 & 0xf;
+	unsigned int submode        = (sett1 >> 4)  & ((1 << 4) - 1);
+	unsigned int timelapse_rate = (sett1 >> 8)  & ((1 << 4) - 1);
+	unsigned int orientation    = (sett1 >> 16) & ((1 << 1) - 1);
+	unsigned int spotmeter      = (sett1 >> 17) & ((1 << 1) - 1);
+	unsigned int protune        = (sett1 >> 30) & ((1 << 1) - 1);
 	//unsigned int white_bal = 0;
 
 	// setting 2
-	unsigned int fov = (sett2 >> 1) & ((1 << 2) - 1);
-	unsigned int lowlight = (sett2 >> 4) & ((1 << 1) - 1);
-	unsigned int superview = (sett2 >> 5) & ((1 << 1) - 1);
-	unsigned int protune_sharpness = (sett2 >> 6) & ((1 << 2) - 1);
-	unsigned int protune_color = (sett2 >> 8) & ((1 << 1) - 1);
-	unsigned int protune_iso = (sett2 >> 9) & ((1 << 3) - 1);
-	unsigned int protune_ev = (sett2 >> 0xc) & ((1 << 4) - 1);
-	unsigned int protune_wb = (sett2 >> 0x10) & ((1 << 2) - 1);
+	unsigned int fov               = (sett2 >> 1)    & ((1 << 2) - 1);
+	unsigned int lowlight          = (sett2 >> 4)    & ((1 << 1) - 1);
+	unsigned int superview         = (sett2 >> 5)    & ((1 << 1) - 1);
+	unsigned int protune_sharpness = (sett2 >> 6)    & ((1 << 2) - 1);
+	unsigned int protune_color     = (sett2 >> 8)    & ((1 << 1) - 1);
+	unsigned int protune_iso       = (sett2 >> 9)    & ((1 << 3) - 1);
+	unsigned int protune_ev        = (sett2 >> 0xc)  & ((1 << 4) - 1);
+	unsigned int protune_wb        = (sett2 >> 0x10) & ((1 << 2) - 1);
 	unsigned int broadcast_privacy = (sett2 >> 0x12) & ((1 << 2) - 1);
 
 	setup_info.resize(1024);

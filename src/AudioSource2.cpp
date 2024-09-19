@@ -386,7 +386,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 	int px = (int)(start / BufferPage::size);
 	int s0 = start % BufferPage::size;
 
-	if (px < 0 || px >= buffer.size()) {
+	if (px < 0 || px >= (int)buffer.size()) {
 		*lBytesRead = 0;
 		*lSamplesRead = 0;
 		return false;
@@ -507,7 +507,7 @@ void VDFFAudioSource::insert_silence(int64_t start, uint32_t count)
 		int px = (int)(start / BufferPage::size);
 		int s0 = start % BufferPage::size;
 
-		if (px >= buffer.size()) {
+		if (px >= (int)buffer.size()) {
 			break;
 		}
 		alloc_page(px);
@@ -531,7 +531,7 @@ void VDFFAudioSource::invalidate(int64_t start, uint32_t count)
 		int px = (int)(start / BufferPage::size);
 		int s0 = start % BufferPage::size;
 
-		if (px >= buffer.size()) {
+		if (px >= (int)buffer.size()) {
 			break;
 		}
 		BufferPage& bp = buffer[px];
