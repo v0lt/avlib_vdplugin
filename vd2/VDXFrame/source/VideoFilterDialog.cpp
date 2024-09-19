@@ -36,7 +36,7 @@ namespace {
 #else
 	HINSTANCE GetLocalHInstance() {
 		MEMORY_BASIC_INFORMATION meminfo={0};
-		if (!VirtualQuery((void*)GetLocalHInstance, &meminfo, sizeof(meminfo)))
+		if (!VirtualQuery(GetLocalHInstance, &meminfo, sizeof(meminfo)))
 			return NULL;
 
 		return (HINSTANCE)meminfo.AllocationBase;
