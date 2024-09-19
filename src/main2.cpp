@@ -254,7 +254,7 @@ void saveConfig()
 	}
 	*pSlash = 0;
 
-	wcscat(buf, L"\\cch_input.ini");
+	wcscat_s(buf, L"\\cch_input.ini");
 
 	WritePrivateProfileStringW(L"force_ffmpeg", L"raw", config_decode_raw ? L"1" : L"0", buf);
 	WritePrivateProfileStringW(L"force_ffmpeg", L"MagicYUV", config_decode_magic ? L"1" : L"0", buf);
@@ -283,7 +283,7 @@ void loadConfig()
 	}
 	*pSlash = 0;
 
-	wcscat(buf, L"\\cch_input.ini");
+	wcscat_s(buf, L"\\cch_input.ini");
 
 	config_decode_raw = GetPrivateProfileIntW(L"force_ffmpeg", L"raw", 0, buf) != 0;
 	config_decode_magic = GetPrivateProfileIntW(L"force_ffmpeg", L"MagicYUV", 0, buf) != 0;
@@ -293,7 +293,11 @@ void loadConfig()
 	wchar_t buf2[128];
 	GetPrivateProfileStringW(L"decode_model", L"cache_size", L"0.5", buf2, 128, buf);
 	float v2;
-	if (swscanf(buf2, L"%f", &v2) == 1) config_cache_size = v2; else config_cache_size = 0.5;
+	if (swscanf_s(buf2, L"%f", &v2) == 1) {
+		config_cache_size = v2;
+	} else {
+		config_cache_size = 0.5;
+	}
 
 	ff_plugin_video.mpStaticConfigureProc = 0;
 

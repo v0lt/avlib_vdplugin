@@ -142,12 +142,12 @@ IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const vo
 			if (v >= 32) {
 				wchar_t vc[] = { 0,0 };
 				vc[0] = v;
-				wcscat(info.vcodec_name, vc);
+				wcscat_s(info.vcodec_name, vc);
 			}
 			else {
 				wchar_t vc[10];
 				swprintf_s(vc, L"[%d]", v);
-				wcscat(info.vcodec_name, vc);
+				wcscat_s(info.vcodec_name, vc);
 			}
 		}
 
@@ -524,8 +524,8 @@ void VDFFInputFile::do_auto_append(const wchar_t* szFile)
 			wcsncpy_s(buf, szFile, ext - szFile - 3); buf[ext - szFile - 3] = 0;
 			wchar_t buf1[32];
 			swprintf_s(buf1, L".%02d", x);
-			wcscat(buf, buf1);
-			wcscat(buf, ext);
+			wcscat_s(buf, buf1);
+			wcscat_s(buf, ext);
 			if (!FileExist(buf)) break;
 			if (!Append(buf)) break;
 			x++;
@@ -799,10 +799,10 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 
 	wcsncpy_s(dst, dst_count, path, digit0);
 	dst[digit0] = 0;
-	wcscat(dst, buf);
-	wcscat(dst, path + digit1 + 1);
+	wcscat_s(dst, dst_count, buf);
+	wcscat_s(dst, dst_count, path + digit1 + 1);
 
-	sscanf(start_buf, "%d", start);
+	sscanf_s(start_buf, "%d", start);
 	int n = 0;
 
 	wchar_t test[MAX_PATH];

@@ -216,13 +216,13 @@ void VDFFInputFileInfoDialog::print_video()
 			if (pVideoCtx->colorspace == AVCOL_SPC_BT2020_CL) spc = "bt.2020-cl";
 			if (pVideoCtx->color_range == AVCOL_RANGE_JPEG) r = "full";
 			if (spc) {
-				strcat(bufA, " (");
-				strcat(bufA, spc);
+				strcat_s(bufA, " (");
+				strcat_s(bufA, spc);
 				if (r) {
-					strcat(bufA, ":");
-					strcat(bufA, r);
+					strcat_s(bufA, ":");
+					strcat_s(bufA, r);
 				}
-				strcat(bufA, ")");
+				strcat_s(bufA, ")");
 			}
 		}
 
@@ -241,7 +241,7 @@ void VDFFInputFileInfoDialog::print_video()
 		VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
 		swprintf_s(buf, L"%u x %u, %.3f fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
 		if (segment->video_source->average_fr) {
-			wcscat(buf, L" (average)");
+			wcscat_s(buf, L" (average)");
 		}
 		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
 	}
@@ -287,10 +287,10 @@ void VDFFInputFileInfoDialog::print_audio()
 	av_channel_layout_describe(&pAudioCtx->ch_layout, bufA, sizeof(bufA));
 	sprintf(bufA+strlen(bufA), " (%u), ", pAudioCtx->ch_layout.nb_channels);
 	if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE) {
-		strcat(bufA, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
+		strcat_s(bufA, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
 	}
 	else {
-		strcat(bufA, "N/A");
+		strcat_s(bufA, "N/A");
 	}
 	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, bufA);
 

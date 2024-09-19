@@ -325,7 +325,7 @@ bool LogoDialog::modify_value(HWND item, int& v)
 	wchar_t buf[80];
 	GetWindowTextW(item, buf, (int)std::size(buf));
 	int val;
-	if (swscanf(buf, L"%d", &val) == 1) {
+	if (swscanf_s(buf, L"%d", &val) == 1) {
 		v = val;
 		return true;
 	}
@@ -337,7 +337,7 @@ bool LogoDialog::modify_value(HWND item, double& v)
 	wchar_t buf[80];
 	GetWindowTextW(item, buf, (int)std::size(buf));
 	float val;
-	if (swscanf(buf, L"%f", &val) == 1) {
+	if (swscanf_s(buf, L"%f", &val) == 1) {
 		v = val;
 		return true;
 	}
