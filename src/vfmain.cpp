@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2015-2020 Anton Shekhovtsov
+ * Copyright (C) 2023-2024 v0lt
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #include <vd2/VDXFrame/VideoFilterEntry.h>
 #include "fflayer.h"
 

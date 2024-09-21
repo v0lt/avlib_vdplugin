@@ -1,3 +1,10 @@
+/*
+ * Copyright (C) 2015-2020 Anton Shekhovtsov
+ * Copyright (C) 2023-2024 v0lt
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
 #include <commctrl.h>
