@@ -55,7 +55,9 @@ COPY /Y /V "history.txt" "_bin\plugins64\avlib-1_history.txt"
 
 REM -------------------------------------
 
-SET PCKG_NAME=avlib_vdplugin
+FOR /F "USEBACKQ" %%F IN (`powershell -NoLogo -NoProfile -Command ^(Get-Item "_bin\plugins64\avlib-1.vdplugin"^).VersionInfo.FileVersion`) DO (SET FILE_VERSION=%%F)
+
+SET PCKG_NAME=avlib_vdplugin_%FILE_VERSION%
 
 "%SEVENZIP%" a -m0=lzma -mx9 -ms=on "_bin\%PCKG_NAME%.7z" ^
 .\_bin\plugins64 ^
