@@ -44,15 +44,14 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <IntDir>$(SolutionDir)_obj\$(Configuration)_$(PlatformShortName)\</IntDir>
+    <OutDir>$(SolutionDir)_bin\$(Configuration)_$(PlatformShortName)\</OutDir>
     <TargetName>avlib-1</TargetName>
     <TargetExt>.vdplugin</TargetExt>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)\</OutDir>
     <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <OutDir>$(SolutionDir)_bin\avlib_$(PlatformShortName)\</OutDir>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -70,7 +69,7 @@
       <SubSystem>Windows</SubSystem>
       <RandomizedBaseAddress>false</RandomizedBaseAddress>
       <SupportUnloadOfDelayLoadedDLL>true</SupportUnloadOfDelayLoadedDLL>
-      <OutputFile>$(OutDir)avlib-1.vdplugin</OutputFile>
+      <OutputFile>$(OutDir)$(TargetName)$(TargetExt)</OutputFile>
     </Link>
     <PreBuildEvent>
       <Command>..\update_revision.cmd</Command>

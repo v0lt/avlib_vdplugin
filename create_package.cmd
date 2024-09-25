@@ -49,7 +49,7 @@ REM -------------------------------------
 
 MKDIR _bin\plugins64
 
-COPY /Y /V "_bin\avlib_x64\avlib-1.vdplugin" "_bin\plugins64\avlib-1.vdplugin"
+COPY /Y /V "_bin\Release_x64\avlib-1.vdplugin" "_bin\plugins64\avlib-1.vdplugin"
 COPY /Y /V "Readme.md" "_bin\plugins64\avlib-1_Readme.md"
 COPY /Y /V "history.txt" "_bin\plugins64\avlib-1_history.txt"
 
