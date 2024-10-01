@@ -1,6 +1,5 @@
 EXPORTS
     sws_alloc_context
-    sws_alloc_set_opts
     sws_allocVec
     sws_convertPalette8ToPacked24
     sws_convertPalette8ToPacked32

@@ -29,7 +29,7 @@ IF %COUNT% EQU 5 (
   GOTO :MakeArchive
 )
 
-SET FFMPEG_7Z=ffmpeg-7.0.2-full_build-shared.7z
+SET FFMPEG_7Z=ffmpeg-7.1-full_build-shared.7z
 
 IF NOT EXIST _bin\ffmpeg\%FFMPEG_7Z% (
   MKDIR _bin\ffmpeg
