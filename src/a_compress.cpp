@@ -8,6 +8,7 @@
 #include "a_compress.h"
 #include "export.h"
 #include <string>
+#include <cassert>
 #include <Ks.h>
 #include <KsMedia.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
@@ -149,13 +150,27 @@ void VDFFAudio::select_fmt(AVSampleFormat* list)
 {
 	int best_pos = -1;
 
+	const enum AVSampleFormat* sample_fmts = nullptr;
+	int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
+	if (ret < 0) {
+		return;
+	}
+	if (!sample_fmts) {
+		assert(0); // unsupported but valid value.
+		return;
+	}
+
 	for (int y = 0; ; y++) {
-		AVSampleFormat yfmt = codec->sample_fmts[y];
-		if (yfmt == AV_SAMPLE_FMT_NONE) break;
+		AVSampleFormat yfmt = sample_fmts[y];
+		if (yfmt == AV_SAMPLE_FMT_NONE) {
+			break;
+		}
 
 		for (int x = 0; ; x++) {
 			AVSampleFormat xfmt = list[x];
-			if (xfmt == AV_SAMPLE_FMT_NONE) break;
+			if (xfmt == AV_SAMPLE_FMT_NONE) {
+				break;
+			}
 			if (xfmt == yfmt) {
 				if (best_pos == -1 || x < best_pos) {
 					best_pos = x;
@@ -182,7 +197,17 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	av_channel_layout_default(&ctx->ch_layout, format->mChannels);
 	ctx->sample_rate = format->mSamplesPerSec;
-	ctx->sample_fmt = codec->sample_fmts[0];
+
+	const enum AVSampleFormat* sample_fmts = nullptr;
+	int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
+	if (ret < 0) {
+		return;
+	}
+	if (!sample_fmts) {
+		assert(0); // unsupported but valid value.
+		return;
+	}
+	ctx->sample_fmt = sample_fmts[0]; // hmm
 
 	AVSampleFormat in_fmt = AV_SAMPLE_FMT_S16;
 	if (format->mBitsPerSample == 8) {
@@ -228,7 +253,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	InitContext();
 
-	int ret = avcodec_open2(ctx, codec, nullptr);
+	ret = avcodec_open2(ctx, codec, nullptr);
 	if (ret < 0) {
 		errstr = AVError2Str(ret);
 		mContext.mpCallbacks->SetError("FFMPEG: Cannot open codec (%s).", errstr.c_str());

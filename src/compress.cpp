@@ -9,6 +9,7 @@
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include <memory>
 #include <functional>
+#include <cassert>
 #include <windows.h>
 #include <vfw.h>
 #include <commctrl.h>
@@ -278,11 +279,24 @@ struct CodecBase : public CodecClass {
 	}
 
 	virtual bool test_av_format(AVPixelFormat format) {
-		if (!codec->pix_fmts) return false;
+		const enum AVPixelFormat* pix_fmts = nullptr;
+		int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_PIX_FORMAT, 0, (const void**)&pix_fmts, nullptr);
+		if (ret < 0) {
+			return false;
+		}
+		if (!pix_fmts) {
+			assert(0); // unsupported but valid value.
+			return false;
+		}
+
 		for (int i = 0; ; i++) {
-			AVPixelFormat f = codec->pix_fmts[i];
-			if (f == -1) break;
-			if (f == format) return true;
+			AVPixelFormat f = pix_fmts[i];
+			if (f == AV_PIX_FMT_NONE) {
+				break;
+			}
+			if (f == format) {
+				return true;
+			}
 		}
 		return false;
 	}
