@@ -1611,7 +1611,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		// however this is also 5x slower!
 		flags |= SWS_FULL_CHR_H_INT | SWS_ACCURATE_RND;
 		if (fast_rgb) flags = SWS_POINT;
-#ifdef FFDEBUG
+#ifdef _DEBUG
 		flags |= SWS_PRINT_INFO;
 #endif
 
