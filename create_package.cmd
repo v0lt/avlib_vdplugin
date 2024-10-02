@@ -8,8 +8,6 @@ FOR /F "tokens=2*" %%A IN (
   'REG QUERY "HKLM\SOFTWARE\7-Zip" /v "Path" 2^>NUL ^| FIND "REG_SZ" ^|^|
    REG QUERY "HKLM\SOFTWARE\Wow6432Node\7-Zip" /v "Path" 2^>NUL ^| FIND "REG_SZ"') DO SET "SEVENZIP=%%B\7z.exe"
 
-ECHO %SEVENZIP%
-
 IF NOT EXIST "%SEVENZIP%" (
   ECHO 7Zip not found.
   GOTO :END
@@ -18,8 +16,6 @@ IF NOT EXIST "%SEVENZIP%" (
 REM -------------------------------------
 
 SET "FFMPEG_DLLS=avcodec-61.dll avformat-61.dll avutil-59.dll swresample-5.dll swscale-8.dll"
-
-ECHO %FFMPEG_DLLS%
 
 SET /A COUNT=0
 FOR %%D IN (%FFMPEG_DLLS%) DO IF EXIST "_bin\ffmpeg\%%D" SET /A COUNT+=1
@@ -32,6 +28,7 @@ IF %COUNT% EQU 5 (
 SET FFMPEG_7Z=ffmpeg-7.1-full_build-shared.7z
 
 IF NOT EXIST _bin\ffmpeg\%FFMPEG_7Z% (
+  ECHO Downloading "%FFMPEG_7Z%"...
   MKDIR _bin\ffmpeg
   curl -o "_bin\ffmpeg\%FFMPEG_7Z%" --insecure "https://www.gyan.dev/ffmpeg/builds/packages/%FFMPEG_7Z%"
 )
