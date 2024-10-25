@@ -109,7 +109,11 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 
 	std::wstring ext;
 	const wchar_t* p = wcsrchr(path, '.');
-	if (p) ext = p; else ext = L".";
+	if (p) {
+		ext = p;
+	} else {
+		ext = L".";
+	}
 
 	wchar_t filter[256];
 	swprintf_s(filter, L"Same as source (*%ls)", ext.c_str());
@@ -249,8 +253,9 @@ void ProgressDialog::check()
 		++mSparseInterval;
 	}
 	else if (dwTime > dwLastTime + 150) {
-		if (mSparseInterval > 1)
+		if (mSparseInterval > 1) {
 			--mSparseInterval;
+		}
 	}
 
 	dwLastTime = dwTime;
@@ -337,8 +342,9 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		}
 
 		video = video_source->m_streamIndex;
-		if (audio_source)
+		if (audio_source) {
 			audio = audio_source->m_streamIndex;
+		}
 
 		for (int i = 0; i < (int)fmt->nb_streams; i++) {
 			if (i != video && i != audio) {
@@ -1176,7 +1182,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	s.frame += samples;
 
 	int err = av_interleaved_write_frame(m_ofmt, pkt);
-	if (err < 0) av_error(err);
+	if (err < 0) {
+		av_error(err);
+	}
 
 	// pkt->data no longer points to pBuffer or a_buf
 	pkt->data = nullptr;
