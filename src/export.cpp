@@ -26,28 +26,34 @@ void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src);
 
 void adjust_codec_tag2(const char* src_format, const AVOutputFormat* format, AVStream* st)
 {
-	if (src_format && strcmp(src_format, format->name) == 0) return;
+	if (src_format && strcmp(src_format, format->name) == 0) {
+		return;
+	}
 	AVCodecID codec_id = st->codecpar->codec_id;
 	unsigned int tag = st->codecpar->codec_tag;
 	st->codecpar->codec_tag = 0;
 	AVCodecID codec_id1 = av_codec_get_id(format->codec_tag, tag);
 	unsigned int codec_tag2;
 	int have_codec_tag2 = av_codec_get_tag2(format->codec_tag, codec_id, &codec_tag2);
-	if (!format->codec_tag || codec_id1 == codec_id || !have_codec_tag2)
+	if (!format->codec_tag || codec_id1 == codec_id || !have_codec_tag2) {
 		st->codecpar->codec_tag = tag;
+	}
 }
 
 void adjust_codec_tag(const char* src_format, const AVOutputFormat* format, AVStream* st)
 {
-	if (src_format && strcmp(src_format, format->name) == 0) return;
+	if (src_format && strcmp(src_format, format->name) == 0) {
+		return;
+	}
 	AVCodecID codec_id = st->codecpar->codec_id;
 	unsigned int tag = st->codecpar->codec_tag;
 	st->codecpar->codec_tag = 0;
 	AVCodecID codec_id1 = av_codec_get_id(format->codec_tag, tag);
 	unsigned int codec_tag2;
 	int have_codec_tag2 = av_codec_get_tag2(format->codec_tag, codec_id, &codec_tag2);
-	if (!format->codec_tag || codec_id1 == codec_id || !have_codec_tag2)
+	if (!format->codec_tag || codec_id1 == codec_id || !have_codec_tag2) {
 		st->codecpar->codec_tag = tag;
+	}
 }
 
 uint32 export_avi_fcc(AVStream* src)
@@ -59,7 +65,9 @@ uint32 export_avi_fcc(AVStream* src)
 	adjust_codec_tag(0, format, st);
 	uint32 r = st->codecpar->codec_tag;
 	// missing tag in type1 avi
-	if (!r) r = av_codec_get_tag(format->codec_tag, src->codecpar->codec_id);
+	if (!r) {
+		r = av_codec_get_tag(format->codec_tag, src->codecpar->codec_id);
+	}
 	avformat_free_context(ctx);
 	return r;
 }
@@ -89,10 +97,11 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	OPENFILENAMEW ofn = { 0 };
 	wchar_t szFile[MAX_PATH];
 
-	if (path)
+	if (path) {
 		wcscpy_s(szFile, path);
-	else
+	} else {
 		szFile[0] = 0;
+	}
 
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
@@ -228,8 +237,9 @@ void ProgressDialog::check()
 {
 	MSG msg;
 
-	if (--mSparseCount)
+	if (--mSparseCount) {
 		return;
+	}
 
 	DWORD dwTime = GetTickCount();
 
@@ -276,7 +286,9 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		if (ext0) {
 			wcscat_s(path2, ext0);
 		}
-		if (!exportSaveFile((HWND)parent, path2, MAX_PATH)) return false;
+		if (!exportSaveFile((HWND)parent, path2, MAX_PATH)) {
+			return false;
+		}
 
 		wchar_t* ext1 = wcsrchr(path2, '.');
 		bool same_format = wcscmp(ext0, ext1) == 0;
@@ -311,19 +323,27 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 		int err = 0;
 		err = avformat_open_input(&fmt, ff_path, 0, 0);
-		if (err < 0) goto end;
+		if (err < 0) {
+			goto end;
+		}
 		err = avformat_find_stream_info(fmt, 0);
-		if (err < 0) goto end;
+		if (err < 0) {
+			goto end;
+		}
 
 		err = avformat_alloc_output_context2(&ofmt, 0, 0, out_ff_path);
-		if (err < 0) goto end;
+		if (err < 0) {
+			goto end;
+		}
 
 		video = video_source->m_streamIndex;
 		if (audio_source)
 			audio = audio_source->m_streamIndex;
 
 		for (int i = 0; i < (int)fmt->nb_streams; i++) {
-			if (i != video && i != audio) continue;
+			if (i != video && i != audio) {
+				continue;
+			}
 
 			AVStream* in_stream = fmt->streams[i];
 			AVStream* out_stream = avformat_new_stream(ofmt, 0);
@@ -360,11 +380,15 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 		if (!(ofmt->oformat->flags & AVFMT_NOFILE)) {
 			err = avio_open(&ofmt->pb, out_ff_path, AVIO_FLAG_WRITE);
-			if (err < 0) goto end;
+			if (err < 0) {
+				goto end;
+			}
 		}
 
 		err = avformat_write_header(ofmt, 0);
-		if (err < 0) goto end;
+		if (err < 0) {
+			goto end;
+		}
 
 		/*
 		int64_t vt_end = video_source->frame_to_pts_next(end);
@@ -379,20 +403,30 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
 			err = av_read_frame(fmt, pkt.get());
-			if (err < 0) break;
+			if (err < 0) {
+				break;
+			}
 
 			AVStream* s = fmt->streams[pkt->stream_index];
 			int64_t t = pkt->pts;
-			if (t == AV_NOPTS_VALUE) t = pkt->dts;
+			if (t == AV_NOPTS_VALUE) {
+				t = pkt->dts;
+			}
 			if (pkt->stream_index == video) {
-				if (vt_end == -1) vt_end = t;
+				if (vt_end == -1) {
+					vt_end = t;
+				}
 			}
 			if (pkt->stream_index == audio) {
-				if (at_end == -1) at_end = t;
+				if (at_end == -1) {
+					at_end = t;
+				}
 			}
 			av_packet_unref(pkt.get());
 
-			if (vt_end != -1 && (at_end != -1 || audio == -1)) break;
+			if (vt_end != -1 && (at_end != -1 || audio == -1)) {
+				break;
+			}
 		}
 
 		pos0 = start * video_source->time_base.den / video_source->time_base.num + video_source->start_time;
@@ -400,34 +434,61 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 		v_end = out_video == 0;
 		a_end = out_audio == 0;
-		if (out_audio) a_bias = av_rescale_q(pos0, fmt->streams[video]->time_base, fmt->streams[audio]->time_base);
+		if (out_audio) {
+			a_bias = av_rescale_q(pos0, fmt->streams[video]->time_base, fmt->streams[audio]->time_base);
+		}
 
 		while (1) {
-			if (v_end && a_end) break;
+			if (v_end && a_end) {
+				break;
+			}
 			progress.check();
-			if (progress.abort) break;
+			if (progress.abort) {
+				break;
+			}
 
 			std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
 			err = av_read_frame(fmt, pkt.get());
-			if (err < 0) { err = 0; break; }
+			if (err < 0) {
+				err = 0;
+				break;
+			}
 
 			AVStream* in_stream = fmt->streams[pkt->stream_index];
 			int64_t t = pkt->pts;
-			if (t == AV_NOPTS_VALUE) t = pkt->dts;
+			if (t == AV_NOPTS_VALUE) {
+				t = pkt->dts;
+			}
 
 			AVStream* out_stream = nullptr;
 			if (pkt->stream_index == video) {
-				if (vt_end != -1 && t >= vt_end) v_end = true; else out_stream = out_video;
-				if (pkt->pts != AV_NOPTS_VALUE) pkt->pts -= pos0;
-				if (pkt->dts != AV_NOPTS_VALUE) pkt->dts -= pos0;
+				if (vt_end != -1 && t >= vt_end) {
+					v_end = true;
+				} else {
+					out_stream = out_video;
+				}
+				if (pkt->pts != AV_NOPTS_VALUE) {
+					pkt->pts -= pos0;
+				}
+				if (pkt->dts != AV_NOPTS_VALUE) {
+					pkt->dts -= pos0;
+				}
 				progress.current_pos = (double(t) - pos0) / (pos1 - pos0);
 			}
 			if (pkt->stream_index == audio) {
-				if (at_end != -1 && t >= at_end) a_end = true; else out_stream = out_audio;
+				if (at_end != -1 && t >= at_end) {
+					a_end = true;
+				} else {
+					out_stream = out_audio;
+				}
 				out_stream = out_audio;
-				if (pkt->pts != AV_NOPTS_VALUE) pkt->pts -= a_bias;
-				if (pkt->dts != AV_NOPTS_VALUE) pkt->dts -= a_bias;
+				if (pkt->pts != AV_NOPTS_VALUE) {
+					pkt->pts -= a_bias;
+				}
+				if (pkt->dts != AV_NOPTS_VALUE) {
+					pkt->dts -= a_bias;
+				}
 			}
 
 			if (out_stream) {
@@ -451,7 +512,9 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 
 	end:
 		avformat_close_input(&fmt);
-		if (ofmt && !(ofmt->oformat->flags & AVFMT_NOFILE)) avio_closep(&ofmt->pb);
+		if (ofmt && !(ofmt->oformat->flags & AVFMT_NOFILE)) {
+			avio_closep(&ofmt->pb);
+		}
 		avformat_free_context(ofmt);
 
 		progress.current_pos = 1;
@@ -508,15 +571,29 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
-	if (format && format[0]) oformat = av_guess_format(format, 0, 0);
-	if (strcmp(format, "mov+faststart") == 0) oformat = av_guess_format("mov", 0, 0);
-	if (strcmp(format, "mp4+faststart") == 0) oformat = av_guess_format("mp4", 0, 0);
-	if (!oformat) oformat = av_guess_format(0, out_ff_path, 0);
-	if (!oformat) return false;
+	if (format && format[0]) {
+		oformat = av_guess_format(format, 0, 0);
+	}
+	if (strcmp(format, "mov+faststart") == 0) {
+		oformat = av_guess_format("mov", 0, 0);
+	}
+	if (strcmp(format, "mp4+faststart") == 0) {
+		oformat = av_guess_format("mp4", 0, 0);
+	}
+	if (!oformat) {
+		oformat = av_guess_format(0, out_ff_path, 0);
+	}
+	if (!oformat) {
+		return false;
+	}
 
-	if (sc.version < 2) return true;
+	if (sc.version < 2) {
+		return true;
+	}
 
-	if (oformat->flags & AVFMT_GLOBALHEADER) sc.global_header = true;
+	if (oformat->flags & AVFMT_GLOBALHEADER) {
+		sc.global_header = true;
+	}
 	if (oformat == av_guess_format("matroska", 0, 0)) {
 		sc.use_offsets = true;
 		sc.timebase_num = 1000;
@@ -527,10 +604,18 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 		sc.timebase_num = 1000;
 		sc.timebase_den = AV_TIME_BASE;
 	}
-	if (oformat == av_guess_format("mov", 0, 0))  sc.use_offsets = true;
-	if (oformat == av_guess_format("mp4", 0, 0))  sc.use_offsets = true;
-	if (oformat == av_guess_format("ipod", 0, 0)) sc.use_offsets = true;
-	if (oformat == av_guess_format("nut", 0, 0))  sc.use_offsets = true;
+	if (oformat == av_guess_format("mov", 0, 0)) {
+		sc.use_offsets = true;
+	}
+	if (oformat == av_guess_format("mp4", 0, 0)) {
+		sc.use_offsets = true;
+	}
+	if (oformat == av_guess_format("ipod", 0, 0)) {
+		sc.use_offsets = true;
+	}
+	if (oformat == av_guess_format("nut", 0, 0)) {
+		sc.use_offsets = true;
+	}
 
 	return true;
 }
@@ -546,10 +631,20 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
-	if (format && format[0]) oformat = av_guess_format(format, 0, 0);
-	if (strcmp(format, "mov+faststart") == 0) { oformat = av_guess_format("mov", 0, 0); mp4_faststart = true; }
-	if (strcmp(format, "mp4+faststart") == 0) { oformat = av_guess_format("mp4", 0, 0); mp4_faststart = true; }
-	if (!oformat) oformat = av_guess_format(0, out_ff_path, 0);
+	if (format && format[0]) {
+		oformat = av_guess_format(format, 0, 0);
+	}
+	if (strcmp(format, "mov+faststart") == 0) {
+		oformat = av_guess_format("mov", 0, 0);
+		mp4_faststart = true;
+	}
+	if (strcmp(format, "mp4+faststart") == 0) {
+		oformat = av_guess_format("mp4", 0, 0);
+		mp4_faststart = true;
+	}
+	if (!oformat) {
+		oformat = av_guess_format(0, out_ff_path, 0);
+	}
 	if (!oformat) {
 		mContext.mpCallbacks->SetError("Unable to find a suitable output format");
 		Finalize();
@@ -581,7 +676,9 @@ typedef struct AVCodecTag {
 
 void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat)
 {
-	if (!m_ofmt) return;
+	if (!m_ofmt) {
+		return;
+	}
 
 	StreamInfo& s = stream[index];
 	const VDXAVIStreamHeader& asi = si.aviHeader;
@@ -624,7 +721,9 @@ void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* p
 
 uint8_t* copy_extradata(AVCodecParameters* p)
 {
-	if (!p->extradata_size) return 0;
+	if (!p->extradata_size) {
+		return 0;
+	}
 	uint8_t* data = (uint8_t*)av_mallocz(p->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
 	memcpy(data, p->extradata, p->extradata_size);
 	return data;
@@ -632,7 +731,9 @@ uint8_t* copy_extradata(AVCodecParameters* p)
 
 uint8_t* copy_extradata(AVCodecContext* c)
 {
-	if (!c->extradata_size) return 0;
+	if (!c->extradata_size) {
+		return 0;
+	}
 	uint8_t* data = (uint8_t*)av_mallocz(c->extradata_size + AV_INPUT_BUFFER_PADDING_SIZE);
 	memcpy(data, c->extradata, c->extradata_size);
 	return data;
@@ -640,7 +741,9 @@ uint8_t* copy_extradata(AVCodecContext* c)
 
 void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat)
 {
-	if (!m_ofmt) return;
+	if (!m_ofmt) {
+		return;
+	}
 
 	StreamInfo& s = stream[index];
 	const VDXAVIStreamHeader& asi = si.aviHeader;
@@ -653,7 +756,9 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* p
 		AVFormatContext* ofmt1 = avformat_alloc_context();
 		AVStream* st1 = avformat_new_stream(ofmt1, 0);
 		import_wav(st1, pFormat, cbFormat);
-		if (s.st->codecpar->extradata_size) av_freep(&s.st->codecpar->extradata);
+		if (s.st->codecpar->extradata_size) {
+			av_freep(&s.st->codecpar->extradata);
+		}
 		s.st->codecpar->extradata_size = st1->codecpar->extradata_size;
 		s.st->codecpar->extradata = copy_extradata(st1->codecpar);
 		avformat_free_context(ofmt1);
@@ -847,7 +952,9 @@ void FFOutputFile::import_wav(AVStream* st, const void* pFormat, int cbFormat)
 	wav.resize(20 + cbFormat);
 	memcpy(&wav[0], dwHeader, 20);
 	memcpy(&wav[20], pFormat, cbFormat);
-	if (cbFormat & 1) wav.push_back(0);
+	if (cbFormat & 1) {
+		wav.push_back(0);
+	}
 
 	dwHeader[0] = mmioFOURCC('d', 'a', 't', 'a');
 	dwHeader[1] = 0;
@@ -863,9 +970,15 @@ void FFOutputFile::import_wav(AVStream* st, const void* pFormat, int cbFormat)
 	AVFormatContext* fmt_ctx = avformat_alloc_context();
 	fmt_ctx->pb = avio_ctx;
 	int err = avformat_open_input(&fmt_ctx, 0, 0, 0);
-	if (err < 0) { av_error(err); goto fail; }
+	if (err < 0) {
+		av_error(err);
+		goto fail;
+	}
 	err = avformat_find_stream_info(fmt_ctx, 0);
-	if (err < 0) { av_error(err); goto fail; }
+	if (err < 0) {
+		av_error(err);
+		goto fail;
+	}
 
 	{
 		AVStream* fs = fmt_ctx->streams[0];
@@ -930,8 +1043,12 @@ bool FFOutputFile::test_streams()
 		}
 
 		bool failed = true;
-		if (avformat_write_header(ofmt, 0) < 0) goto cleanup;
-		if (av_write_trailer(ofmt) < 0) goto cleanup;
+		if (avformat_write_header(ofmt, 0) < 0) {
+			goto cleanup;
+		}
+		if (av_write_trailer(ofmt) < 0) {
+			goto cleanup;
+		}
 		failed = false;
 
 	cleanup:
@@ -973,7 +1090,9 @@ bool FFOutputFile::test_streams()
 
 void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, PacketInfo& info)
 {
-	if (!m_ofmt) return;
+	if (!m_ofmt) {
+		return;
+	}
 
 	if (!header) {
 		if (!stream_test && !test_streams()) {
@@ -981,7 +1100,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 			return;
 		}
 
-		if (!(m_ofmt->oformat->flags & AVFMT_TS_NEGATIVE)) m_ofmt->avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE;
+		if (!(m_ofmt->oformat->flags & AVFMT_TS_NEGATIVE)) {
+			m_ofmt->avoid_negative_ts = AVFMT_AVOID_NEG_TS_MAKE_NON_NEGATIVE;
+		}
 
 		int err = 0;
 		if (!(m_ofmt->oformat->flags & AVFMT_NOFILE)) {
@@ -994,7 +1115,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 		}
 
 		AVDictionary* options = nullptr;
-		if (mp4_faststart) av_dict_set_int(&options, "movflags", FF_MOV_FLAG_FASTSTART, 0);
+		if (mp4_faststart) {
+			av_dict_set_int(&options, "movflags", FF_MOV_FLAG_FASTSTART, 0);
+		}
 		if (strcmp(m_ofmt->oformat->name, "avi") == 0) {
 			// we take care of tags
 			av_dict_set_int(&options, "strict", -2, 0);
@@ -1011,7 +1134,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	}
 
 	StreamInfo& s = stream[index];
-	if (!s.st) return;
+	if (!s.st) {
+		return;
+	}
 
 	AVPacket* pkt = av_packet_alloc();
 	// pkt->data points to pBuffer or a_buf
@@ -1022,7 +1147,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	}
 	pkt->size = cbBuffer;
 
-	if (info.flags & AVIIF_KEYFRAME) pkt->flags = AV_PKT_FLAG_KEY;
+	if (info.flags & AVIIF_KEYFRAME) {
+		pkt->flags = AV_PKT_FLAG_KEY;
+	}
 
 	pkt->pos = -1;
 	pkt->stream_index = s.st->index;
@@ -1182,7 +1309,9 @@ bool VDXAPIENTRY VDFFOutputFileDriver::EnumFormats(int i, wchar_t* filter, wchar
 bool VDXAPIENTRY ff_create_output(const VDXInputDriverContext* pContext, IVDXOutputFileDriver** ppDriver)
 {
 	VDFFOutputFileDriver* p = new VDFFOutputFileDriver(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;

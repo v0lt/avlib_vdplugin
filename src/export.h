@@ -48,10 +48,21 @@ struct IOBuffer {
 
 	static int64_t Seek(void* obj, int64_t offset, int whence) {
 		IOBuffer* t = (IOBuffer*)obj;
-		if (whence == AVSEEK_SIZE) return t->size;
-		if (whence == SEEK_CUR) { t->pos += offset; return t->pos; }
-		if (whence == SEEK_SET) { t->pos = offset; return t->pos; }
-		if (whence == SEEK_END) { t->pos = t->size + offset; return t->pos; }
+		if (whence == AVSEEK_SIZE) {
+			return t->size;
+		}
+		if (whence == SEEK_CUR) {
+			t->pos += offset;
+			return t->pos;
+		}
+		if (whence == SEEK_SET) {
+			t->pos = offset;
+			return t->pos;
+		}
+		if (whence == SEEK_END) {
+			t->pos = t->size + offset;
+			return t->pos;
+		}
 		return -1;
 	}
 };
@@ -79,10 +90,21 @@ struct IOWBuffer {
 
 	static int64_t Seek(void* obj, int64_t offset, int whence) {
 		IOWBuffer* t = (IOWBuffer*)obj;
-		if (whence == AVSEEK_SIZE) return t->size;
-		if (whence == SEEK_CUR) { t->pos += offset; return t->pos; }
-		if (whence == SEEK_SET) { t->pos = offset; return t->pos; }
-		if (whence == SEEK_END) { t->pos = t->size + offset; return t->pos; }
+		if (whence == AVSEEK_SIZE) {
+			return t->size;
+		}
+		if (whence == SEEK_CUR) {
+			t->pos += offset;
+			return t->pos;
+		}
+		if (whence == SEEK_SET) {
+			t->pos = offset;
+			return t->pos;
+		}
+		if (whence == SEEK_END) {
+			t->pos = t->size + offset;
+			return t->pos;
+		}
 		return -1;
 	}
 };
