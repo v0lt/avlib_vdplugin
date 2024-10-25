@@ -182,7 +182,7 @@ public:
 
 template<class T>
 const VDXScriptObject VDXVideoFilterScriptObjectAdapter<T>::sScriptObject = {
-	NULL, (T::sScriptMethods == VDXVideoFilter::sScriptMethods) ? NULL : (VDXScriptFunctionDef *)static_cast<const VDXScriptFunctionDef *>(T::sScriptMethods), NULL
+	NULL, (&T::sScriptMethods[0] == &VDXVideoFilter::sScriptMethods[0]) ? NULL : (VDXScriptFunctionDef*)static_cast<const VDXScriptFunctionDef*>(T::sScriptMethods), NULL
 };
 
 template<bool (*T_Routine)(VDXHWND)>
