@@ -393,9 +393,15 @@ struct CodecBase : public CodecClass {
 
 		if (config->format == format_rgb) {
 			if (config->bits == 8) {
-				if (test_av_format(AV_PIX_FMT_0RGB32)) return nsVDXPixmap::kPixFormat_XRGB8888;
-				if (test_av_format(AV_PIX_FMT_RGB24)) return nsVDXPixmap::kPixFormat_RGB888;
-				if (test_av_format(AV_PIX_FMT_GBRP)) return nsVDXPixmap::kPixFormat_RGB888;
+				if (test_av_format(AV_PIX_FMT_0RGB32)) {
+					return nsVDXPixmap::kPixFormat_XRGB8888;
+				}
+				if (test_av_format(AV_PIX_FMT_RGB24)) {
+					return nsVDXPixmap::kPixFormat_RGB888;
+				}
+				if (test_av_format(AV_PIX_FMT_GBRP)) {
+					return nsVDXPixmap::kPixFormat_RGB888;
+				}
 			}
 
 			if (config->bits > 8) {
@@ -510,7 +516,9 @@ struct CodecBase : public CodecClass {
 	LRESULT compress_get_format(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout)
 	{
 		int extra_size = 0;
-		if (ctx) extra_size = (ctx->extradata_size + 1) & ~1;
+		if (ctx) {
+			extra_size = (ctx->extradata_size + 1) & ~1;
+		}
 
 		if (!lpbiOutput) {
 			return sizeof(BITMAPINFOHEADER) + extra_size;
@@ -539,7 +547,9 @@ struct CodecBase : public CodecClass {
 		outhdr->biSizeImage = iWidth * iHeight * 8;
 		if (ctx) {
 			outhdr->biSize = sizeof(BITMAPINFOHEADER) + ctx->extradata_size;
-			if (ctx->codec_tag) outhdr->biCompression = ctx->codec_tag;
+			if (ctx->codec_tag) {
+				outhdr->biCompression = ctx->codec_tag;
+			}
 			uint8* p = ((uint8*)outhdr) + sizeof(BITMAPINFOHEADER);
 			memset(p, 0, extra_size);
 			memcpy(p, ctx->extradata, ctx->extradata_size);
@@ -802,11 +812,17 @@ struct CodecBase : public CodecClass {
 
 		ctx->color_range = color_range;
 		ctx->colorspace = colorspace;
-		if (global_header) ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+		if (global_header) {
+			ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+		}
 
-		if (!init_ctx(layout)) return ICERR_BADPARAM;
+		if (!init_ctx(layout)) {
+			return ICERR_BADPARAM;
+		}
 
-		if (keyint > 1) ctx->gop_size = keyint;
+		if (keyint > 1) {
+			ctx->gop_size = keyint;
+		}
 
 		int ret = avcodec_open2(ctx, codec, nullptr);
 		if (ret < 0) {
@@ -940,7 +956,9 @@ struct CodecBase : public CodecClass {
 			}
 
 			DWORD flags = 0;
-			if (pkt->flags & AV_PKT_FLAG_KEY) flags = AVIIF_KEYFRAME;
+			if (pkt->flags & AV_PKT_FLAG_KEY) {
+				flags = AVIIF_KEYFRAME;
+			}
 			*icc->lpdwFlags = flags;
 
 			memcpy(icc->lpOutput, pkt->data, pkt->size);
@@ -1039,8 +1057,12 @@ void ConfigBase::adjust_bits()
 		int bits1 = 0;
 		for (int i = 0; i < std::size(option); i++) {
 			int x = option[i];
-			if (x) bits1 = x;
-			if (x >= bits) break;
+			if (x) {
+				bits1 = x;
+			}
+			if (x >= bits) {
+				break;
+			}
 		}
 
 		notify_bits_change(bits1, codec->config->bits);
@@ -1075,7 +1097,9 @@ void ConfigBase::init_bits()
 
 void ConfigBase::notify_hide()
 {
-	if (idc_message != -1) SetDlgItemTextW(mhdlg, idc_message, nullptr);
+	if (idc_message != -1) {
+		SetDlgItemTextW(mhdlg, idc_message, nullptr);
+	}
 }
 
 void ConfigBase::notify_bits_change(int bits_new, int bits_old)
@@ -1244,7 +1268,9 @@ struct CodecFFV1 : public CodecBase {
 		case AV_PIX_FMT_GBRP14:
 		case AV_PIX_FMT_GBRP16:
 		case AV_PIX_FMT_GBRAP16:
-			if (codec_config.level < 1) return false;
+			if (codec_config.level < 1) {
+				return false;
+			}
 		}
 		return CodecBase::test_av_format(format);
 	}
@@ -1340,7 +1366,9 @@ void ConfigFFV1::change_bits()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_CODER0), config->bits == 8);
-	if (config->bits > 8) config->coder = 1;
+	if (config->bits > 8) {
+		config->coder = 1;
+	}
 	init_coder();
 	ConfigBase::change_bits();
 }
@@ -1362,8 +1390,12 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_names[i]);
 		}
 		int x = 0;
-		if (config->level == 1) x = 1;
-		if (config->level == 3) x = 2;
+		if (config->level == 1) {
+			x = 1;
+		}
+		else if (config->level == 3) {
+			x = 2;
+		}
 		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, x, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
@@ -1384,8 +1416,12 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				int x = (int)SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_GETCURSEL, 0, 0);
 				config->level = 0;
-				if (x == 1) config->level = 1;
-				if (x == 2) config->level = 3;
+				if (x == 1) {
+					config->level = 1;
+				}
+				else if (x == 2) {
+					config->level = 3;
+				}
 				apply_level();
 				return TRUE;
 			}
@@ -1472,7 +1508,9 @@ struct CodecHUFF : public CodecBase {
 	{
 		ctx->thread_count = 0;
 		int pred = codec_config.prediction;
-		if (pred == 2 && config->format == format_rgb && config->bits == 8) pred = 0;
+		if (pred == 2 && config->format == format_rgb && config->bits == 8) {
+			pred = 0;
+		}
 		av_opt_set_int(ctx->priv_data, "pred", pred, 0);
 		return true;
 	}
@@ -1648,7 +1686,9 @@ void ConfigProres::init_profile()
 {
 	CodecProres::Config* config = (CodecProres::Config*)codec->config;
 	if (config->format == CodecBase::format_yuva444) {
-		if (config->profile < 4) config->profile = 4;
+		if (config->profile < 4) {
+			config->profile = 4;
+		}
 
 		const char* profile_names[] = {
 			"4444",
@@ -1693,16 +1733,24 @@ void ConfigProres::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
 	int sel = 0; // format_yuv422
-	if (codec->config->format == CodecBase::format_yuv444) sel = 1;
-	if (codec->config->format == CodecBase::format_yuva444) sel = 2;
+	if (codec->config->format == CodecBase::format_yuv444) {
+		sel = 1;
+	}
+	else if (codec->config->format == CodecBase::format_yuva444) {
+		sel = 2;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigProres::change_format(int sel)
 {
 	int format = CodecBase::format_yuv422;
-	if (sel == 1) format = CodecBase::format_yuv444;
-	if (sel == 2) format = CodecBase::format_yuva444;
+	if (sel == 1) {
+		format = CodecBase::format_yuv444;
+	}
+	else if (sel == 2) {
+		format = CodecBase::format_yuva444;
+	}
 	codec->config->format = format;
 	init_profile();
 }
@@ -1866,16 +1914,24 @@ void ConfigH264::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
 	int sel = 0; // format_yuv420
-	if (codec->config->format == CodecBase::format_yuv422) sel = 1;
-	if (codec->config->format == CodecBase::format_yuv444) sel = 2;
+	if (codec->config->format == CodecBase::format_yuv422) {
+		sel = 1;
+	}
+	else if (codec->config->format == CodecBase::format_yuv444) {
+		sel = 2;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigH264::change_format(int sel)
 {
 	int format = CodecBase::format_yuv420;
-	if (sel == 1) format = CodecBase::format_yuv422;
-	if (sel == 2) format = CodecBase::format_yuv444;
+	if (sel == 1) {
+		format = CodecBase::format_yuv422;
+	}
+	else if (sel == 2) {
+		format = CodecBase::format_yuv444;
+	}
 	codec->config->format = format;
 	init_bits();
 }
@@ -2083,18 +2139,30 @@ void ConfigH265::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
 	int sel = 0; // format_rgb
-	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
-	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
-	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
+	if (codec->config->format == CodecBase::format_yuv420) {
+		sel = 1;
+	}
+	else if (codec->config->format == CodecBase::format_yuv422) {
+		sel = 2;
+	}
+	else if (codec->config->format == CodecBase::format_yuv444) {
+		sel = 3;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigH265::change_format(int sel)
 {
 	int format = CodecBase::format_rgb;
-	if (sel == 1) format = CodecBase::format_yuv420;
-	if (sel == 2) format = CodecBase::format_yuv422;
-	if (sel == 3) format = CodecBase::format_yuv444;
+	if (sel == 1) {
+		format = CodecBase::format_yuv420;
+	}
+	else if (sel == 2) {
+		format = CodecBase::format_yuv422;
+	}
+	else if (sel == 3) {
+		format = CodecBase::format_yuv444;
+	}
 	codec->config->format = format;
 	init_bits();
 }
@@ -2157,8 +2225,9 @@ struct CodecVP8 : public CodecBase {
 
 		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
 		av_opt_set_int(ctx->priv_data, "max-intra-rate", 0, 0);
-		if (codec_config.format == format_yuva420)
+		if (codec_config.format == format_yuva420) {
 			av_opt_set_int(ctx->priv_data, "auto-alt-ref", 0, 0);
+		}
 		ctx->qmin = codec_config.crf;
 		ctx->qmax = codec_config.crf;
 		return true;
@@ -2208,7 +2277,9 @@ void ConfigVP8::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
 	int sel = 0; // format_yuv420
-	if (codec->config->format == CodecBase::format_yuva420) sel = 1;
+	if (codec->config->format == CodecBase::format_yuva420) {
+		sel = 1;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), false); //! need to pass side_data
 }
@@ -2216,7 +2287,9 @@ void ConfigVP8::init_format()
 void ConfigVP8::change_format(int sel)
 {
 	int format = CodecBase::format_yuv420;
-	if (sel == 1) format = CodecBase::format_yuva420;
+	if (sel == 1) {
+		format = CodecBase::format_yuva420;
+	}
 	codec->config->format = format;
 }
 
@@ -2336,18 +2409,30 @@ void ConfigVP9::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
 	}
 	int sel = 0; // format_rgb
-	if (codec->config->format == CodecBase::format_yuv420) sel = 1;
-	if (codec->config->format == CodecBase::format_yuv422) sel = 2;
-	if (codec->config->format == CodecBase::format_yuv444) sel = 3;
+	if (codec->config->format == CodecBase::format_yuv420) {
+		sel = 1;
+	}
+	else if (codec->config->format == CodecBase::format_yuv422) {
+		sel = 2;
+	}
+	else if (codec->config->format == CodecBase::format_yuv444) {
+		sel = 3;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigVP9::change_format(int sel)
 {
 	int format = CodecBase::format_rgb;
-	if (sel == 1) format = CodecBase::format_yuv420;
-	if (sel == 2) format = CodecBase::format_yuv422;
-	if (sel == 3) format = CodecBase::format_yuv444;
+	if (sel == 1) {
+		format = CodecBase::format_yuv420;
+	}
+	else if (sel == 2) {
+		format = CodecBase::format_yuv422;
+	}
+	else if (sel == 3) {
+		format = CodecBase::format_yuv444;
+	}
 	codec->config->format = format;
 	init_bits();
 }
@@ -2432,7 +2517,9 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 	case ICM_GETINFO:
 	{
 		ICINFO* icinfo = (ICINFO*)lParam1;
-		if (lParam2 < sizeof(ICINFO)) return 0;
+		if (lParam2 < sizeof(ICINFO)) {
+			return 0;
+		}
 		icinfo->dwSize = sizeof(ICINFO);
 		icinfo->fccType = ICTYPE_VIDEO;
 		icinfo->dwVersion = 0;
@@ -2442,8 +2529,9 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 	}
 
 	case ICM_CONFIGURE:
-		if (lParam1 != -1)
+		if (lParam1 != -1) {
 			return codec->configure((HWND)lParam1);
+		}
 		return ICERR_OK;
 
 	case ICM_ABOUT:

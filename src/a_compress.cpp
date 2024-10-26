@@ -100,8 +100,12 @@ void VDFFAudio::export_wav()
 	AVStream* st = avformat_new_stream(ofmt, 0);
 	st->time_base = av_make_q(1, ctx->sample_rate);
 	avcodec_parameters_from_context(st->codecpar, ctx);
-	if (avformat_write_header(ofmt, 0) < 0) goto cleanup;
-	if (av_write_trailer(ofmt) < 0) goto cleanup;
+	if (avformat_write_header(ofmt, 0) < 0) {
+		goto cleanup;
+	}
+	if (av_write_trailer(ofmt) < 0) {
+		goto cleanup;
+	}
 
 	{
 		out_format_size = *(int*)(io.data + 16);
@@ -112,8 +116,9 @@ void VDFFAudio::export_wav()
 
 		if (codec->id == AV_CODEC_ID_AAC) {
 			// is this ffmpeg' job to calculate right size?
-			if (max_packet > out_format->Format.nBlockAlign)
+			if (max_packet > out_format->Format.nBlockAlign) {
 				out_format->Format.nBlockAlign = max_packet;
+			}
 		}
 	}
 
@@ -221,7 +226,9 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 		if (fx->dwChannelMask && av_popcount(fx->dwChannelMask) == format->mChannels) {
 			av_channel_layout_from_mask(&ctx->ch_layout, fx->dwChannelMask);
 		}
-		if (fx->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) in_fmt = AV_SAMPLE_FMT_FLT;
+		if (fx->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) {
+			in_fmt = AV_SAMPLE_FMT_FLT;
+		}
 	}
 
 	if (in_fmt == AV_SAMPLE_FMT_FLT) {
@@ -322,14 +329,20 @@ void VDFFAudio::GetStreamInfo(VDXStreamInfo& si) const
 int VDFFAudio::SuggestFileFormat(const char* name)
 {
 	if (strcmp(name, "wav") == 0 || strcmp(name, "avi") == 0) {
-		if (wav_compatible) return vd2::kFormat_Good; else return vd2::kFormat_Reject;
+		if (wav_compatible) {
+			return vd2::kFormat_Good;
+		} else {
+			return vd2::kFormat_Reject;
+		}
 	}
 	return vd2::kFormat_Unknown;
 }
 
 bool VDFFAudio::Convert(bool flush, bool requireOutput)
 {
-	if (pkt->size) return true;
+	if (pkt->size) {
+		return true;
+	}
 
 	if (in_pos >= frame_size || (in_pos > 0 && flush)) {
 		const uint8_t* src[] = { in_buf };
@@ -351,12 +364,20 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 	avcodec_receive_packet(ctx, pkt);
 	for (int i = 0; i < pkt->side_data_elems; i++) {
 		AVPacketSideData& s = pkt->side_data[i];
-		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) export_wav();
+		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) {
+			export_wav();
+		}
 	}
-	if (pkt->size > max_packet) max_packet = pkt->size;
-	if (flush) export_wav();
+	if (pkt->size > max_packet) {
+		max_packet = pkt->size;
+	}
+	if (flush) {
+		export_wav();
+	}
 
-	if (pkt->size) return true;
+	if (pkt->size) {
+		return true;
+	}
 
 	return false;
 }
@@ -555,7 +576,9 @@ void VDFFAudio_aac::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_aacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_aac(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -605,7 +628,9 @@ void VDFFAudio_mp3::InitContext()
 	av_opt_set_int(ctx->priv_data, "joint_stereo", codec_config.flags & flag_jointstereo, 0);
 
 	// this estimate is fake, but leaving bit_rate=0 is worse
-	if (!(codec_config.flags & VDFFAudio::flag_constant_rate)) ctx->bit_rate = ctx->sample_rate * 4;
+	if (!(codec_config.flags & VDFFAudio::flag_constant_rate)) {
+		ctx->bit_rate = ctx->sample_rate * 4;
+	}
 }
 
 class AConfigMp3 : public AConfigBase
@@ -684,13 +709,15 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_JOINT_STEREO:
 			codec_config->flags &= ~VDFFAudio_mp3::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO)) {
 				codec_config->flags |= VDFFAudio_mp3::flag_jointstereo;
+			}
 			break;
 		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
+			}
 			init_quality();
 			break;
 		}
@@ -709,7 +736,9 @@ void VDFFAudio_mp3::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_mp3enc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_mp3(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -765,7 +794,9 @@ void VDFFAudio_flac::InitContext()
 bool VDXAPIENTRY ff_create_flacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_flac(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -843,8 +874,9 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_JOINT_STEREO:
 			codec_config->flags &= ~VDFFAudio_flac::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO)) {
 				codec_config->flags |= VDFFAudio_flac::flag_jointstereo;
+			}
 			break;
 		}
 	}
@@ -882,7 +914,9 @@ void VDFFAudio_alac::InitContext()
 bool VDXAPIENTRY ff_create_alacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_alac(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -1078,8 +1112,9 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
+			}
 			init_quality();
 			break;
 		}
@@ -1098,7 +1133,9 @@ void VDFFAudio_vorbis::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_vorbisenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_vorbis(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -1145,12 +1182,16 @@ void VDFFAudio_opus::InitContext()
 {
 	ctx->bit_rate = config->bitrate * ctx->ch_layout.nb_channels;
 	ctx->compression_level = config->quality;
-	if (config->flags & flag_constant_rate)
+
+	if (config->flags & flag_constant_rate) {
 		av_opt_set_int(ctx->priv_data, "vbr", 0, 0);
-	else if (config->flags & flag_limited_rate)
+	}
+	else if (config->flags & flag_limited_rate) {
 		av_opt_set_int(ctx->priv_data, "vbr", 2, 0);
-	else
+	}
+	else {
 		av_opt_set_int(ctx->priv_data, "vbr", 1, 0);
+	}
 }
 
 class AConfigOpus : public AConfigBase
@@ -1226,15 +1267,17 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_ENC_CBR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
 			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
 				codec_config->flags |= VDFFAudio::flag_constant_rate;
+			}
 			init_flags();
 			break;
 		case IDC_ENC_ABR:
 			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
 			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_ABR))
+			if (IsDlgButtonChecked(mhdlg, IDC_ENC_ABR)) {
 				codec_config->flags |= VDFFAudio_opus::flag_limited_rate;
+			}
 			init_flags();
 			break;
 		}
@@ -1253,7 +1296,9 @@ void VDFFAudio_opus::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_opusenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_opus(*pContext);
-	if (!p) return false;
+	if (!p) {
+		return false;
+	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;

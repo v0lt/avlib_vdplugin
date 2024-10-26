@@ -399,7 +399,9 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 		return false;
 	}
 
-	if (count * mRawFormat.Format.nBlockAlign > cbBuffer) count = cbBuffer / mRawFormat.Format.nBlockAlign;
+	if (count * mRawFormat.Format.nBlockAlign > cbBuffer) {
+		count = cbBuffer / mRawFormat.Format.nBlockAlign;
+	}
 
 	if (count == 0) {
 		*lBytesRead = 0;
@@ -461,7 +463,9 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 
 			do {
 				int s = read_packet(pkt.get(), ri);
-				if (s < 0) break;
+				if (s < 0) {
+					break;
+				}
 				pkt->data += s;
 				pkt->size -= s;
 			} while (pkt->size > 0);
@@ -471,7 +475,9 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 			av_packet_unref(pkt.get());
 		}
 
-		if (ri.last_sample < start) continue;
+		if (ri.last_sample < start) {
+			continue;
+		}
 
 		if (start == 0 && first_sample > 0) {
 			// some crappy padding
@@ -777,11 +783,21 @@ int VDFFAudioSource::BufferPage::copy(int s0, uint32_t count, void* dst, int sam
 
 int VDFFAudioSource::BufferPage::empty(int s0, uint32_t count)
 {
-	if (a0 <= s0 && a1 > s0) return 0;
-	if (b0 <= s0 && b1 > s0) return 0;
-	if (a0 > s0) return s0 + count < a0 ? count : a0 - s0;
-	if (b0 > s0) return s0 + count < b0 ? count : b0 - s0;
-	if (b1 <= s0) return s0 + count < size ? count : size - s0;
+	if (a0 <= s0 && a1 > s0) {
+		return 0;
+	}
+	if (b0 <= s0 && b1 > s0) {
+		return 0;
+	}
+	if (a0 > s0) {
+		return s0 + count < a0 ? count : a0 - s0;
+	}
+	if (b0 > s0) {
+		return s0 + count < b0 ? count : b0 - s0;
+	}
+	if (b1 <= s0) {
+		return s0 + count < size ? count : size - s0;
+	}
 	return 0;
 }
 
