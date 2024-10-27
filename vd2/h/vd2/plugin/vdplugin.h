@@ -212,10 +212,10 @@ struct FilterModPixmapInfo {
 	}
 
 	void clear() {
-		ref_r = 0;
-		ref_g = 0;
-		ref_b = 0;
-		ref_a = 0;
+		ref_r = 0xFF;
+		ref_g = 0xFF;
+		ref_b = 0xFF;
+		ref_a = 0xFF;
 		transfer_type = kTransferUnknown;
 		alpha_type = kAlphaInvalid;
 		frame_num = -1;
