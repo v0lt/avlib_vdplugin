@@ -212,10 +212,10 @@ struct FilterModPixmapInfo {
 	}
 
 	void clear() {
-		ref_r = 0xFF;
-		ref_g = 0xFF;
-		ref_b = 0xFF;
-		ref_a = 0xFF;
+		ref_r = 0xFF; // FIXME: don't use zero here because division by zero is possible in rare situations
+		ref_g = 0;
+		ref_b = 0;
+		ref_a = 0;
 		transfer_type = kTransferUnknown;
 		alpha_type = kAlphaInvalid;
 		frame_num = -1;
