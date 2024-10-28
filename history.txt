@@ -2,6 +2,7 @@ avlib.vdplugin history
 0.7.1 dev
 ----------------------
 FFmpeg 7.1 is now supported.
+Fixed freezing after early interruption of writing to a file when using some codecs.
 
 
 0.7.0.123 - 2024-08-30
