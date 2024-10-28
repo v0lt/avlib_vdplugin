@@ -941,8 +941,9 @@ struct CodecBase : public CodecClass {
 
 			ret = avcodec_send_frame(ctx, frame);
 		}
-		else if (icc->lFrameNum == frame_total) {
+		else if (icc->lFrameNum == frame_total || frame_total == 0) {
 			ret = avcodec_send_frame(ctx, nullptr);
+			frame_total = icc->lFrameNum;
 		}
 
 		if (ret == 0) {
