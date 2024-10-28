@@ -301,7 +301,7 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 
 	AVFormatContext* ctx = nullptr;
 	int err = 0;
-	err = avformat_open_input(&ctx, ff_path, 0, 0);
+	err = avformat_open_input(&ctx, ff_path, nullptr, nullptr);
 	if (err != 0) {
 		return IVDXInputFileDriver::kDC_None;
 	}
@@ -310,7 +310,7 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 		avformat_close_input(&ctx);
 		return IVDXInputFileDriver::kDC_None;
 	}
-	err = avformat_find_stream_info(ctx, 0);
+	err = avformat_find_stream_info(ctx, nullptr);
 	if (err < 0) {
 		avformat_close_input(&ctx);
 		return IVDXInputFileDriver::kDC_None;
@@ -645,7 +645,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 
 	AVFormatContext* fmt = nullptr;
 	int err = 0;
-	err = avformat_open_input(&fmt, ff_path, 0, 0);
+	err = avformat_open_input(&fmt, ff_path, nullptr, nullptr);
 	if (err != 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Unable to open file.");
 		return 0;
@@ -656,7 +656,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 		fmt->max_index_size = 512 * 1024 * 1024;
 	}
 
-	err = avformat_find_stream_info(fmt, 0);
+	err = avformat_find_stream_info(fmt, nullptr);
 	if (err < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
 		return 0;
@@ -735,7 +735,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 					mContext.mpCallbacks->SetError("FFMPEG: Unable to open image sequence.");
 					return 0;
 				}
-				err = avformat_find_stream_info(fmt, 0);
+				err = avformat_find_stream_info(fmt, nullptr);
 				if (err < 0) {
 					mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
 					return 0;
@@ -827,11 +827,11 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 int VDFFInputFile::find_stream(AVFormatContext* fmt, AVMediaType type)
 {
 	int video = -1;
-	int r0 = av_find_best_stream(fmt, AVMEDIA_TYPE_VIDEO, -1, -1, 0, 0);
+	int r0 = av_find_best_stream(fmt, AVMEDIA_TYPE_VIDEO, -1, -1, nullptr, 0);
 	if (r0 >= 0) video = r0;
 	if (type == AVMEDIA_TYPE_VIDEO) return video;
 
-	int r1 = av_find_best_stream(fmt, type, -1, video, 0, 0);
+	int r1 = av_find_best_stream(fmt, type, -1, video, nullptr, 0);
 	if (r1 >= 0) return r1;
 	return -1;
 }

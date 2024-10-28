@@ -1696,7 +1696,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 			src_fmt = proxy_fmt;
 		}
 
-		m_pSwsCtx = sws_getContext(w, h, src_fmt, w, h, convertInfo.av_fmt, flags, 0, 0, 0);
+		m_pSwsCtx = sws_getContext(w, h, src_fmt, w, h, convertInfo.av_fmt, flags, nullptr, nullptr, nullptr);
 		if (convertInfo.in_yuv && convertInfo.out_rgb) {
 			// range and color space only makes sence for yuv->rgb
 			// rgb->rgb is always exact

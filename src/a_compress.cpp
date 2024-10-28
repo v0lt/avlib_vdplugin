@@ -93,14 +93,14 @@ void VDFFAudio::export_wav()
 	IOWBuffer io;
 	int buf_size = 4096;
 	void* buf = av_malloc(buf_size);
-	AVIOContext* avio_ctx = avio_alloc_context((unsigned char*)buf, buf_size, 1, &io, 0, &IOWBuffer::Write, &IOWBuffer::Seek);
+	AVIOContext* avio_ctx = avio_alloc_context((unsigned char*)buf, buf_size, 1, &io, nullptr, &IOWBuffer::Write, &IOWBuffer::Seek);
 	AVFormatContext* ofmt = avformat_alloc_context();
 	ofmt->pb = avio_ctx;
-	ofmt->oformat = av_guess_format("wav", 0, 0);
-	AVStream* st = avformat_new_stream(ofmt, 0);
+	ofmt->oformat = av_guess_format("wav", nullptr, nullptr);
+	AVStream* st = avformat_new_stream(ofmt, nullptr);
 	st->time_base = av_make_q(1, ctx->sample_rate);
 	avcodec_parameters_from_context(st->codecpar, ctx);
-	if (avformat_write_header(ofmt, 0) < 0) {
+	if (avformat_write_header(ofmt, nullptr) < 0) {
 		goto cleanup;
 	}
 	if (av_write_trailer(ofmt) < 0) {
@@ -357,7 +357,7 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 
 	}
 	else if (flush) {
-		avcodec_send_frame(ctx, 0);
+		avcodec_send_frame(ctx, nullptr);
 	}
 
 	av_packet_unref(pkt);

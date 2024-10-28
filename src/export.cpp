@@ -59,9 +59,9 @@ void adjust_codec_tag(const char* src_format, const AVOutputFormat* format, AVSt
 uint32 export_avi_fcc(AVStream* src)
 {
 	AVFormatContext* ctx = avformat_alloc_context();
-	AVStream* st = avformat_new_stream(ctx, 0);
+	AVStream* st = avformat_new_stream(ctx, nullptr);
 	avcodec_parameters_copy(st->codecpar, src->codecpar);
-	const AVOutputFormat* format = av_guess_format("avi", 0, 0);
+	const AVOutputFormat* format = av_guess_format("avi", nullptr, nullptr);
 	adjust_codec_tag(0, format, st);
 	uint32 r = st->codecpar->codec_tag;
 	// missing tag in type1 avi
@@ -304,7 +304,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		char out_ff_path[ff_path_size];
 		widechar_to_utf8(out_ff_path, ff_path_size, path2);
 
-		const AVOutputFormat* oformat = av_guess_format(0, out_ff_path, 0);
+		const AVOutputFormat* oformat = av_guess_format(nullptr, out_ff_path, nullptr);
 		if (!oformat) {
 			MessageBoxW((HWND)parent, L"Unable to find a suitable output format", L"Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
@@ -327,16 +327,16 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		AVStream* out_audio = nullptr;
 
 		int err = 0;
-		err = avformat_open_input(&fmt, ff_path, 0, 0);
+		err = avformat_open_input(&fmt, ff_path, nullptr, nullptr);
 		if (err < 0) {
 			goto end;
 		}
-		err = avformat_find_stream_info(fmt, 0);
+		err = avformat_find_stream_info(fmt, nullptr);
 		if (err < 0) {
 			goto end;
 		}
 
-		err = avformat_alloc_output_context2(&ofmt, 0, 0, out_ff_path);
+		err = avformat_alloc_output_context2(&ofmt, nullptr, nullptr, out_ff_path);
 		if (err < 0) {
 			goto end;
 		}
@@ -352,7 +352,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			}
 
 			AVStream* in_stream = fmt->streams[i];
-			AVStream* out_stream = avformat_new_stream(ofmt, 0);
+			AVStream* out_stream = avformat_new_stream(ofmt, nullptr);
 			if (!out_stream) {
 				err = AVERROR_UNKNOWN;
 				goto end;
@@ -391,7 +391,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			}
 		}
 
-		err = avformat_write_header(ofmt, 0);
+		err = avformat_write_header(ofmt, nullptr);
 		if (err < 0) {
 			goto end;
 		}
@@ -578,16 +578,16 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
 	if (format && format[0]) {
-		oformat = av_guess_format(format, 0, 0);
+		oformat = av_guess_format(format, nullptr, nullptr);
 	}
 	if (strcmp(format, "mov+faststart") == 0) {
-		oformat = av_guess_format("mov", 0, 0);
+		oformat = av_guess_format("mov", nullptr, nullptr);
 	}
 	if (strcmp(format, "mp4+faststart") == 0) {
-		oformat = av_guess_format("mp4", 0, 0);
+		oformat = av_guess_format("mp4", nullptr, nullptr);
 	}
 	if (!oformat) {
-		oformat = av_guess_format(0, out_ff_path, 0);
+		oformat = av_guess_format(nullptr, out_ff_path, nullptr);
 	}
 	if (!oformat) {
 		return false;
@@ -600,26 +600,26 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 	if (oformat->flags & AVFMT_GLOBALHEADER) {
 		sc.global_header = true;
 	}
-	if (oformat == av_guess_format("matroska", 0, 0)) {
+	if (oformat == av_guess_format("matroska", nullptr, nullptr)) {
 		sc.use_offsets = true;
 		sc.timebase_num = 1000;
 		sc.timebase_den = AV_TIME_BASE;
 	}
-	if (oformat == av_guess_format("webm", 0, 0)) {
+	if (oformat == av_guess_format("webm", nullptr, nullptr)) {
 		sc.use_offsets = true;
 		sc.timebase_num = 1000;
 		sc.timebase_den = AV_TIME_BASE;
 	}
-	if (oformat == av_guess_format("mov", 0, 0)) {
+	if (oformat == av_guess_format("mov", nullptr, nullptr)) {
 		sc.use_offsets = true;
 	}
-	if (oformat == av_guess_format("mp4", 0, 0)) {
+	if (oformat == av_guess_format("mp4", nullptr, nullptr)) {
 		sc.use_offsets = true;
 	}
-	if (oformat == av_guess_format("ipod", 0, 0)) {
+	if (oformat == av_guess_format("ipod", nullptr, nullptr)) {
 		sc.use_offsets = true;
 	}
-	if (oformat == av_guess_format("nut", 0, 0)) {
+	if (oformat == av_guess_format("nut", nullptr, nullptr)) {
 		sc.use_offsets = true;
 	}
 
@@ -638,18 +638,18 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
 	if (format && format[0]) {
-		oformat = av_guess_format(format, 0, 0);
+		oformat = av_guess_format(format, nullptr, nullptr);
 	}
 	if (strcmp(format, "mov+faststart") == 0) {
-		oformat = av_guess_format("mov", 0, 0);
+		oformat = av_guess_format("mov", nullptr, nullptr);
 		mp4_faststart = true;
 	}
 	if (strcmp(format, "mp4+faststart") == 0) {
-		oformat = av_guess_format("mp4", 0, 0);
+		oformat = av_guess_format("mp4", nullptr, nullptr);
 		mp4_faststart = true;
 	}
 	if (!oformat) {
-		oformat = av_guess_format(0, out_ff_path, 0);
+		oformat = av_guess_format(nullptr, out_ff_path, nullptr);
 	}
 	if (!oformat) {
 		mContext.mpCallbacks->SetError("Unable to find a suitable output format");
@@ -659,7 +659,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 
 	format_name = oformat->name;
 
-	err = avformat_alloc_output_context2(&m_ofmt, oformat, 0, out_ff_path); // filename needed for second pass
+	err = avformat_alloc_output_context2(&m_ofmt, oformat, nullptr, out_ff_path); // filename needed for second pass
 	if (err < 0) {
 		av_error(err);
 		Finalize();
@@ -692,7 +692,7 @@ void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* p
 		return;
 	}
 
-	AVStream* st = avformat_new_stream(m_ofmt, 0);
+	AVStream* st = avformat_new_stream(m_ofmt, nullptr);
 	st->codecpar->codec_type = AVMEDIA_TYPE_VIDEO;
 
 	import_bmp(st, pFormat, cbFormat);
@@ -760,7 +760,7 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* p
 		// matroskaenc, movenc expect audio packet with side_data
 
 		AVFormatContext* ofmt1 = avformat_alloc_context();
-		AVStream* st1 = avformat_new_stream(ofmt1, 0);
+		AVStream* st1 = avformat_new_stream(ofmt1, nullptr);
 		import_wav(st1, pFormat, cbFormat);
 		if (s.st->codecpar->extradata_size) {
 			av_freep(&s.st->codecpar->extradata);
@@ -778,12 +778,12 @@ void FFOutputFile::SetAudio(uint32 index, const VDXStreamInfo& si, const void* p
 		return;
 	}
 
-	AVStream* st = avformat_new_stream(m_ofmt, 0);
+	AVStream* st = avformat_new_stream(m_ofmt, nullptr);
 	st->codecpar->codec_type = AVMEDIA_TYPE_AUDIO;
 
 	import_wav(st, pFormat, cbFormat);
 
-	if (m_ofmt->oformat == av_guess_format("aiff", 0, 0)) {
+	if (m_ofmt->oformat == av_guess_format("aiff", nullptr, nullptr)) {
 		if (st->codecpar->codec_id == AV_CODEC_ID_PCM_S16LE) {
 			st->codecpar->codec_id = AV_CODEC_ID_PCM_S16BE;
 			s.bswap_pcm = true;
@@ -971,16 +971,16 @@ void FFOutputFile::import_wav(AVStream* st, const void* pFormat, int cbFormat)
 
 	IOBuffer buf;
 	buf.copy(&wav[0], (int)wav.size());
-	AVIOContext* avio_ctx = avio_alloc_context(0, 0, 0, &buf, &IOBuffer::Read, 0, 0);
+	AVIOContext* avio_ctx = avio_alloc_context(nullptr, 0, 0, &buf, &IOBuffer::Read, nullptr, nullptr);
 
 	AVFormatContext* fmt_ctx = avformat_alloc_context();
 	fmt_ctx->pb = avio_ctx;
-	int err = avformat_open_input(&fmt_ctx, 0, 0, 0);
+	int err = avformat_open_input(&fmt_ctx, nullptr, nullptr, nullptr);
 	if (err < 0) {
 		av_error(err);
 		goto fail;
 	}
-	err = avformat_find_stream_info(fmt_ctx, 0);
+	err = avformat_find_stream_info(fmt_ctx, nullptr);
 	if (err < 0) {
 		av_error(err);
 		goto fail;
@@ -1031,11 +1031,11 @@ bool FFOutputFile::test_streams()
 		IOWBuffer io;
 		int buf_size = 4096;
 		void* buf = av_malloc(buf_size);
-		AVIOContext* avio_ctx = avio_alloc_context((unsigned char*)buf, buf_size, 1, &io, 0, &IOWBuffer::Write, &IOWBuffer::Seek);
+		AVIOContext* avio_ctx = avio_alloc_context((unsigned char*)buf, buf_size, 1, &io, nullptr, &IOWBuffer::Write, &IOWBuffer::Seek);
 		AVFormatContext* ofmt = avformat_alloc_context();
 		ofmt->pb = avio_ctx;
 		ofmt->oformat = this->m_ofmt->oformat;
-		AVStream* st = avformat_new_stream(ofmt, 0);
+		AVStream* st = avformat_new_stream(ofmt, nullptr);
 		avcodec_parameters_copy(st->codecpar, si.st->codecpar);
 		st->sample_aspect_ratio = si.st->sample_aspect_ratio;
 		st->avg_frame_rate = si.st->avg_frame_rate;
@@ -1043,13 +1043,13 @@ bool FFOutputFile::test_streams()
 		st->time_base = si.st->time_base;
 
 		if (st->codecpar->codec_type == AVMEDIA_TYPE_AUDIO) {
-			if (ofmt->oformat == av_guess_format("mp4", 0, 0)) {
+			if (ofmt->oformat == av_guess_format("mp4", nullptr, nullptr)) {
 				st->codecpar->codec_tag = 0;
 			}
 		}
 
 		bool failed = true;
-		if (avformat_write_header(ofmt, 0) < 0) {
+		if (avformat_write_header(ofmt, nullptr) < 0) {
 			goto cleanup;
 		}
 		if (av_write_trailer(ofmt) < 0) {
