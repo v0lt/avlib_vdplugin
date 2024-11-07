@@ -490,6 +490,8 @@ void VDFFInputFile::DisplayInfo(VDXHWND hwndParent)
 
 void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 {
+	DLog(L"VDFFInputFile::Init - %s", szFile);
+
 	if (!szFile) {
 		mContext.mpCallbacks->SetError("No File Given");
 		return;
@@ -497,10 +499,14 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 
 	if (in_opts) {
 		VDFFInputFileOptions* opt = (VDFFInputFileOptions*)in_opts;
-		if (opt->data.disable_cache) cfg_disable_cache = true;
+		if (opt->data.disable_cache) {
+			cfg_disable_cache = true;
+		}
 	}
 
-	if (cfg_frame_buffers < 1) cfg_frame_buffers = 1;
+	if (cfg_frame_buffers < 1) {
+		cfg_frame_buffers = 1;
+	}
 
 	wcscpy_s(path, szFile);
 
@@ -509,7 +515,9 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 	// audio will manage its own
 	m_pFormatCtx = open_file(AVMEDIA_TYPE_VIDEO);
 
-	if (auto_append) do_auto_append(szFile);
+	if (auto_append) {
+		do_auto_append(szFile);
+	}
 }
 
 int VDFFInputFile::GetFileFlags()
