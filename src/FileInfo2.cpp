@@ -241,12 +241,12 @@ void VDFFInputFileInfoDialog::print_video()
 	}
 
 	if (segment->is_image) {
-		swprintf_s(buf, L"%u x %u", pVideoCtx->width, pVideoCtx->height);
+		swprintf_s(buf, L"%d x %d", pVideoCtx->width, pVideoCtx->height);
 		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
 	}
 	else {
 		VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
-		swprintf_s(buf, L"%u x %u, %.3f fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
+		swprintf_s(buf, L"%d x %d, %.3f fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
 		if (segment->video_source->average_fr) {
 			wcscat_s(buf, L" (average)");
 		}
@@ -262,7 +262,7 @@ void VDFFInputFileInfoDialog::print_video()
 	}
 	AVRational ar1;
 	av_reduce(&ar1.num, &ar1.den, ar.num, ar.den, INT_MAX);
-	swprintf_s(buf, L"%u : %u", ar1.num, ar1.den);
+	swprintf_s(buf, L"%d : %d", ar1.num, ar1.den);
 	SetDlgItemTextW(mhdlg, IDC_VIDEO_ASPECTRATIO, buf);
 
 	if (pVideoCtx->bit_rate) {
@@ -288,11 +288,11 @@ void VDFFInputFileInfoDialog::print_audio()
 
 	SetDlgItemTextA(mhdlg, IDC_AUDIO_CODECNAME, codec_name);
 
-	swprintf_s(buf, L"%u Hz", pAudioCtx->sample_rate);
+	swprintf_s(buf, L"%d Hz", pAudioCtx->sample_rate);
 	SetDlgItemTextW(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
 
 	av_channel_layout_describe(&pAudioCtx->ch_layout, bufA, sizeof(bufA));
-	sprintf(bufA+strlen(bufA), " (%u), ", pAudioCtx->ch_layout.nb_channels);
+	sprintf(bufA+strlen(bufA), " (%d), ", pAudioCtx->ch_layout.nb_channels);
 	if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE) {
 		strcat_s(bufA, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
 	}
