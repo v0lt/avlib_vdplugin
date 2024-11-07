@@ -1,6 +1,5 @@
 /*
- * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2024 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -9,6 +8,32 @@
 
 #include <string>
 #include <algorithm>
+
+#if _DEBUG
+template <typename... Args>
+void DLog(const char* format, Args ...args)
+{
+	char buf[2000];
+
+	sprintf_s(buf, format, args...);
+	cscat_s(buf, L"\n");
+
+	OutputDebugStringA(buf);
+};
+
+template <typename... Args>
+void DLog(const wchar_t* format, Args ...args)
+{
+	wchar_t buf[2000];
+
+	swprintf_s(buf, format, args...);
+	wcscat_s(buf, L"\n");
+
+	OutputDebugStringW(buf);
+};
+#else
+#define DLog(...) __noop
+#endif
 
 inline void str_tolower(std::string& s)
 {
