@@ -2035,7 +2035,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 		}
 
 		avcodec_flush_buffers(m_pCodecCtx);
-		::seek_frame(m_pFormatCtx, m_streamIndex, seek_pos, AVSEEK_FLAG_BACKWARD);
+		::seek_frame(m_pFormatCtx, m_streamIndex, seek_pos, 0);
 		if (trust_index || is_image_list) {
 			next_frame = seek_frame;
 		} else {
