@@ -187,7 +187,7 @@ void VDFFInputFileInfoDialog::print_format()
 
 void VDFFInputFileInfoDialog::print_video()
 {
-	AVStream* pVideoStream = segment->video_source->m_pStreamCtx;
+	AVStream* pVideoStream = segment->video_source->m_pStream;
 	AVCodecContext* pVideoCtx = segment->video_source->m_pCodecCtx;
 	AVCodecParameters* codecpar = pVideoStream->codecpar;
 	if (!pVideoCtx) return;
@@ -352,7 +352,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 	AVFormatContext* pFormatCtx = segment->m_pFormatCtx;
 	AVStream* pVideoStream = nullptr;
 	AVStream* pAudioStream = nullptr;
-	if (segment->video_source) pVideoStream = segment->video_source->m_pStreamCtx;
+	if (segment->video_source) pVideoStream = segment->video_source->m_pStream;
 	if (segment->audio_source) pAudioStream = segment->audio_source->m_pStreamCtx;
 
 	std::wstring s;
