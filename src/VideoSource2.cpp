@@ -9,6 +9,7 @@
 #include "VideoSource2.h"
 #include "export.h"
 #include <functional>
+#include "Utils.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>
@@ -2028,7 +2029,9 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 			return true;
 		}
 
-		if (!m_copy_mode && frame_array[start]) return true;
+		if (!m_copy_mode && frame_array[start]) {
+			return true;
+		}
 
 		//! missed seek or bad stream, just fail
 		// better idea is to build new corrected index maybe
@@ -2150,14 +2153,18 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 	dead_range_start = -1;
 	dead_range_end = -1;
 	int64_t ts = pts;
-	if (ts == AV_NOPTS_VALUE) ts = dts;
+	if (ts == AV_NOPTS_VALUE) {
+		ts = dts;
+	}
 	int pos = next_frame;
 
 	if (avi_drop_index && pos != -1) {
 		while (pos < sample_count && frame_type[pos] == 'D') pos++;
 	}
 	else if (!trust_index && !is_image_list) {
-		if (ts == AV_NOPTS_VALUE && pos == -1) return -1;
+		if (ts == AV_NOPTS_VALUE && pos == -1) {
+			return -1;
+		}
 
 		if (ts != AV_NOPTS_VALUE) {
 			// guess where we are
@@ -2168,7 +2175,9 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 		}
 	}
 
-	if (pos > last_seek_frame) last_seek_frame = -1;
+	if (pos > last_seek_frame) {
+		last_seek_frame = -1;
+	}
 	return pos;
 }
 
@@ -2176,13 +2185,17 @@ int VDFFVideoSource::handle_frame()
 {
 	decoded_count++;
 	int pos = handle_frame_num(m_pFrame->pts, m_pFrame->pkt_dts);
-	if (pos == -1) return -1;
+	if (pos == -1) {
+		return -1;
+	}
 
 	if (next_frame > 0 && pos > next_frame) {
 		// gap between frames, fill with dups
 		// caused by non-constant framerate etc
 		BufferPage* page = frame_array[next_frame - 1];
-		if (page) copy_page(next_frame, pos - 1, page);
+		if (page) {
+			copy_page(next_frame, pos - 1, page);
+		}
 	}
 
 	next_frame = pos + 1;
@@ -2207,10 +2220,16 @@ int VDFFVideoSource::handle_frame()
 		}
 		else {
 			uint8_t* dst = page->pic_data;
-			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210)
+			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210) {
 				memcpy(dst, m_pFrame->data[0], m_pFrame->linesize[0] * m_pFrame->height);
-			else
+			} else {
 				av_image_copy_to_buffer(dst, frame_size, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height, line_align);
+#if _DEBUG && 0
+				wchar_t filepath[MAX_PATH] = {};
+				swprintf_s(filepath, L"C:\\Temp\\VideoFrame%04d.bmp", pos);
+				DumpImageToFile(filepath, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height);
+#endif
+			}
 		}
 	}
 	else if (direct_buffer) {
@@ -2231,7 +2250,9 @@ bool VDFFVideoSource::check_frame_format()
 void VDFFVideoSource::alloc_direct_buffer()
 {
 	int pos = next_frame;
-	if (!frame_array[pos]) alloc_page(pos);
+	if (!frame_array[pos]) {
+		alloc_page(pos);
+	}
 	BufferPage* page = frame_array[pos];
 	open_write(page);
 }

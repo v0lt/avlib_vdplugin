@@ -35,6 +35,8 @@ void DLog(const wchar_t* format, Args ...args)
 #define DLog(...) __noop
 #endif
 
+bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], const int src_linesize[4], enum AVPixelFormat pix_fmt, int width, int height);
+
 inline void str_tolower(std::string& s)
 {
 	std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) { return std::tolower(c); });
