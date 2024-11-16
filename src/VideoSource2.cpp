@@ -111,7 +111,6 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 		}
 
 		if (duration != AV_NOPTS_VALUE) {
-			int rndd = frame_ts.num / 2;
 			//! stream duration really means last timestamp
 			// found on "10 bit.mp4"
 			// also works with mkv (derived from file duration)
@@ -130,6 +129,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 				duration += start_pts;
 				start_pts = 0; // ignore count_error
 			}
+			const int rndd = frame_ts.num / 2;
 			sample_count = (int)((duration * frame_ts.den + rndd) / frame_ts.num);
 			int e = (int)((start_pts * frame_ts.den + rndd) / frame_ts.num);
 			e = abs(e);
@@ -354,7 +354,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 				if (index_entry->flags & AVINDEX_KEYFRAME) {
 					int64_t ts = index_entry->timestamp;
 					ts -= m_pStream->start_time;
-					int rndd = frame_ts.num / 2;
+					const int rndd = frame_ts.num / 2;
 					int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 					int d = pos - p0;
 					p0 = pos;
@@ -544,7 +544,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		for (int i = 0; i < nb_index_entries; i++) {
 			int64_t ts = avformat_index_get_entry(m_pStream, i)->timestamp;
 			ts -= m_pStream->start_time;
-			int rndd = frame_ts.num / 2;
+			const int rndd = frame_ts.num / 2;
 			int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 			if (pos >= 0 && pos < sample_count) {
 				frame_type[pos] = ' ';
@@ -1801,14 +1801,14 @@ int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
 	// works with 10 bit.mp4: sample*den/num = exactly key timestamp
 	// half-frame bias helps with some rounding noise
 	// works with 2017-04-07 08-53-48.flv
-	int rd = frame_ts.num / 2;
-	int64_t pos1 = (sample * frame_ts.num + rd) / frame_ts.den;
+	int64_t pos1 = (sample * frame_ts.num + frame_ts.num / 2) / frame_ts.den;
 	int x = av_index_search_timestamp(m_pStream, pos1, AVSEEK_FLAG_BACKWARD);
 	if (x == -1) {
 		return -1;
 	}
 	pos = avformat_index_get_entry(m_pStream, x)->timestamp;
-	int frame = int((pos * frame_ts.den + rd) / frame_ts.num);
+	const int rndd = frame_ts.num / 2;
+	int frame = int((pos * frame_ts.den + rndd) / frame_ts.num);
 	return frame;
 }
 
@@ -2227,7 +2227,7 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 			// guess where we are
 			// timestamp to frame number is at times unreliable
 			ts -= start_time;
-			int rndd = frame_ts.num / 2;
+			const int rndd = frame_ts.num / 2;
 			pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 		}
 	}
