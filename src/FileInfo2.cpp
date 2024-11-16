@@ -276,7 +276,7 @@ void VDFFInputFileInfoDialog::print_video()
 
 void VDFFInputFileInfoDialog::print_audio()
 {
-	AVStream* pAudioStream = segment->audio_source->m_pStreamCtx;
+	AVStream* pAudioStream = segment->audio_source->m_pStream;
 	AVCodecContext* pAudioCtx = segment->audio_source->m_pCodecCtx;
 	if (!pAudioCtx) return;
 
@@ -352,8 +352,12 @@ void VDFFInputFileInfoDialog::print_metadata()
 	AVFormatContext* pFormatCtx = segment->m_pFormatCtx;
 	AVStream* pVideoStream = nullptr;
 	AVStream* pAudioStream = nullptr;
-	if (segment->video_source) pVideoStream = segment->video_source->m_pStream;
-	if (segment->audio_source) pAudioStream = segment->audio_source->m_pStreamCtx;
+	if (segment->video_source) {
+		pVideoStream = segment->video_source->m_pStream;
+	}
+	if (segment->audio_source) {
+		pAudioStream = segment->audio_source->m_pStream;
+	}
 
 	std::wstring s;
 

@@ -62,8 +62,8 @@ private:
 
 	AVFormatContext* m_pFormatCtx = nullptr;
 public:
-	AVStream*        m_pStreamCtx = nullptr;
-	AVCodecContext*  m_pCodecCtx  = nullptr;
+	AVStream*       m_pStream   = nullptr;
+	AVCodecContext* m_pCodecCtx = nullptr;
 	VDXStreamSourceInfo m_streamInfo = {};
 	int m_streamIndex    = 0;
 	int64_t sample_count = 0;

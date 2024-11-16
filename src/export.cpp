@@ -399,7 +399,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		/*
 		int64_t vt_end = video_source->frame_to_pts_next(end);
 		int64_t at_end = -1;
-		if(out_audio) at_end = audio_source->frame_to_pts(end,video_source->m_pStreamCtx);
+		if(out_audio) at_end = audio_source->frame_to_pts(end,video_source->m_pStream);
 		*/
 
 		pos1 = end * video_source->time_base.den / video_source->time_base.num + video_source->start_time;

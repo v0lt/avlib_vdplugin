@@ -63,18 +63,18 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	m_pSource = pSource;
 	m_streamIndex = streamIndex;
-	m_pStreamCtx = m_pFormatCtx->streams[m_streamIndex];
+	m_pStream = m_pFormatCtx->streams[m_streamIndex];
 
-	const AVCodec* pDecoder = avcodec_find_decoder(m_pStreamCtx->codecpar->codec_id);
+	const AVCodec* pDecoder = avcodec_find_decoder(m_pStream->codecpar->codec_id);
 	if (!pDecoder) {
-		mContext.mpCallbacks->SetError("FFMPEG: Unsupported audio codec (%d)", m_pStreamCtx->codecpar->codec_id);
+		mContext.mpCallbacks->SetError("FFMPEG: Unsupported audio codec (%d)", m_pStream->codecpar->codec_id);
 		return -1;
 	}
 	m_pCodecCtx = avcodec_alloc_context3(pDecoder);
 	if (!m_pCodecCtx) {
 		return -1;
 	}
-	avcodec_parameters_to_context(m_pCodecCtx, m_pStreamCtx->codecpar);
+	avcodec_parameters_to_context(m_pCodecCtx, m_pStream->codecpar);
 	m_pCodecCtx->thread_count = 1;
 
 	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
@@ -85,7 +85,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 
-	const AVRational tb = m_pStreamCtx->time_base;
+	const AVRational tb = m_pStream->time_base;
 	// should normally reduce to integer if timebase is derived from sample_rate
 	av_reduce(&time_base.num, &time_base.den, int64(m_pCodecCtx->sample_rate) * tb.num, tb.den, INT_MAX);
 
@@ -95,13 +95,13 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		trust_sample_pos = false;
 	}
 
-	if (m_pStreamCtx->duration == AV_NOPTS_VALUE) {
+	if (m_pStream->duration == AV_NOPTS_VALUE) {
 		/*
 		const char* class_name = m_pFormatCtx->iformat->priv_class->class_name;
 		if(strcmp(class_name,"avi")==0){
 			// pcm avi has it here, maybe bug in avidec
 			// not using this now as there is no win
-			sample_count = m_pStreamCtx->nb_frames;
+			sample_count = m_pStream->nb_frames;
 		} else*/ {
 		// this gives inexact value
 			if (m_pFormatCtx->duration == AV_NOPTS_VALUE) {
@@ -113,27 +113,27 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		}
 	}
 	else {
-		sample_count = (m_pStreamCtx->duration * time_base.num + time_base.den / 2) / time_base.den;
+		sample_count = (m_pStream->duration * time_base.num + time_base.den / 2) / time_base.den;
 	}
 
 	use_keys = false;
-	int nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+	int nb_index_entries = avformat_index_get_entries_count(m_pStream);
 	if (nb_index_entries < 60) {
 		// go to the last record of the current index and back. this will fill up the index a bit.
 		// here you should not search to the end of the file, this will greatly slow down
 		// the opening of a large file with a large number of audio tracks.
 		// works for MKV and FLV
-		const AVIndexEntry* ie = avformat_index_get_entry(m_pStreamCtx, nb_index_entries - 1);
+		const AVIndexEntry* ie = avformat_index_get_entry(m_pStream, nb_index_entries - 1);
 		if (ie) {
 			seek_frame(m_pFormatCtx, m_streamIndex, ie->pos, AVSEEK_FLAG_BACKWARD);
 			seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
 			// get the number of index entries again
-			nb_index_entries = avformat_index_get_entries_count(m_pStreamCtx);
+			nb_index_entries = avformat_index_get_entries_count(m_pStream);
 		}
 	}
 
 	for (int i = 0; i < nb_index_entries; i++) {
-		if (avformat_index_get_entry(m_pStreamCtx, i)->flags & AVINDEX_KEYFRAME) {
+		if (avformat_index_get_entry(m_pStream, i)->flags & AVINDEX_KEYFRAME) {
 			use_keys = true;
 			break;
 		}
@@ -333,7 +333,7 @@ void VDFFAudioSource::init_start_time()
 		av_packet_unref(pkt.get());
 	}
 
-	start_time = m_pStreamCtx->start_time;
+	start_time = m_pStream->start_time;
 	if (start_time == AV_NOPTS_VALUE) {
 		start_time = 0;
 	}
@@ -346,7 +346,7 @@ void VDFFAudioSource::init_start_time()
 	int vs = m_pSource->find_stream(m_pFormatCtx, AVMEDIA_TYPE_VIDEO);
 	if (vs != -1) {
 		AVStream* video = m_pFormatCtx->streams[vs];
-		AVRational at = m_pStreamCtx->time_base;
+		AVRational at = m_pStream->time_base;
 		AVRational vt = video->time_base;
 
 		// reference formula
