@@ -402,7 +402,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		if(out_audio) at_end = audio_source->frame_to_pts(end,video_source->m_pStream);
 		*/
 
-		pos1 = end * video_source->time_base.den / video_source->time_base.num + video_source->start_time;
+		pos1 = end * video_source->frame_ts.num / video_source->frame_ts.den + video_source->start_time;
 		av_seek_frame(fmt, video, pos1, 0);
 
 		while (1) {
@@ -435,7 +435,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			}
 		}
 
-		pos0 = start * video_source->time_base.den / video_source->time_base.num + video_source->start_time;
+		pos0 = start * video_source->frame_ts.num / video_source->frame_ts.den + video_source->start_time;
 		av_seek_frame(fmt, video, pos0, AVSEEK_FLAG_BACKWARD);
 
 		v_end = out_video == 0;

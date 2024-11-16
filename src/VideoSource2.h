@@ -102,10 +102,10 @@ public:
 	AVStream*       m_pStream   = nullptr;
 	AVCodecContext* m_pCodecCtx = nullptr;
 	VDXStreamSourceInfoV3 m_streamInfo = {};
-	int m_streamIndex    = 0;
-	int sample_count     = 0;
-	AVRational time_base = {};
-	int64_t start_time   = 0;
+	int m_streamIndex   = 0;
+	int sample_count    = 0;
+	AVRational frame_ts = {}; // how many timestamps are there per frame
+	int64_t start_time  = 0;
 
 private:
 	std::unique_ptr<uint8_t[]> direct_format;

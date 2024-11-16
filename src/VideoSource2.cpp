@@ -92,7 +92,7 @@ void* VDXAPIENTRY VDFFVideoSource::AsInterface(uint32_t iid)
 int VDFFVideoSource::init_duration(const AVRational fr)
 {
 	AVRational tb = m_pStream->time_base;
-	av_reduce(&time_base.num, &time_base.den, int64_t(fr.num) * tb.num, int64_t(fr.den) * tb.den, INT_MAX);
+	av_reduce(&frame_ts.num, &frame_ts.den, int64_t(fr.den) * tb.den, int64_t(fr.num) * tb.num, INT_MAX);
 
 	int sample_count_error = 2;
 
@@ -111,7 +111,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 		}
 
 		if (duration != AV_NOPTS_VALUE) {
-			int rndd = time_base.den / 2;
+			int rndd = frame_ts.num / 2;
 			//! stream duration really means last timestamp
 			// found on "10 bit.mp4"
 			// also works with mkv (derived from file duration)
@@ -130,8 +130,8 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 				duration += start_pts;
 				start_pts = 0; // ignore count_error
 			}
-			sample_count = (int)((duration * time_base.num + rndd) / time_base.den);
-			int e = (int)((start_pts * time_base.num + rndd) / time_base.den);
+			sample_count = (int)((duration * frame_ts.den + rndd) / frame_ts.num);
+			int e = (int)((start_pts * frame_ts.den + rndd) / frame_ts.num);
 			e = abs(e);
 			if (e > sample_count_error) {
 				sample_count_error = e;
@@ -227,7 +227,9 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		// example: amanda_excerpt.m2t
 		// idea of this: r_fr cannot be lower than average
 		AVRational avg_fr = m_pStream->avg_frame_rate;
-		if (int64_t(r_fr.num) * avg_fr.den >= int64_t(avg_fr.num) * r_fr.den * 2) r_fr.den *= 2;
+		if (int64_t(r_fr.num) * avg_fr.den >= int64_t(avg_fr.num) * r_fr.den * 2) {
+			r_fr.den *= 2;
+		}
 	}
 	int sample_count_error = init_duration(r_fr);
 	if (sample_count_error == -1) {
@@ -240,7 +242,6 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		sparse_index = false;
 		keyframe_gap = 1;
 		fw_seek_threshold = 1;
-
 	}
 	else {
 		int nb_index_entries = avformat_index_get_entries_count(m_pStream);
@@ -250,7 +251,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 			// works for FLV and MKV
 			int64_t pos = m_pStream->duration;
 			if (pos == AV_NOPTS_VALUE) {
-				pos = int64_t(sample_count) * time_base.den / time_base.num;
+				pos = int64_t(sample_count) * frame_ts.num / frame_ts.den;
 			}
 			seek_frame(m_pFormatCtx, m_streamIndex, pos, AVSEEK_FLAG_BACKWARD);
 			seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
@@ -294,7 +295,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		}
 
 		if (trust_index) {
-			int64_t exp_dt = time_base.den / time_base.num;
+			int64_t exp_dt = frame_ts.num / frame_ts.den;
 			int64_t min_dt = exp_dt;
 			for (int i = 1; i < nb_index_entries; i++) {
 				const AVIndexEntry* i0 = avformat_index_get_entry(m_pStream, i - 1);
@@ -353,8 +354,8 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 				if (index_entry->flags & AVINDEX_KEYFRAME) {
 					int64_t ts = index_entry->timestamp;
 					ts -= m_pStream->start_time;
-					int rndd = time_base.den / 2;
-					int pos = int((ts * time_base.num + rndd) / time_base.den);
+					int rndd = frame_ts.num / 2;
+					int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 					int d = pos - p0;
 					p0 = pos;
 					if (d > keyframe_gap) {
@@ -543,8 +544,8 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		for (int i = 0; i < nb_index_entries; i++) {
 			int64_t ts = avformat_index_get_entry(m_pStream, i)->timestamp;
 			ts -= m_pStream->start_time;
-			int rndd = time_base.den / 2;
-			int pos = int((ts * time_base.num + rndd) / time_base.den);
+			int rndd = frame_ts.num / 2;
+			int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 			if (pos >= 0 && pos < sample_count) {
 				frame_type[pos] = ' ';
 			}
@@ -1788,7 +1789,7 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 		return pos;
 	}
 	else {
-		int64_t pos = start * time_base.den / time_base.num + start_time;
+		int64_t pos = start * frame_ts.num / frame_ts.den + start_time;
 		return pos;
 	}
 }
@@ -1800,14 +1801,14 @@ int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
 	// works with 10 bit.mp4: sample*den/num = exactly key timestamp
 	// half-frame bias helps with some rounding noise
 	// works with 2017-04-07 08-53-48.flv
-	int rd = time_base.den / 2;
-	int64_t pos1 = (sample * time_base.den + rd) / time_base.num;
+	int rd = frame_ts.num / 2;
+	int64_t pos1 = (sample * frame_ts.num + rd) / frame_ts.den;
 	int x = av_index_search_timestamp(m_pStream, pos1, AVSEEK_FLAG_BACKWARD);
 	if (x == -1) {
 		return -1;
 	}
 	pos = avformat_index_get_entry(m_pStream, x)->timestamp;
-	int frame = int((pos * time_base.num + rd) / time_base.den);
+	int frame = int((pos * frame_ts.den + rd) / frame_ts.num);
 	return frame;
 }
 
@@ -1815,7 +1816,7 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 {
 	if (is_image_list) {
 		if (next_frame == -1 || jump > next_frame + fw_seek_threshold || jump < next_frame) {
-			pos = int64_t(jump) * time_base.den / time_base.num + start_time;
+			pos = int64_t(jump) * frame_ts.num / frame_ts.den + start_time;
 			return jump;
 		}
 		return -1;
@@ -1855,12 +1856,12 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 		if (jump == last_seek_frame) return -1;
 
 		// required to seek somewhere
-		pos = int64_t(jump) * time_base.den / time_base.num + start_time;
+		pos = int64_t(jump) * frame_ts.num / frame_ts.den + start_time;
 		int dst = jump;
 
 		if (!(m_pFormatCtx->iformat->flags & AVFMT_SEEK_TO_PTS)) {
 			// because seeking works on DTS it needs some unknown offset to work
-			pos -= int64_t(8) * time_base.den / time_base.num; // better than nothing
+			pos -= int64_t(8) * frame_ts.num / frame_ts.den; // better than nothing
 			dst -= 8;
 			if (pos < 0) pos = 0;
 			if (dst < 0) dst = 0;
@@ -2226,8 +2227,8 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 			// guess where we are
 			// timestamp to frame number is at times unreliable
 			ts -= start_time;
-			int rndd = time_base.den / 2;
-			pos = int((ts * time_base.num + rndd) / time_base.den);
+			int rndd = frame_ts.num / 2;
+			pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
 		}
 	}
 
