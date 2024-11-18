@@ -15,7 +15,8 @@
 #include <vfw.h>
 #include <aviriff.h>
 #include "resource.h"
-#include "Utils.h"
+#include "Helper.h"
+#include "Utils/StringUtil.h"
 
 typedef struct AVCodecTag {
 	enum AVCodecID id;

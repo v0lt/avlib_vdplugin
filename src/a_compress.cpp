@@ -14,7 +14,7 @@
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include "resource.h"
 #include <commctrl.h>
-#include "Utils.h"
+#include "Helper.h"
 
 void init_av();
 extern HINSTANCE hInstance;

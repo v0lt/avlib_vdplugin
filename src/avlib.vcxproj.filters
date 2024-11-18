@@ -7,6 +7,9 @@
     <Filter Include="VirtualDub2">
       <UniqueIdentifier>{bc38372b-47df-4cf4-8cce-4f36c757006c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Utils">
+      <UniqueIdentifier>{299c7184-682a-4885-a83a-3bea8398d2a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fflayer.h">
@@ -23,7 +26,6 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="VideoSource2.h" />
     <ClInclude Include="Version.h" />
-    <ClInclude Include="Utils.h" />
     <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h">
       <Filter>VirtualDub2</Filter>
     </ClInclude>
@@ -45,6 +47,10 @@
     <ClInclude Include="..\vd2\h\vd2\VDXFrame\VideoFilterEntry.h">
       <Filter>VirtualDub2</Filter>
     </ClInclude>
+    <ClInclude Include="Utils\StringUtil.h">
+      <Filter>Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Helper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -76,7 +82,10 @@
     <ClCompile Include="..\vd2\VDXFrame\source\VideoFilterEntry.cpp">
       <Filter>VirtualDub2</Filter>
     </ClCompile>
-    <ClCompile Include="Utils.cpp" />
+    <ClCompile Include="Utils\StringUtil.cpp">
+      <Filter>Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Helper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />

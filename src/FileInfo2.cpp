@@ -11,7 +11,7 @@
 #include "AudioSource2.h"
 #include "resource.h"
 #include "gopro.h"
-#include "Utils.h"
+#include "Utils/StringUtil.h"
 
 #include <string>
 

@@ -9,7 +9,7 @@
 #include "VideoSource2.h"
 #include "export.h"
 #include <functional>
-#include "Utils.h"
+#include "Helper.h"
 
 extern "C" {
 #include <libavcodec/avcodec.h>

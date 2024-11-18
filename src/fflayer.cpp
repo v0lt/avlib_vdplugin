@@ -6,6 +6,7 @@
  */
 
 #include <windows.h>
+#include <commdlg.h>
 #include <commctrl.h>
 #include <stdio.h>
 #include <stdlib.h>
