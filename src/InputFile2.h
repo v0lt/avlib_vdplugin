@@ -11,13 +11,13 @@
 #include <stdint.h>
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
+#include <windows.h>
+#include <string>
 
 extern "C"
 {
 #include <libavformat/avformat.h>
 }
-
-#include <windows.h>
 
 class VDFFVideoSource;
 class VDFFAudioSource;
@@ -96,8 +96,8 @@ public:
 class VDFFInputFile : public vdxunknown<IVDXInputFile>, public IFilterModFileTool
 {
 public:
+	std::wstring m_path;
 	int64_t video_start_time = 0;
-	wchar_t path[MAX_PATH]   = {};
 	bool auto_append         = false;
 	bool single_file_mode    = false;
 

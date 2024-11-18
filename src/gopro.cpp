@@ -148,7 +148,7 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 	setup_info.erase(p - setup_info.data(), std::string::npos);
 }
 
-void GoproInfo::find_info(const wchar_t* name)
+void GoproInfo::find_info(const std::wstring& name)
 {
 	MovParser parser(name);
 	while (1) {

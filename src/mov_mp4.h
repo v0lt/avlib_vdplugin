@@ -11,6 +11,7 @@
 #include "windows.h"
 #include "inttypes.h"
 #include <memory>
+#include <string>
 
 struct MovAtom {
 	__int64 sz;
@@ -38,13 +39,13 @@ struct MovParser {
 	{
 	}
 
-	MovParser(const wchar_t* name)
+	MovParser(const std::wstring& name)
 		: buf(nullptr)
 		, buf_size(0)
 		, p(nullptr)
 		, offset(0)
 	{
-		hfile = CreateFileW(name, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
+		hfile = CreateFileW(name.c_str(), GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, 0, 0);
 		LARGE_INTEGER s;
 		GetFileSizeEx(hfile, &s);
 		fileSize = s.QuadPart;

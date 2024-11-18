@@ -19,8 +19,17 @@
 
 extern HINSTANCE hInstance;
 
-void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src);
-void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src);
+void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src)
+{
+	*dst = 0;
+	WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, max_dst, 0, 0);
+}
+
+void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src)
+{
+	*dst = 0;
+	MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, max_dst);
+}
 
 //-------------------------------------------------------------------------------------------------
 

@@ -29,18 +29,6 @@ extern bool config_decode_raw;
 extern bool config_decode_magic;
 extern bool config_disable_cache;
 
-void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src)
-{
-	*dst = 0;
-	WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, max_dst, 0, 0);
-}
-
-void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src)
-{
-	*dst = 0;
-	MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, max_dst);
-}
-
 bool FileExist(const wchar_t* name)
 {
 	DWORD a = GetFileAttributesW(name);
@@ -296,13 +284,11 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 		return IVDXInputFileDriver::kDC_None;
 	}
 
-	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
-	char ff_path[ff_path_size];
-	widechar_to_utf8(ff_path, ff_path_size, fileName);
+	std::string ff_path = ConvertWideToUtf8(fileName);
 
 	AVFormatContext* ctx = nullptr;
 	int err = 0;
-	err = avformat_open_input(&ctx, ff_path, nullptr, nullptr);
+	err = avformat_open_input(&ctx, ff_path.c_str(), nullptr, nullptr);
 	if (err != 0) {
 		return IVDXInputFileDriver::kDC_None;
 	}
@@ -509,7 +495,7 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 		cfg_frame_buffers = 1;
 	}
 
-	wcscpy_s(path, szFile);
+	m_path = szFile;
 
 	init_av();
 	//! this context instance is granted to video stream: wasted in audio-only mode
@@ -648,13 +634,11 @@ bool VDXAPIENTRY VDFFInputFile::Append2(const wchar_t* szFile, int flags, IVDXIn
 
 AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 {
-	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
-	char ff_path[ff_path_size];
-	widechar_to_utf8(ff_path, ff_path_size, path);
+	std::string ff_path = ConvertWideToUtf8(m_path);
 
 	AVFormatContext* fmt = nullptr;
 	int err = 0;
-	err = avformat_open_input(&fmt, ff_path, nullptr, nullptr);
+	err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
 	if (err != 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Unable to open file.");
 		return 0;
@@ -730,7 +714,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 				is_image_list = true;
 				auto_append = false;
 				avformat_close_input(&fmt);
-				widechar_to_utf8(ff_path, ff_path_size, list_path);
+				ff_path = ConvertWideToUtf8(list_path);
 				AVDictionary* options = nullptr;
 				av_dict_set_int(&options, "start_number", start, 0);
 				if (r_fr.num != 0) {
@@ -738,7 +722,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 					sprintf_s(buf, "%d/%d", r_fr.num, r_fr.den);
 					av_dict_set(&options, "framerate", buf, 0);
 				}
-				err = avformat_open_input(&fmt, ff_path, fmt_image2, &options);
+				err = avformat_open_input(&fmt, ff_path.c_str(), fmt_image2, &options);
 				av_dict_free(&options);
 				if (err != 0) {
 					mContext.mpCallbacks->SetError("FFMPEG: Unable to open image sequence.");
@@ -779,19 +763,19 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 
 bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, int* count)
 {
-	wchar_t* p = wcsrchr(path, '.');
+	const wchar_t* p = wcsrchr(m_path.c_str(), '.');
 	if (!p) return false;
 
 	int digit0 = -1;
 	int digit1 = -1;
 
-	while (p > path) {
+	while (p > m_path.c_str()) {
 		p--;
 		int c = *p;
 		if (c == '\\' || c == '/') break;
 		if (c >= '0' && c <= '9') {
 			if (digit0 == -1) {
-				digit0 = int(p - path);
+				digit0 = int(p - m_path.c_str());
 				digit1 = digit0;
 			}
 			else digit0--;
@@ -804,7 +788,7 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 	char start_buf[128];
 	char* s = start_buf;
 	for (int i = digit0; i <= digit1; i++) {
-		int c = path[i];
+		int c = m_path[i];
 		*s = c;
 		s++;
 	}
@@ -813,10 +797,10 @@ bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, i
 	wchar_t buf[20];
 	swprintf_s(buf, L"%%0%dd", digit1 - digit0 + 1);
 
-	wcsncpy_s(dst, dst_count, path, digit0);
+	wcsncpy_s(dst, dst_count, m_path.c_str(), digit0);
 	dst[digit0] = 0;
 	wcscat_s(dst, dst_count, buf);
-	wcscat_s(dst, dst_count, path + digit1 + 1);
+	wcscat_s(dst, dst_count, m_path.c_str() + digit1 + 1);
 
 	sscanf_s(start_buf, "%d", start);
 	int n = 0;

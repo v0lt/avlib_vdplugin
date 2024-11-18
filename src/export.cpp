@@ -18,11 +18,9 @@
 #include <commctrl.h>
 #include "resource.h"
 #include <vfw.h>
+#include "Utils/StringUtil.h"
 
 extern HINSTANCE hInstance;
-
-void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src);
-void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src);
 
 void adjust_codec_tag2(const char* src_format, const AVOutputFormat* format, AVStream* st)
 {
@@ -278,14 +276,14 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			end = video_source->sample_count;
 		}
 
-		wchar_t* ext0 = wcsrchr(path, '.');
+		const wchar_t* ext0 = wcsrchr(m_path.c_str(), '.');
 		wchar_t path2[MAX_PATH];
 		if (ext0) {
-			wcsncpy_s(path2, path, ext0 - path);
-			path2[ext0 - path] = 0;
+			wcsncpy_s(path2, m_path.c_str(), ext0 - m_path.c_str());
+			path2[ext0 - m_path.c_str()] = 0;
 		}
 		else {
-			wcscpy_s(path2, path);
+			wcscpy_s(path2, m_path.c_str());
 		}
 		wcscat_s(path2, L"-01");
 		if (ext0) {
@@ -298,13 +296,10 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		wchar_t* ext1 = wcsrchr(path2, '.');
 		bool same_format = wcscmp(ext0, ext1) == 0;
 
-		const int ff_path_size = MAX_PATH * 4; // utf8, worst case
-		char ff_path[ff_path_size];
-		widechar_to_utf8(ff_path, ff_path_size, path);
-		char out_ff_path[ff_path_size];
-		widechar_to_utf8(out_ff_path, ff_path_size, path2);
+		std::string ff_path = ConvertWideToUtf8(m_path);
+		std::string out_ff_path = ConvertWideToUtf8(path2);
 
-		const AVOutputFormat* oformat = av_guess_format(nullptr, out_ff_path, nullptr);
+		const AVOutputFormat* oformat = av_guess_format(nullptr, out_ff_path.c_str(), nullptr);
 		if (!oformat) {
 			MessageBoxW((HWND)parent, L"Unable to find a suitable output format", L"Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
@@ -327,7 +322,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		AVStream* out_audio = nullptr;
 
 		int err = 0;
-		err = avformat_open_input(&fmt, ff_path, nullptr, nullptr);
+		err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
 		if (err < 0) {
 			goto end;
 		}
@@ -336,7 +331,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			goto end;
 		}
 
-		err = avformat_alloc_output_context2(&ofmt, nullptr, nullptr, out_ff_path);
+		err = avformat_alloc_output_context2(&ofmt, nullptr, nullptr, out_ff_path.c_str());
 		if (err < 0) {
 			goto end;
 		}
@@ -385,7 +380,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		}
 
 		if (!(ofmt->oformat->flags & AVFMT_NOFILE)) {
-			err = avio_open(&ofmt->pb, out_ff_path, AVIO_FLAG_WRITE);
+			err = avio_open(&ofmt->pb, out_ff_path.c_str(), AVIO_FLAG_WRITE);
 			if (err < 0) {
 				goto end;
 			}
@@ -571,9 +566,7 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 {
 	init_av();
 
-	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
-	char out_ff_path[ff_path_size];
-	widechar_to_utf8(out_ff_path, ff_path_size, path);
+	std::string out_ff_path = ConvertWideToUtf8(path);
 
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
@@ -587,7 +580,7 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 		oformat = av_guess_format("mp4", nullptr, nullptr);
 	}
 	if (!oformat) {
-		oformat = av_guess_format(nullptr, out_ff_path, nullptr);
+		oformat = av_guess_format(nullptr, out_ff_path.c_str(), nullptr);
 	}
 	if (!oformat) {
 		return false;
@@ -630,9 +623,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 {
 	init_av();
 
-	const int ff_path_size = MAX_PATH * 4; // utf8, worst case
-	char out_ff_path[ff_path_size];
-	widechar_to_utf8(out_ff_path, ff_path_size, path);
+	std::string out_ff_path = ConvertWideToUtf8(path);
 	this->m_out_ff_path = out_ff_path;
 
 	int err = 0;
@@ -649,7 +640,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 		mp4_faststart = true;
 	}
 	if (!oformat) {
-		oformat = av_guess_format(nullptr, out_ff_path, nullptr);
+		oformat = av_guess_format(nullptr, out_ff_path.c_str(), nullptr);
 	}
 	if (!oformat) {
 		mContext.mpCallbacks->SetError("Unable to find a suitable output format");
@@ -659,7 +650,7 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 
 	format_name = oformat->name;
 
-	err = avformat_alloc_output_context2(&m_ofmt, oformat, nullptr, out_ff_path); // filename needed for second pass
+	err = avformat_alloc_output_context2(&m_ofmt, oformat, nullptr, out_ff_path.c_str()); // filename needed for second pass
 	if (err < 0) {
 		av_error(err);
 		Finalize();

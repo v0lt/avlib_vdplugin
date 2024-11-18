@@ -57,9 +57,9 @@ void VDFFInputFileInfoDialog::load_segment()
 
 	segment = f;
 
-	wchar_t* p0 = wcsrchr(segment->path, '\\');
-	wchar_t* p1 = wcsrchr(segment->path, '/');
-	wchar_t* name = segment->path;
+	const wchar_t* p0 = wcsrchr(segment->m_path.c_str(), '\\');
+	const wchar_t* p1 = wcsrchr(segment->m_path.c_str(), '/');
+	const wchar_t* name = segment->m_path.c_str();
 	if (p0 > name) name = p0 + 1;
 	if (p1 > name) name = p1 + 1;
 
@@ -403,7 +403,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 	}
 
 	GoproInfo gi;
-	gi.find_info(segment->path);
+	gi.find_info(segment->m_path);
 
 	if (gi.type) {
 		s += L"GoPro info: " + A2WStr(gi.type->Name) + L"\r\n";

@@ -22,7 +22,7 @@ struct GoproInfo {
 	std::string firmware;
 	std::string setup_info;
 
-	void find_info(const wchar_t* name);
+	void find_info(const std::wstring& name);
 	void get_camera_type();
 	void get_settings(unsigned int* sett, int n);
 };
