@@ -17,13 +17,11 @@
 #include "a_compress.h"
 #include "resource.h"
 
-#ifdef _MSC_VER
 #pragma comment(lib, "avcodec")
 #pragma comment(lib, "avformat")
 #pragma comment(lib, "avutil")
 #pragma comment(lib, "swscale")
 #pragma comment(lib, "swresample")
-#endif
 
 #pragma comment(lib, "vfw32")
 
@@ -398,8 +396,6 @@ void loadConfig()
 	}
 }
 
-#ifdef _MSC_VER
-
 BOOLEAN WINAPI DllMain(IN HINSTANCE hDllHandle, IN DWORD nReason, IN LPVOID Reserved)
 {
 	switch (nReason) {
@@ -414,24 +410,3 @@ BOOLEAN WINAPI DllMain(IN HINSTANCE hDllHandle, IN DWORD nReason, IN LPVOID Rese
 
 	return true;
 }
-
-#endif
-
-#ifdef __GNUC__
-
-BOOLEAN WINAPI DllMain(IN HINSTANCE hDllHandle, IN DWORD nReason, IN LPVOID Reserved)
-{
-	switch (nReason) {
-	case DLL_PROCESS_ATTACH:
-		hInstance = hDllHandle;
-		loadConfig();
-		return true;
-
-	case DLL_PROCESS_DETACH:
-		return true;
-	}
-
-	return true;
-}
-
-#endif
