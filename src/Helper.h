@@ -37,3 +37,5 @@ void DLog(const wchar_t* format, Args ...args)
 bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], const int src_linesize[4], enum AVPixelFormat pix_fmt, int width, int height);
 
 std::string AVError2Str(const int errnum);
+
+const wchar_t* GetFileExt(std::wstring_view path);

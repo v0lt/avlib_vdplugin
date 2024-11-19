@@ -12,6 +12,7 @@
 #include <cassert>
 #include <windows.h>
 #include <vfw.h>
+#include <shellapi.h>
 #include <commctrl.h>
 #include "vd2\plugin\vdinputdriver.h"
 extern "C" {

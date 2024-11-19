@@ -18,6 +18,7 @@
 #include <commctrl.h>
 #include "resource.h"
 #include <vfw.h>
+#include "Helper.h"
 #include "Utils/StringUtil.h"
 
 extern HINSTANCE hInstance;
@@ -106,7 +107,7 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	ofn.lpstrTitle = L"Export Stream Copy";
 
 	std::wstring ext;
-	const wchar_t* p = wcsrchr(path, '.');
+	const wchar_t* p = GetFileExt(path);
 	if (p) {
 		ext = p;
 	} else {
@@ -130,7 +131,7 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 
 	if (GetSaveFileNameW(&ofn)) {
 		wcscpy_s(path, max_path, szFile);
-		wchar_t* p1 = wcsrchr(szFile, '.');
+		const wchar_t* p1 = GetFileExt(szFile);
 		if (!p1) {
 			wcscat_s(path, max_path, ext.c_str());
 		}
@@ -276,7 +277,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			end = video_source->sample_count;
 		}
 
-		const wchar_t* ext0 = wcsrchr(m_path.c_str(), '.');
+		const wchar_t* ext0 = GetFileExt(m_path.c_str());
 		wchar_t path2[MAX_PATH];
 		if (ext0) {
 			wcsncpy_s(path2, m_path.c_str(), ext0 - m_path.c_str());
@@ -293,7 +294,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			return false;
 		}
 
-		wchar_t* ext1 = wcsrchr(path2, '.');
+		const wchar_t* ext1 = GetFileExt(path2);
 		bool same_format = wcscmp(ext0, ext1) == 0;
 
 		std::string ff_path = ConvertWideToUtf8(m_path);

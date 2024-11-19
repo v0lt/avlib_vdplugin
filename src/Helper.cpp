@@ -51,23 +51,36 @@ bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], 
 	}
 
 	FILE* fp;
-	if (_wfopen_s(&fp, filepath, L"wb") == 0) {
-		fwrite(&bfh, sizeof(bfh), 1, fp);
-		fwrite(&bih, sizeof(bih), 1, fp);
-		if (colortable.size()) {
-			fwrite(colortable.data(), colortable.size(), 1, fp);
-		}
-		const uint8_t* src = src_data[0];
-		for (int y = 0; y < height; ++y) {
-			fwrite(src, widthBytes, 1, fp);
-			src += src_linesize[0];
-		}
-		fclose(fp);
+	errno_t err = _wfopen_s(&fp, filepath, L"wb");
+	if (err) {
+		return false;
 	}
+	fwrite(&bfh, sizeof(bfh), 1, fp);
+	fwrite(&bih, sizeof(bih), 1, fp);
+	if (colortable.size()) {
+		fwrite(colortable.data(), colortable.size(), 1, fp);
+	}
+	const uint8_t* src = src_data[0];
+	for (int y = 0; y < height; ++y) {
+		fwrite(src, widthBytes, 1, fp);
+		src += src_linesize[0];
+	}
+	fclose(fp);
+
+	return true;
 }
 
 std::string AVError2Str(const int errnum)
 {
 	char errBuf[AV_ERROR_MAX_STRING_SIZE] = {};
 	return std::string(av_make_error_string(errBuf, sizeof(errBuf), errnum));
+}
+
+const wchar_t* GetFileExt(std::wstring_view path)
+{
+	size_t pos = path.find_last_of(L".\\/");
+	if (pos != path.npos && path[pos] == L'.') {
+		return &path[pos];
+	}
+	return nullptr;
 }

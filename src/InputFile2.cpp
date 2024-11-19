@@ -333,7 +333,7 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature2(VDXMediaInfo& info, cons
 int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName)
 {
 	if (fileName) {
-		const wchar_t* p = wcsrchr(fileName, L'.');
+		const wchar_t* p = GetFileExt(fileName);
 		if (p) {
 			std::wstring ext(p);
 			str_tolower(ext);
@@ -516,7 +516,7 @@ int VDFFInputFile::GetFileFlags()
 
 void VDFFInputFile::do_auto_append(const wchar_t* szFile)
 {
-	const wchar_t* ext = wcsrchr(szFile, '.');
+	const wchar_t* ext = GetFileExt(szFile);
 	if (!ext) return;
 	if (ext - szFile < 3) return;
 	if (ext[-3] == '.' && ext[-2] == '0' && ext[-1] == '0') {
@@ -763,8 +763,10 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 
 bool VDFFInputFile::detect_image_list(wchar_t* dst, int dst_count, int* start, int* count)
 {
-	const wchar_t* p = wcsrchr(m_path.c_str(), '.');
-	if (!p) return false;
+	const wchar_t* p = GetFileExt(m_path);
+	if (!p) {
+		return false;
+	}
 
 	int digit0 = -1;
 	int digit1 = -1;
