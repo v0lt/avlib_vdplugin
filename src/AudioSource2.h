@@ -108,6 +108,7 @@ private:
 
 public:
 	int initStream(VDFFInputFile* pSource, int streamIndex);
+	AVFormatContext* OpenAudioFile(std::wstring_view path, int streamIndex);
 private:
 	void init_start_time();
 	int read_packet(AVPacket* pkt, ReadInfo& ri);

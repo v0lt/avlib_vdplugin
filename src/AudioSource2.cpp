@@ -11,6 +11,8 @@
 #include <KsMedia.h>
 #include <memory>
 #include <functional>
+#include <cassert>
+#include "Utils/StringUtil.h"
 
 VDFFAudioSource::VDFFAudioSource(const VDXInputDriverContext& context)
 	:mContext(context)
@@ -56,7 +58,7 @@ void* VDXAPIENTRY VDFFAudioSource::AsInterface(uint32_t iid)
 
 int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 {
-	m_pFormatCtx = pSource->open_file(AVMEDIA_TYPE_AUDIO, streamIndex);
+	m_pFormatCtx = OpenAudioFile(pSource->m_path, streamIndex);
 	if (!m_pFormatCtx) {
 		return -1;
 	}
@@ -174,6 +176,38 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	SetTargetFormat(0);
 
 	return 0;
+}
+
+AVFormatContext* VDFFAudioSource::OpenAudioFile(std::wstring_view path, int streamIndex)
+{
+	assert(streamIndex >= 0);
+
+	std::string ff_path = ConvertWideToUtf8(path);
+
+	AVFormatContext* fmt = nullptr;
+	int err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
+	if (err < 0) {
+		mContext.mpCallbacks->SetError("FFMPEG: Unable to open file.");
+		return nullptr;
+	}
+
+	err = avformat_find_stream_info(fmt, nullptr);
+	if (err < 0) {
+		mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
+		avformat_close_input(&fmt);
+		return nullptr;
+	}
+
+	// disable unwanted streams
+	for (int i = 0; i < (int)fmt->nb_streams; i++) {
+		if (i == streamIndex) {
+			continue;
+		}
+		// this has minor impact on performance, ~10% for video
+		fmt->streams[i]->discard = AVDISCARD_ALL;
+	}
+
+	return fmt;
 }
 
 void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)

@@ -152,7 +152,7 @@ public:
 public:
 	AVFormatContext* getContext(void) { return m_pFormatCtx; }
 	int find_stream(AVFormatContext* fmt, AVMediaType type);
-	AVFormatContext* open_file(AVMediaType type, int streamIndex = -1);
+	AVFormatContext* OpenVideoFile();
 	bool detect_image_list(wchar_t* dst, int dst_count, int* start, int* count);
 	void do_auto_append(const wchar_t* szFile);
 

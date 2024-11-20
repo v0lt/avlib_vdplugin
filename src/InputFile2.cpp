@@ -500,7 +500,7 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 	init_av();
 	//! this context instance is granted to video stream: wasted in audio-only mode
 	// audio will manage its own
-	m_pFormatCtx = open_file(AVMEDIA_TYPE_VIDEO);
+	m_pFormatCtx = OpenVideoFile();
 
 	if (auto_append) {
 		do_auto_append(szFile);
@@ -632,7 +632,7 @@ bool VDXAPIENTRY VDFFInputFile::Append2(const wchar_t* szFile, int flags, IVDXIn
 	return true;
 }
 
-AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
+AVFormatContext* VDFFInputFile::OpenVideoFile()
 {
 	std::string ff_path = ConvertWideToUtf8(m_path);
 
@@ -641,18 +641,17 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 	err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
 	if (err != 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Unable to open file.");
-		return 0;
+		return nullptr;
 	}
 
-	if (type == AVMEDIA_TYPE_VIDEO) {
-		// I absolutely do not want index getting condensed
-		fmt->max_index_size = 512 * 1024 * 1024;
-	}
+	// I absolutely do not want index getting condensed
+	fmt->max_index_size = 512 * 1024 * 1024;
 
 	err = avformat_find_stream_info(fmt, nullptr);
 	if (err < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
-		return 0;
+		avformat_close_input(&fmt);
+		return nullptr;
 	}
 
 	is_image = false;
@@ -726,12 +725,14 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 				av_dict_free(&options);
 				if (err != 0) {
 					mContext.mpCallbacks->SetError("FFMPEG: Unable to open image sequence.");
-					return 0;
+					avformat_close_input(&fmt);
+					return nullptr;
 				}
 				err = avformat_find_stream_info(fmt, nullptr);
 				if (err < 0) {
 					mContext.mpCallbacks->SetError("FFMPEG: Couldn't find stream information of file.");
-					return 0;
+					avformat_close_input(&fmt);
+					return nullptr;
 				}
 
 				AVStream& st = *fmt->streams[0];
@@ -740,8 +741,7 @@ AVFormatContext* VDFFInputFile::open_file(AVMediaType type, int streamIndex)
 		}
 	}
 
-	int st = streamIndex;
-	if (st == -1) st = find_stream(fmt, type);
+	int st = find_stream(fmt, AVMEDIA_TYPE_VIDEO);
 	if (st != -1) {
 		// disable unwanted streams
 		bool is_avi = strcmp(fmt->iformat->name, "avi") == 0;
