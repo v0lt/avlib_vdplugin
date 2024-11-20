@@ -370,7 +370,7 @@ void VDFFInputFileInfoDialog::print_metadata()
 	};
 
 	if (pFormatCtx && pFormatCtx->metadata) {
-		bValueAnsi = (pFormatCtx->iformat && strcmp(pFormatCtx->iformat->name, "avi") == 0);
+		bValueAnsi = (pFormatCtx->iformat == av_find_input_format("avi"));
 		AVDictionaryEntry* t = nullptr;
 
 		s += L"File:\r\n";

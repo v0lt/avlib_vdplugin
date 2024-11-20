@@ -292,11 +292,13 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 	if (err != 0) {
 		return IVDXInputFileDriver::kDC_None;
 	}
-	if (strcmp(ctx->iformat->name, "avisynth") == 0) {
+
+	if (ctx->iformat == av_find_input_format("avisynth")) {
 		// ignore AviSynth scripts
 		avformat_close_input(&ctx);
 		return IVDXInputFileDriver::kDC_None;
 	}
+
 	err = avformat_find_stream_info(ctx, nullptr);
 	if (err < 0) {
 		avformat_close_input(&ctx);
@@ -657,6 +659,8 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 	is_image = false;
 	is_image_list = false;
 	is_anim_image = false;
+	is_mp4 = false;
+
 	const char* image_names[] = {
 		"image2",
 		"bmp_pipe",
@@ -741,10 +745,14 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 		}
 	}
 
+	if (!is_image && fmt->iformat == av_find_input_format("mp4")) {
+		is_mp4 = true;
+	}
+
 	int st = find_stream(fmt, AVMEDIA_TYPE_VIDEO);
 	if (st != -1) {
 		// disable unwanted streams
-		bool is_avi = strcmp(fmt->iformat->name, "avi") == 0;
+		//const bool is_avi = (fmt->iformat == av_find_input_format("avi"));
 		for (int i = 0; i < (int)fmt->nb_streams; i++) {
 			if (i == st) {
 				continue;
@@ -754,7 +762,7 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 
 			// this is HUGE if streams are not evenly interleaved (like VD does by default)
 			// this fix is hack, I dont know if it will work for other format
-			//?/if(is_avi) fmt->streams[i]->nb_index_entries = 0;
+			//?/if (is_avi) fmt->streams[i]->nb_index_entries = 0;
 		}
 	}
 

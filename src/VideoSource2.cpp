@@ -121,8 +121,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 			duration -= start_pts;
 			//! above idea fails on Hilary.0000.ts
 
-			const AVInputFormat* mts_format = av_find_input_format("mpegts");
-			const bool mts = (m_pFormatCtx->iformat == mts_format);
+			const bool mts = (m_pFormatCtx->iformat == av_find_input_format("mpegts"));
 
 			if (mts || duration <= 0) {
 				// undo previous step
@@ -156,8 +155,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 
 	if (sample_count == 0) {
 		// found in 1-frame nut
-		const AVInputFormat* nut_format = av_find_input_format("nut");
-		if (m_pFormatCtx->iformat == nut_format) {
+		if (m_pFormatCtx->iformat == av_find_input_format("nut")) {
 			sample_count = 1;
 		}
 	}
@@ -263,8 +261,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 		if (nb_index_entries > 2) {
 			// when avi has dropped frames ffmpeg removes these entries from index - find way to avoid this?
-			const AVInputFormat* avi_format = av_find_input_format("avi");
-			if (m_pFormatCtx->iformat == avi_format) {
+			if (m_pFormatCtx->iformat == av_find_input_format("avi")) {
 				//sample_count = m_pStream->nb_index_entries;
 				//trust_index = true;
 				trust_index = (sample_count == nb_index_entries);
@@ -534,8 +531,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		memcpy(direct_format.get() + sizeof(BITMAPINFOHEADER), m_pCodecCtx->extradata, m_pCodecCtx->extradata_size);
 	}
 
-	const AVInputFormat* avi_format = av_find_input_format("avi");
-	if (m_pFormatCtx->iformat == avi_format) {
+	if (m_pFormatCtx->iformat == av_find_input_format("avi")) {
 		avi_drop_index = true;
 		std::fill(frame_type.begin(), frame_type.end(), 'D');
 
@@ -2035,7 +2031,9 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 		}
 
 		avcodec_flush_buffers(m_pCodecCtx);
-		::seek_frame(m_pFormatCtx, m_streamIndex, seek_pos, trust_index ? 0 : AVSEEK_FLAG_BACKWARD);
+		// don't use AVSEEK_FLAG_BACKWARD for MP4
+		// Comment from LAV Filters source code: "MP4 index timestamps are DTS, seeking expects PTS however..."
+		::seek_frame(m_pFormatCtx, m_streamIndex, seek_pos, m_pSource->is_mp4 ? 0 : AVSEEK_FLAG_BACKWARD);
 		if (trust_index || is_image_list) {
 			next_frame = seek_frame;
 		} else {

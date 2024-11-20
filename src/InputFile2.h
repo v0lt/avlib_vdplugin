@@ -105,6 +105,8 @@ public:
 	bool is_image      = false;
 	bool is_anim_image = false;
 
+	bool is_mp4 = false;
+
 	int  cfg_frame_buffers = 0;
 	bool cfg_disable_cache = false;
 
