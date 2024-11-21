@@ -15,7 +15,7 @@ void DLog(const char* format, Args ...args)
 	char buf[2000];
 
 	sprintf_s(buf, format, args...);
-	cscat_s(buf, L"\n");
+	strcat_s(buf, "\n");
 
 	OutputDebugStringA(buf);
 };
