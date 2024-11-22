@@ -1831,7 +1831,7 @@ struct CodecH264 : public CodecBase {
 		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = -1;
+		ctx->bit_rate = 0; // CRF
 
 		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
@@ -2027,7 +2027,7 @@ struct CodecH265 : public CodecBase {
 		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = -1;
+		ctx->bit_rate = 0; // CRF
 
 		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
@@ -2356,7 +2356,7 @@ struct CodecVP9 : public CodecBase {
 		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = 0;
+		ctx->bit_rate = 0; // CRF
 
 		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
 		av_opt_set_int(ctx->priv_data, "max-intra-rate", 0, 0);
