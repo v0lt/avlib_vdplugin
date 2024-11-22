@@ -242,7 +242,7 @@ struct CodecBase : public CodecClass {
 	const char* codec_name = nullptr;
 	uint32_t codec_tag     = 0;
 	const AVCodec* codec   = nullptr;
-	AVCodecContext* ctx    = nullptr;
+	AVCodecContext* avctx  = nullptr;
 	AVFrame* frame         = nullptr;
 	VDLogProc logProc      = nullptr;
 	bool global_header     = false;
@@ -281,7 +281,7 @@ struct CodecBase : public CodecClass {
 
 	virtual bool test_av_format(AVPixelFormat format) {
 		const enum AVPixelFormat* pix_fmts = nullptr;
-		int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_PIX_FORMAT, 0, (const void**)&pix_fmts, nullptr);
+		int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_PIX_FORMAT, 0, (const void**)&pix_fmts, nullptr);
 		if (ret < 0) {
 			return false;
 		}
@@ -517,8 +517,8 @@ struct CodecBase : public CodecClass {
 	LRESULT compress_get_format(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout)
 	{
 		int extra_size = 0;
-		if (ctx) {
-			extra_size = (ctx->extradata_size + 1) & ~1;
+		if (avctx) {
+			extra_size = (avctx->extradata_size + 1) & ~1;
 		}
 
 		if (!lpbiOutput) {
@@ -546,14 +546,14 @@ struct CodecBase : public CodecClass {
 		}
 		outhdr->biCompression = codec_tag;
 		outhdr->biSizeImage = iWidth * iHeight * 8;
-		if (ctx) {
-			outhdr->biSize = sizeof(BITMAPINFOHEADER) + ctx->extradata_size;
-			if (ctx->codec_tag) {
-				outhdr->biCompression = ctx->codec_tag;
+		if (avctx) {
+			outhdr->biSize = sizeof(BITMAPINFOHEADER) + avctx->extradata_size;
+			if (avctx->codec_tag) {
+				outhdr->biCompression = avctx->codec_tag;
 			}
 			uint8* p = ((uint8*)outhdr) + sizeof(BITMAPINFOHEADER);
 			memset(p, 0, extra_size);
-			memcpy(p, ctx->extradata, ctx->extradata_size);
+			memcpy(p, avctx->extradata, avctx->extradata_size);
 		}
 
 		return ICERR_OK;
@@ -610,52 +610,52 @@ struct CodecBase : public CodecClass {
 			return ICERR_BADFORMAT;
 		}
 
-		ctx = avcodec_alloc_context3(codec);
+		avctx = avcodec_alloc_context3(codec);
 
 		if (config->format == format_rgba) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_GBRAP16LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRAP16LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_GBRAP12LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRAP12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_GBRAP10LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRAP10LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_RGB32;
+				avctx->pix_fmt = AV_PIX_FMT_RGB32;
 				break;
 			}
 		}
 		else if (config->format == format_rgb) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_GBRP16LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRP16LE;
 				break;
 			case 14:
-				ctx->pix_fmt = AV_PIX_FMT_GBRP14LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRP14LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_GBRP12LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRP12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_GBRP10LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRP10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_GBRP9LE;
+				avctx->pix_fmt = AV_PIX_FMT_GBRP9LE;
 				break;
 			case 8:
 				if (test_av_format(AV_PIX_FMT_0RGB32)) {
-					ctx->pix_fmt = AV_PIX_FMT_0RGB32;
+					avctx->pix_fmt = AV_PIX_FMT_0RGB32;
 					break;
 				}
 				if (test_av_format(AV_PIX_FMT_RGB24)) {
-					ctx->pix_fmt = AV_PIX_FMT_RGB24;
+					avctx->pix_fmt = AV_PIX_FMT_RGB24;
 					break;
 				}
 				if (test_av_format(AV_PIX_FMT_GBRP)) {
-					ctx->pix_fmt = AV_PIX_FMT_GBRP;
+					avctx->pix_fmt = AV_PIX_FMT_GBRP;
 					break;
 				}
 				break;
@@ -664,150 +664,150 @@ struct CodecBase : public CodecClass {
 		else if (config->format == format_yuv420) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P16LE;
 				break;
 			case 14:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P14LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P14LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P12LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUV420P;
+				avctx->pix_fmt = AV_PIX_FMT_YUV420P;
 				break;
 			}
 		}
 		else if (config->format == format_yuv422) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P16LE;
 				break;
 			case 14:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P14LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P14LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P12LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUV422P;
+				avctx->pix_fmt = AV_PIX_FMT_YUV422P;
 				break;
 			}
 		}
 		else if (config->format == format_yuv444) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P16LE;
 				break;
 			case 14:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P14LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P14LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P12LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUV444P;
+				avctx->pix_fmt = AV_PIX_FMT_YUV444P;
 				break;
 			}
 		}
 		else if (config->format == format_yuva420) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA420P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA420P16LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA420P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA420P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA420P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA420P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA420P;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA420P;
 				break;
 			}
 		}
 		else if (config->format == format_yuva422) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA422P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA422P16LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA422P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA422P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA422P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA422P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA422P;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA422P;
 				break;
 			}
 		}
 		else if (config->format == format_yuva444) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA444P16LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA444P16LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA444P10LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA444P10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA444P9LE;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA444P9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_YUVA444P;
+				avctx->pix_fmt = AV_PIX_FMT_YUVA444P;
 				break;
 			}
 		}
 		else if (config->format == format_gray) {
 			switch (config->bits) {
 			case 16:
-				ctx->pix_fmt = AV_PIX_FMT_GRAY16LE;
+				avctx->pix_fmt = AV_PIX_FMT_GRAY16LE;
 				break;
 			case 12:
-				ctx->pix_fmt = AV_PIX_FMT_GRAY12LE;
+				avctx->pix_fmt = AV_PIX_FMT_GRAY12LE;
 				break;
 			case 10:
-				ctx->pix_fmt = AV_PIX_FMT_GRAY10LE;
+				avctx->pix_fmt = AV_PIX_FMT_GRAY10LE;
 				break;
 			case 9:
-				ctx->pix_fmt = AV_PIX_FMT_GRAY9LE;
+				avctx->pix_fmt = AV_PIX_FMT_GRAY9LE;
 				break;
 			case 8:
-				ctx->pix_fmt = AV_PIX_FMT_GRAY8;
+				avctx->pix_fmt = AV_PIX_FMT_GRAY8;
 				break;
 			}
 		}
 
-		ctx->thread_count = 0;
-		ctx->bit_rate = 0;
-		ctx->width = layout->w;
-		ctx->height = layout->h;
-		ctx->time_base = time_base;
-		ctx->gop_size = 1;
-		ctx->max_b_frames = 1;
-		ctx->framerate = av_make_q(time_base.den, time_base.num);
+		avctx->thread_count = 0;
+		avctx->bit_rate = 0;
+		avctx->width = layout->w;
+		avctx->height = layout->h;
+		avctx->time_base = time_base;
+		avctx->gop_size = 1;
+		avctx->max_b_frames = 1;
+		avctx->framerate = av_make_q(time_base.den, time_base.num);
 
-		ctx->color_range = color_range;
-		ctx->colorspace = colorspace;
+		avctx->color_range = color_range;
+		avctx->colorspace = colorspace;
 		if (global_header) {
-			ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+			avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 		}
 
 		if (!init_ctx(layout)) {
@@ -815,23 +815,23 @@ struct CodecBase : public CodecClass {
 		}
 
 		if (keyint > 1) {
-			ctx->gop_size = keyint;
+			avctx->gop_size = keyint;
 		}
 
-		int ret = avcodec_open2(ctx, codec, nullptr);
+		int ret = avcodec_open2(avctx, codec, nullptr);
 		if (ret < 0) {
 			compress_end();
 			return ICERR_BADPARAM;
 		}
 
 		frame = av_frame_alloc();
-		frame->format = ctx->pix_fmt;
-		frame->color_range = ctx->color_range;
-		frame->colorspace = ctx->colorspace;
-		frame->width = ctx->width;
-		frame->height = ctx->height;
+		frame->format = avctx->pix_fmt;
+		frame->color_range = avctx->color_range;
+		frame->colorspace = avctx->colorspace;
+		frame->width = avctx->width;
+		frame->height = avctx->height;
 
-		ret = av_image_alloc(frame->data, frame->linesize, ctx->width, ctx->height, ctx->pix_fmt, 32);
+		ret = av_image_alloc(frame->data, frame->linesize, avctx->width, avctx->height, avctx->pix_fmt, 32);
 		if (ret < 0) { compress_end(); return ICERR_MEMORY; }
 
 		return ICERR_OK;
@@ -845,7 +845,7 @@ struct CodecBase : public CodecClass {
 	void getStreamInfo(VDXStreamInfo* si)
 	{
 		AVCodecParameters* par = avcodec_parameters_alloc();
-		avcodec_parameters_from_context(par, ctx);
+		avcodec_parameters_from_context(par, avctx);
 
 		si->avcodec_version = LIBAVCODEC_VERSION_INT;
 
@@ -870,9 +870,9 @@ struct CodecBase : public CodecClass {
 
 	LRESULT compress_end()
 	{
-		if (ctx) {
-			av_freep(&ctx->extradata);
-			avcodec_free_context(&ctx);
+		if (avctx) {
+			av_freep(&avctx->extradata);
+			avcodec_free_context(&avctx);
 		}
 		if (frame) {
 			av_freep(&frame->data[0]);
@@ -933,15 +933,15 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 
-			ret = avcodec_send_frame(ctx, frame);
+			ret = avcodec_send_frame(avctx, frame);
 		}
 		else if (icc->lFrameNum == frame_total || frame_total == 0) {
-			ret = avcodec_send_frame(ctx, nullptr);
+			ret = avcodec_send_frame(avctx, nullptr);
 			frame_total = icc->lFrameNum;
 		}
 
 		if (ret == 0) {
-			ret = avcodec_receive_packet(ctx, pkt.get());
+			ret = avcodec_receive_packet(avctx, pkt.get());
 		}
 
 		if (ret == 0) {
@@ -1303,12 +1303,12 @@ struct CodecFFV1 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->strict_std_compliance = -2;
-		ctx->level = codec_config.level;
-		ctx->slices = codec_config.slice;
-		av_opt_set_int(ctx->priv_data, "slicecrc", codec_config.slicecrc, 0);
-		av_opt_set_int(ctx->priv_data, "context", codec_config.context, 0);
-		av_opt_set_int(ctx->priv_data, "coder", codec_config.coder, 0);
+		avctx->strict_std_compliance = -2;
+		avctx->level = codec_config.level;
+		avctx->slices = codec_config.slice;
+		av_opt_set_int(avctx->priv_data, "slicecrc", codec_config.slicecrc, 0);
+		av_opt_set_int(avctx->priv_data, "context", codec_config.context, 0);
+		av_opt_set_int(avctx->priv_data, "coder", codec_config.coder, 0);
 		return true;
 	}
 
@@ -1504,7 +1504,7 @@ struct CodecHUFF : public CodecBase {
 		if (pred == 2 && config->format == format_rgb && config->bits == 8) {
 			pred = 0;
 		}
-		av_opt_set_int(ctx->priv_data, "pred", pred, 0);
+		av_opt_set_int(avctx->priv_data, "pred", pred, 0);
 		return true;
 	}
 
@@ -1614,12 +1614,12 @@ struct CodecProres : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		av_opt_set_int(ctx->priv_data, "profile", codec_config.profile, 0);
+		av_opt_set_int(avctx->priv_data, "profile", codec_config.profile, 0);
 		if (codec_config.format == format_yuva444) {
-			av_opt_set_int(ctx->priv_data, "alpha_bits", 16, 0);
+			av_opt_set_int(avctx->priv_data, "alpha_bits", 16, 0);
 		}
-		ctx->flags |= AV_CODEC_FLAG_QSCALE;
-		ctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
+		avctx->flags |= AV_CODEC_FLAG_QSCALE;
+		avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
 		return true;
 	}
 
@@ -1818,16 +1818,16 @@ struct CodecH264 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->gop_size = -1;
-		ctx->max_b_frames = -1;
+		avctx->gop_size = -1;
+		avctx->max_b_frames = -1;
 
 		[[maybe_unused]] int ret = 0;
-		ret = av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
+		ret = av_opt_set(avctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
 		if (codec_config.tune) {
-			ret = av_opt_set(ctx->priv_data, "tune", x264_tune_names[codec_config.tune], 0);
+			ret = av_opt_set(avctx->priv_data, "tune", x264_tune_names[codec_config.tune], 0);
 		}
-		ret = av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
-		ret = av_opt_set(ctx->priv_data, "level", "3", 0);
+		ret = av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
+		ret = av_opt_set(avctx->priv_data, "level", "3", 0);
 		return true;
 	}
 
@@ -2012,15 +2012,15 @@ struct CodecH265 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->gop_size = -1;
-		ctx->max_b_frames = -1;
+		avctx->gop_size = -1;
+		avctx->max_b_frames = -1;
 
 		[[maybe_unused]] int ret = 0;
-		ret = av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
+		ret = av_opt_set(avctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
 		if (codec_config.tune) {
-			ret = av_opt_set(ctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
+			ret = av_opt_set(avctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
 		}
-		ret = av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
+		ret = av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
 		return true;
 	}
 
@@ -2041,7 +2041,7 @@ struct CodecH265LS : public CodecH265 {
 		if (!CodecH265::init_ctx(layout)) {
 			return false;
 		}
-		int ret = av_opt_set(ctx->priv_data, "x265-params", "lossless=1", 0);
+		int ret = av_opt_set(avctx->priv_data, "x265-params", "lossless=1", 0);
 		return true;
 	}
 
@@ -2206,17 +2206,17 @@ struct CodecVP8 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->gop_size = -1;
-		ctx->max_b_frames = -1;
-		ctx->bit_rate = 0x400000000000;
+		avctx->gop_size = -1;
+		avctx->max_b_frames = -1;
+		avctx->bit_rate = 0x400000000000;
 
-		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
-		av_opt_set_int(ctx->priv_data, "max-intra-rate", 0, 0);
+		av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
+		av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
 		if (codec_config.format == format_yuva420) {
-			av_opt_set_int(ctx->priv_data, "auto-alt-ref", 0, 0);
+			av_opt_set_int(avctx->priv_data, "auto-alt-ref", 0, 0);
 		}
-		ctx->qmin = codec_config.crf;
-		ctx->qmax = codec_config.crf;
+		avctx->qmin = codec_config.crf;
+		avctx->qmax = codec_config.crf;
 		return true;
 	}
 
@@ -2338,13 +2338,13 @@ struct CodecVP9 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->gop_size = -1;
-		ctx->max_b_frames = -1;
+		avctx->gop_size = -1;
+		avctx->max_b_frames = -1;
 
-		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
-		av_opt_set_int(ctx->priv_data, "max-intra-rate", 0, 0);
-		ctx->qmin = codec_config.crf;
-		ctx->qmax = codec_config.crf;
+		av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
+		av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
+		avctx->qmin = codec_config.crf;
+		avctx->qmax = codec_config.crf;
 		return true;
 	}
 

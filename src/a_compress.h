@@ -52,20 +52,20 @@ public:
 		}
 	}*config = nullptr;
 
-	const AVCodec* codec = nullptr;
-	AVCodecContext* ctx  = nullptr;
-	AVFrame* frame       = nullptr;
-	SwrContext* swr      = nullptr;
-	uint8_t** sample_buf = nullptr;
-	uint8_t* in_buf      = nullptr;
-	unsigned frame_size  = 0;
-	int frame_pos        = 0;
-	unsigned in_pos      = 0;
-	int src_linesize     = 0;
-	AVPacket* pkt        = nullptr;
-	sint64 total_in      = 0;
-	sint64 total_out     = 0;
-	int max_packet       = 0;
+	const AVCodec* codec  = nullptr;
+	AVCodecContext* avctx = nullptr;
+	AVFrame* frame        = nullptr;
+	SwrContext* swr       = nullptr;
+	uint8_t** sample_buf  = nullptr;
+	uint8_t* in_buf       = nullptr;
+	unsigned frame_size   = 0;
+	int frame_pos         = 0;
+	unsigned in_pos       = 0;
+	int src_linesize      = 0;
+	AVPacket* pkt         = nullptr;
+	sint64 total_in       = 0;
+	sint64 total_out      = 0;
+	int max_packet        = 0;
 
 	WAVEFORMATEXTENSIBLE* out_format = nullptr;
 	int out_format_size = 0;

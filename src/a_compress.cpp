@@ -33,9 +33,9 @@ VDFFAudio::~VDFFAudio()
 
 void VDFFAudio::cleanup()
 {
-	if (ctx) {
-		av_freep(&ctx->extradata);
-		avcodec_free_context(&ctx);
+	if (avctx) {
+		av_freep(&avctx->extradata);
+		avcodec_free_context(&avctx);
 	}
 	if (frame) {
 		av_frame_free(&frame);
@@ -74,11 +74,11 @@ void VDFFAudio::SetConfig(void* data, size_t size)
 void VDFFAudio::InitContext()
 {
 	if (config->flags & flag_constant_rate) {
-		ctx->bit_rate = config->bitrate * 1000;
+		avctx->bit_rate = config->bitrate * 1000;
 	}
 	else {
-		ctx->flags |= AV_CODEC_FLAG_QSCALE;
-		ctx->global_quality = FF_QP2LAMBDA * config->quality;
+		avctx->flags |= AV_CODEC_FLAG_QSCALE;
+		avctx->global_quality = FF_QP2LAMBDA * config->quality;
 	}
 }
 
@@ -98,8 +98,8 @@ void VDFFAudio::export_wav()
 	ofmt->pb = avio_ctx;
 	ofmt->oformat = av_guess_format("wav", nullptr, nullptr);
 	AVStream* st = avformat_new_stream(ofmt, nullptr);
-	st->time_base = av_make_q(1, ctx->sample_rate);
-	avcodec_parameters_from_context(st->codecpar, ctx);
+	st->time_base = av_make_q(1, avctx->sample_rate);
+	avcodec_parameters_from_context(st->codecpar, avctx);
 	if (avformat_write_header(ofmt, nullptr) < 0) {
 		goto cleanup;
 	}
@@ -129,24 +129,24 @@ cleanup:
 
 	if (!out_format) {
 		// make our private descriptor
-		out_format_size = sizeof(WAVEFORMATEX_VDFF) + ctx->extradata_size;
+		out_format_size = sizeof(WAVEFORMATEX_VDFF) + avctx->extradata_size;
 		out_format = (WAVEFORMATEXTENSIBLE*)malloc(out_format_size);
 		out_format->Format.wFormatTag        = WAVE_FORMAT_EXTENSIBLE;
-		out_format->Format.nChannels         = ctx->ch_layout.nb_channels;
-		out_format->Format.nSamplesPerSec    = ctx->sample_rate;
-		out_format->Format.nAvgBytesPerSec   = (DWORD)(ctx->bit_rate / 8);
-		out_format->Format.nBlockAlign       = ctx->block_align;
-		out_format->Format.wBitsPerSample    = ctx->bits_per_coded_sample;
+		out_format->Format.nChannels         = avctx->ch_layout.nb_channels;
+		out_format->Format.nSamplesPerSec    = avctx->sample_rate;
+		out_format->Format.nAvgBytesPerSec   = (DWORD)(avctx->bit_rate / 8);
+		out_format->Format.nBlockAlign       = avctx->block_align;
+		out_format->Format.wBitsPerSample    = avctx->bits_per_coded_sample;
 		out_format->Format.cbSize            = WORD(out_format_size - sizeof(WAVEFORMATEX));
-		out_format->Samples.wSamplesPerBlock = ctx->frame_size;
+		out_format->Samples.wSamplesPerBlock = avctx->frame_size;
 		out_format->dwChannelMask            = 0;
 		out_format->SubFormat                = KSDATAFORMAT_SUBTYPE_VDFF;
 
 		WAVEFORMATEX_VDFF* ff = (WAVEFORMATEX_VDFF*)out_format;
-		ff->codec_id = ctx->codec_id;
-		if (ctx->extradata_size) {
+		ff->codec_id = avctx->codec_id;
+		if (avctx->extradata_size) {
 			char* p = (char*)(ff + 1);
-			memcpy(p, ctx->extradata, ctx->extradata_size);
+			memcpy(p, avctx->extradata, avctx->extradata_size);
 		}
 	}
 }
@@ -156,7 +156,7 @@ void VDFFAudio::select_fmt(AVSampleFormat* list)
 	int best_pos = -1;
 
 	const enum AVSampleFormat* sample_fmts = nullptr;
-	int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
+	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
 	if (ret < 0) {
 		return;
 	}
@@ -179,7 +179,7 @@ void VDFFAudio::select_fmt(AVSampleFormat* list)
 			if (xfmt == yfmt) {
 				if (best_pos == -1 || x < best_pos) {
 					best_pos = x;
-					ctx->sample_fmt = yfmt;
+					avctx->sample_fmt = yfmt;
 				}
 			}
 		}
@@ -198,13 +198,13 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	init_av();
 	CreateCodec();
 
-	ctx = avcodec_alloc_context3(codec);
+	avctx = avcodec_alloc_context3(codec);
 
-	av_channel_layout_default(&ctx->ch_layout, format->mChannels);
-	ctx->sample_rate = format->mSamplesPerSec;
+	av_channel_layout_default(&avctx->ch_layout, format->mChannels);
+	avctx->sample_rate = format->mSamplesPerSec;
 
 	const enum AVSampleFormat* sample_fmts = nullptr;
-	int ret = avcodec_get_supported_config(ctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
+	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
 	if (ret < 0) {
 		return;
 	}
@@ -212,7 +212,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 		assert(0); // unsupported but valid value.
 		return;
 	}
-	ctx->sample_fmt = sample_fmts[0]; // hmm
+	avctx->sample_fmt = sample_fmts[0]; // hmm
 
 	AVSampleFormat in_fmt = AV_SAMPLE_FMT_S16;
 	if (format->mBitsPerSample == 8) {
@@ -224,7 +224,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	else if (format->mFormatTag == WAVE_FORMAT_EXTENSIBLE) {
 		WAVEFORMATEXTENSIBLE* fx = (WAVEFORMATEXTENSIBLE*)(format);
 		if (fx->dwChannelMask && av_popcount(fx->dwChannelMask) == format->mChannels) {
-			av_channel_layout_from_mask(&ctx->ch_layout, fx->dwChannelMask);
+			av_channel_layout_from_mask(&avctx->ch_layout, fx->dwChannelMask);
 		}
 		if (fx->SubFormat == KSDATAFORMAT_SUBTYPE_IEEE_FLOAT) {
 			in_fmt = AV_SAMPLE_FMT_FLT;
@@ -256,11 +256,11 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	//if(ofmt->oformat->flags & AVFMT_GLOBALHEADER)
 	//	ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
-	ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+	avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
 	InitContext();
 
-	ret = avcodec_open2(ctx, codec, nullptr);
+	ret = avcodec_open2(avctx, codec, nullptr);
 	if (ret < 0) {
 		errstr = AVError2Str(ret);
 		mContext.mpCallbacks->SetError("FFMPEG: Cannot open codec (%s).", errstr.c_str());
@@ -277,13 +277,13 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	swr = swr_alloc();
 
-	ret = av_opt_set_chlayout(swr, "in_chlayout", &ctx->ch_layout, 0);
-	ret = av_opt_set_int(swr, "in_sample_rate", ctx->sample_rate, 0);
+	ret = av_opt_set_chlayout(swr, "in_chlayout", &avctx->ch_layout, 0);
+	ret = av_opt_set_int(swr, "in_sample_rate", avctx->sample_rate, 0);
 	ret = av_opt_set_sample_fmt(swr, "in_sample_fmt", in_fmt, 0);
 
-	ret = av_opt_set_chlayout(swr, "out_chlayout", &ctx->ch_layout, 0);
-	ret = av_opt_set_int(swr, "out_sample_rate", ctx->sample_rate, 0);
-	ret = av_opt_set_sample_fmt(swr, "out_sample_fmt", ctx->sample_fmt, 0);
+	ret = av_opt_set_chlayout(swr, "out_chlayout", &avctx->ch_layout, 0);
+	ret = av_opt_set_int(swr, "out_sample_rate", avctx->sample_rate, 0);
+	ret = av_opt_set_sample_fmt(swr, "out_sample_fmt", avctx->sample_fmt, 0);
 
 	ret = swr_init(swr);
 	if (ret < 0) {
@@ -294,36 +294,36 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	}
 
 	frame = av_frame_alloc();
-	av_channel_layout_copy(&frame->ch_layout, &ctx->ch_layout);
-	frame->format = ctx->sample_fmt;
-	frame->sample_rate = ctx->sample_rate;
+	av_channel_layout_copy(&frame->ch_layout, &avctx->ch_layout);
+	frame->format = avctx->sample_fmt;
+	frame->sample_rate = avctx->sample_rate;
 	frame->pts = 0;
 	frame->nb_samples = 0;
 
-	frame_size = ctx->frame_size;
-	sample_buf = (uint8**)malloc(ctx->ch_layout.nb_channels * sizeof(void*));
-	av_samples_alloc(sample_buf, 0, ctx->ch_layout.nb_channels, frame_size, ctx->sample_fmt, 0);
+	frame_size = avctx->frame_size;
+	sample_buf = (uint8**)malloc(avctx->ch_layout.nb_channels * sizeof(void*));
+	av_samples_alloc(sample_buf, 0, avctx->ch_layout.nb_channels, frame_size, avctx->sample_fmt, 0);
 
-	av_samples_get_buffer_size(&src_linesize, ctx->ch_layout.nb_channels, 1, in_fmt, 1);
+	av_samples_get_buffer_size(&src_linesize, avctx->ch_layout.nb_channels, 1, in_fmt, 1);
 	in_buf = (uint8*)malloc(src_linesize * frame_size);
 }
 
 void VDFFAudio::GetStreamInfo(VDXStreamInfo& si) const
 {
 	si.avcodec_version = LIBAVCODEC_VERSION_INT;
-	si.block_align = ctx->block_align;
-	si.frame_size = ctx->frame_size;
-	si.initial_padding = ctx->initial_padding;
-	si.trailing_padding = ctx->trailing_padding;
+	si.block_align = avctx->block_align;
+	si.frame_size = avctx->frame_size;
+	si.initial_padding = avctx->initial_padding;
+	si.trailing_padding = avctx->trailing_padding;
 
 	// proof: ff_parse_specific_params
 	// au_rate = par->sample_rate
 	// au_scale = par->frame_size (depends on codec but here it must be known)
 	// au_ssize = par->block_align
 
-	si.aviHeader.dwSampleSize = ctx->block_align;
-	si.aviHeader.dwScale = ctx->frame_size;
-	si.aviHeader.dwRate = ctx->sample_rate;
+	si.aviHeader.dwSampleSize = avctx->block_align;
+	si.aviHeader.dwScale = avctx->frame_size;
+	si.aviHeader.dwRate = avctx->sample_rate;
 }
 
 int VDFFAudio::SuggestFileFormat(const char* name)
@@ -350,18 +350,18 @@ bool VDFFAudio::Convert(bool flush, bool requireOutput)
 
 		frame->pts += frame->nb_samples;
 		frame->nb_samples = in_pos;
-		av_samples_fill_arrays(frame->data, frame->linesize, sample_buf[0], ctx->ch_layout.nb_channels, frame_size, ctx->sample_fmt, 0);
-		avcodec_send_frame(ctx, frame);
+		av_samples_fill_arrays(frame->data, frame->linesize, sample_buf[0], avctx->ch_layout.nb_channels, frame_size, avctx->sample_fmt, 0);
+		avcodec_send_frame(avctx, frame);
 
 		in_pos = 0;
 
 	}
 	else if (flush) {
-		avcodec_send_frame(ctx, nullptr);
+		avcodec_send_frame(avctx, nullptr);
 	}
 
 	av_packet_unref(pkt);
-	avcodec_receive_packet(ctx, pkt);
+	avcodec_receive_packet(avctx, pkt);
 	for (int i = 0; i < pkt->side_data_elems; i++) {
 		AVPacketSideData& s = pkt->side_data[i];
 		if (s.type == AV_PKT_DATA_NEW_EXTRADATA) {
@@ -510,7 +510,7 @@ void VDFFAudio_aac::InitContext()
 {
 	VDFFAudio::InitContext();
 	if (config->flags & flag_constant_rate) {
-		ctx->bit_rate = config->bitrate * 1000 * ctx->ch_layout.nb_channels;
+		avctx->bit_rate = config->bitrate * 1000 * avctx->ch_layout.nb_channels;
 	}
 }
 
@@ -625,11 +625,11 @@ void VDFFAudio_mp3::CreateCodec()
 void VDFFAudio_mp3::InitContext()
 {
 	VDFFAudio::InitContext();
-	av_opt_set_int(ctx->priv_data, "joint_stereo", codec_config.flags & flag_jointstereo, 0);
+	av_opt_set_int(avctx->priv_data, "joint_stereo", codec_config.flags & flag_jointstereo, 0);
 
 	// this estimate is fake, but leaving bit_rate=0 is worse
 	if (!(codec_config.flags & VDFFAudio::flag_constant_rate)) {
-		ctx->bit_rate = ctx->sample_rate * 4;
+		avctx->bit_rate = avctx->sample_rate * 4;
 	}
 }
 
@@ -785,8 +785,8 @@ void VDFFAudio_flac::CreateCodec()
 
 void VDFFAudio_flac::InitContext()
 {
-	ctx->compression_level = codec_config.quality;
-	av_opt_set_int(ctx->priv_data, "ch_mode", (codec_config.flags & flag_jointstereo) ? -1 : 0, 0);
+	avctx->compression_level = codec_config.quality;
+	av_opt_set_int(avctx->priv_data, "ch_mode", (codec_config.flags & flag_jointstereo) ? -1 : 0, 0);
 }
 
 //-----------------------------------------------------------------------------------
@@ -906,7 +906,7 @@ void VDFFAudio_alac::CreateCodec()
 
 void VDFFAudio_alac::InitContext()
 {
-	ctx->compression_level = codec_config.quality;
+	avctx->compression_level = codec_config.quality;
 }
 
 //-----------------------------------------------------------------------------------
@@ -1026,16 +1026,16 @@ void VDFFAudio_vorbis::CreateCodec()
 void VDFFAudio_vorbis::InitContext()
 {
 	if (config->flags & flag_constant_rate) {
-		ctx->bit_rate = config->bitrate * 1000 * ctx->ch_layout.nb_channels;
-		ctx->rc_min_rate = ctx->bit_rate;
-		ctx->rc_max_rate = ctx->bit_rate;
+		avctx->bit_rate = config->bitrate * 1000 * avctx->ch_layout.nb_channels;
+		avctx->rc_min_rate = avctx->bit_rate;
+		avctx->rc_max_rate = avctx->bit_rate;
 	}
 	else {
-		ctx->flags |= AV_CODEC_FLAG_QSCALE;
-		ctx->global_quality = (FF_QP2LAMBDA * config->quality + 50) / 100;
-		ctx->bit_rate = -1;
-		ctx->rc_min_rate = -1;
-		ctx->rc_max_rate = -1;
+		avctx->flags |= AV_CODEC_FLAG_QSCALE;
+		avctx->global_quality = (FF_QP2LAMBDA * config->quality + 50) / 100;
+		avctx->bit_rate = -1;
+		avctx->rc_min_rate = -1;
+		avctx->rc_max_rate = -1;
 	}
 }
 
@@ -1180,17 +1180,17 @@ void VDFFAudio_opus::CreateCodec()
 
 void VDFFAudio_opus::InitContext()
 {
-	ctx->bit_rate = config->bitrate * ctx->ch_layout.nb_channels;
-	ctx->compression_level = config->quality;
+	avctx->bit_rate = config->bitrate * avctx->ch_layout.nb_channels;
+	avctx->compression_level = config->quality;
 
 	if (config->flags & flag_constant_rate) {
-		av_opt_set_int(ctx->priv_data, "vbr", 0, 0);
+		av_opt_set_int(avctx->priv_data, "vbr", 0, 0);
 	}
 	else if (config->flags & flag_limited_rate) {
-		av_opt_set_int(ctx->priv_data, "vbr", 2, 0);
+		av_opt_set_int(avctx->priv_data, "vbr", 2, 0);
 	}
 	else {
-		av_opt_set_int(ctx->priv_data, "vbr", 1, 0);
+		av_opt_set_int(avctx->priv_data, "vbr", 1, 0);
 	}
 }
 
