@@ -61,9 +61,9 @@ void init_av()
 		av_initialized = 1;
 
 #ifdef _DEBUG
-		//av_log_set_callback(av_log_func);
-		//av_log_set_level(AV_LOG_INFO);
-		//av_log_set_flags(AV_LOG_SKIP_REPEATED);
+		av_log_set_callback(av_log_func);
+		av_log_set_level(AV_LOG_INFO);
+		av_log_set_flags(AV_LOG_SKIP_REPEATED);
 #endif
 	}
 }
