@@ -628,8 +628,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_rgb) {
+		else if (config->format == format_rgb) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_GBRP16LE;
@@ -662,8 +661,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuv420) {
+		else if (config->format == format_yuv420) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUV420P16LE;
@@ -685,8 +683,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuv422) {
+		else if (config->format == format_yuv422) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUV422P16LE;
@@ -708,8 +705,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuv444) {
+		else if (config->format == format_yuv444) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUV444P16LE;
@@ -731,8 +727,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuva420) {
+		else if (config->format == format_yuva420) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUVA420P16LE;
@@ -748,8 +743,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuva422) {
+		else if (config->format == format_yuva422) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUVA422P16LE;
@@ -765,8 +759,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_yuva444) {
+		else if (config->format == format_yuva444) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_YUVA444P16LE;
@@ -782,8 +775,7 @@ struct CodecBase : public CodecClass {
 				break;
 			}
 		}
-
-		if (config->format == format_gray) {
+		else if (config->format == format_gray) {
 			switch (config->bits) {
 			case 16:
 				ctx->pix_fmt = AV_PIX_FMT_GRAY16LE;
@@ -803,7 +795,8 @@ struct CodecBase : public CodecClass {
 			}
 		}
 
-		ctx->bit_rate = 400000;
+		ctx->thread_count = 0;
+		ctx->bit_rate = 0;
 		ctx->width = layout->w;
 		ctx->height = layout->h;
 		ctx->time_base = time_base;
@@ -1312,7 +1305,6 @@ struct CodecFFV1 : public CodecBase {
 	{
 		ctx->strict_std_compliance = -2;
 		ctx->level = codec_config.level;
-		ctx->thread_count = 0;
 		ctx->slices = codec_config.slice;
 		av_opt_set_int(ctx->priv_data, "slicecrc", codec_config.slicecrc, 0);
 		av_opt_set_int(ctx->priv_data, "context", codec_config.context, 0);
@@ -1508,7 +1500,6 @@ struct CodecHUFF : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		int pred = codec_config.prediction;
 		if (pred == 2 && config->format == format_rgb && config->bits == 8) {
 			pred = 0;
@@ -1623,7 +1614,6 @@ struct CodecProres : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		av_opt_set_int(ctx->priv_data, "profile", codec_config.profile, 0);
 		if (codec_config.format == format_yuva444) {
 			av_opt_set_int(ctx->priv_data, "alpha_bits", 16, 0);
@@ -1828,10 +1818,8 @@ struct CodecH264 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = 0; // CRF
 
 		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x264_preset_names[codec_config.preset], 0);
@@ -2024,10 +2012,8 @@ struct CodecH265 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = 0; // CRF
 
 		[[maybe_unused]] int ret = 0;
 		ret = av_opt_set(ctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
@@ -2220,7 +2206,6 @@ struct CodecVP8 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
 		ctx->bit_rate = 0x400000000000;
@@ -2353,10 +2338,8 @@ struct CodecVP9 : public CodecBase {
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{
-		ctx->thread_count = 0;
 		ctx->gop_size = -1;
 		ctx->max_b_frames = -1;
-		ctx->bit_rate = 0; // CRF
 
 		av_opt_set_double(ctx->priv_data, "crf", codec_config.crf, 0);
 		av_opt_set_int(ctx->priv_data, "max-intra-rate", 0, 0);
