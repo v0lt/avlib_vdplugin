@@ -4,6 +4,7 @@ avlib.vdplugin history
 ----------------------
 Trying to get around incorrect keyframe seek for MP4 files.
 Fixed the operation of x264 and x265 encoders.
+Fixed the operation of Vorbis encoder.
 
 
 0.7.1.170 - 2024-11-10

@@ -1033,9 +1033,9 @@ void VDFFAudio_vorbis::InitContext()
 	else {
 		avctx->flags |= AV_CODEC_FLAG_QSCALE;
 		avctx->global_quality = (FF_QP2LAMBDA * config->quality + 50) / 100;
-		avctx->bit_rate = -1;
-		avctx->rc_min_rate = -1;
-		avctx->rc_max_rate = -1;
+		avctx->bit_rate = 0;
+		avctx->rc_min_rate = 0;
+		avctx->rc_max_rate = 0;
 	}
 }
 
