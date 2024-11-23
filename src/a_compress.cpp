@@ -255,7 +255,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	}
 
 	//if(ofmt->oformat->flags & AVFMT_GLOBALHEADER)
-	//	ctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
+	//	avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 	avctx->flags |= AV_CODEC_FLAG_GLOBAL_HEADER;
 
 	InitContext();

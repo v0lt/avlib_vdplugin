@@ -939,7 +939,7 @@ void FFOutputFile::import_wav(AVStream* st, const void* pFormat, int cbFormat)
 		}
 	}
 
-	uint32 dwHeader[20];
+	uint32 dwHeader[5];
 	dwHeader[0] = FOURCC_RIFF;
 	dwHeader[1] = 20 - 8 + cbFormat;
 	dwHeader[2] = mmioFOURCC('W', 'A', 'V', 'E');
