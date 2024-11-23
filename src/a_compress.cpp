@@ -1003,10 +1003,10 @@ void VDFFAudio_alac::ShowConfig(VDXHWND parent)
 void VDFFAudio_vorbis::reset_config()
 {
 	codec_config.clear();
-	codec_config.version = 1;
+	codec_config.version = 2;
 	codec_config.flags = 0;
 	codec_config.bitrate = 160;
-	codec_config.quality = 500;
+	codec_config.quality = 3;
 }
 
 int VDFFAudio_vorbis::SuggestFileFormat(const char* name)
@@ -1032,7 +1032,7 @@ void VDFFAudio_vorbis::InitContext()
 	}
 	else {
 		avctx->flags |= AV_CODEC_FLAG_QSCALE;
-		avctx->global_quality = (FF_QP2LAMBDA * config->quality + 50) / 100;
+		avctx->global_quality = FF_QP2LAMBDA * config->quality;
 		avctx->bit_rate = 0;
 		avctx->rc_min_rate = 0;
 		avctx->rc_max_rate = 0;
@@ -1063,13 +1063,11 @@ void AConfigVorbis::init_quality()
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 110);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, (100 - codec_config->quality / 10));
-		wchar_t buf[80];
-		swprintf_s(buf, L"%1.1f", codec_config->quality * 0.01);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality (high-low)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, -1);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, true);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality");
 	}
 }
 
@@ -1083,10 +1081,8 @@ void AConfigVorbis::change_quality()
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
 	}
 	else {
-		codec_config->quality = (100 - x) * 10;
-		wchar_t buf[80];
-		swprintf_s(buf, L"%1.1f", codec_config->quality * 0.01);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
+		codec_config->quality = x;
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, true);
 	}
 }
 
