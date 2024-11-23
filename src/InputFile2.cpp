@@ -67,20 +67,20 @@ IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const vo
 
 	RIFFCHUNK chunk;
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x46464952) { //RIFF
+	if (chunk.fcc != FCC('RIFF')) { //RIFF
 		return IVDXInputFileDriver::kDC_None;
 	}
 	DWORD fmt;
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
-	if (fmt != 0x20495641) { //AVI
+	if (fmt != FCC('AVI ')) { //AVI
 		return IVDXInputFileDriver::kDC_None;
 	}
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x5453494C) { //LIST
+	if (chunk.fcc != FCC('LIST')) { //LIST
 		return IVDXInputFileDriver::kDC_None;
 	}
 	memcpy(&fmt, data, 4); data += 4; rsize -= 4;
-	if (fmt != 0x6C726468) { //hdrl
+	if (fmt != FCC('hdrl')) { //hdrl
 		return IVDXInputFileDriver::kDC_None;
 	}
 
@@ -105,7 +105,7 @@ IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const vo
 		return IVDXInputFileDriver::kDC_High;
 	}
 	memcpy(&chunk, data, sizeof(chunk)); data += sizeof(chunk); rsize -= sizeof(chunk);
-	if (chunk.fcc != 0x5453494C) { //LIST
+	if (chunk.fcc != FCC('LIST')) { //LIST
 		return IVDXInputFileDriver::kDC_None;
 	}
 
