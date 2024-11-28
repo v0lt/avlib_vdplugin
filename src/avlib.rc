@@ -501,7 +501,7 @@ BEGIN
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_ENC_BITRATE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,47,139,12
     LTEXT           "Bitrate per channel",IDC_STATIC,14,61,65,8
-    RTEXT           "XXX kbit/s",IDC_ENC_BITRATE_VALUE,109,61,35,8
+    RTEXT           "XXX kbit/s",IDC_ENC_BITRATE_VALUE,108,61,35,8
     CONTROL         "Constrained bitrate",IDC_ENC_ABR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,18,78,10
     CONTROL         "Constant bitrate",IDC_ENC_CBR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,32,69,10
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,80,139,12
@@ -521,7 +521,7 @@ BEGIN
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Quality (high-low)",IDC_ENC_QUALITY_LABEL,14,73,58,8
-    LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
+    RTEXT           "XXX kbit/s",IDC_ENC_QUALITY_VALUE,108,73,35,8
     CONTROL         "Constant bitrate",IDC_ENC_CBR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,32,69,10
 END
 
@@ -566,9 +566,9 @@ BEGIN
     GROUPBOX        "Encoder",-1,151,3,158,75
     CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
-    CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",IDC_ENC_QUALITY_LABEL,14,73,58,8
-    LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
+    CONTROL         "",IDC_ENC_BITRATE,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
+    LTEXT           "Bitrate per channel",IDC_STATIC,14,73,65,8
+    RTEXT           "XXX kbit/s",IDC_ENC_BITRATE_VALUE,108,73,35,8
 END
 
 IDD_ENC_MP3 DIALOGEX 0, 0, 316, 119
@@ -582,8 +582,8 @@ BEGIN
     CONTROL         IDB_FFMPEG,-1,"Static",SS_BITMAP,162,16,136,39,WS_EX_CLIENTEDGE
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",IDC_ENC_QUALITY_LABEL,14,73,58,8
-    LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
+    LTEXT           "Quality (high-low)",IDC_ENC_QUALITY_LABEL,14,73,61,8
+    RTEXT           "XXX kbit/s",IDC_ENC_QUALITY_VALUE,108,73,35,8
     CONTROL         "Joint stereo",IDC_ENC_JOINT_STEREO,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,18,54,10
     CONTROL         "Constant bitrate",IDC_ENC_CBR,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,7,32,69,10
 END
