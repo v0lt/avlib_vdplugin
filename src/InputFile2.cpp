@@ -230,13 +230,78 @@ IVDXInputFileDriver::DetectionConfidence detect_mp4_mov(VDXMediaInfo& info, cons
 	}
 
 	switch (a.t) {
-	case 'wide':
 	case 'ftyp':
+		// http://www.ftyps.com/
+		// https://exiftool.org/TagNames/QuickTime.html#FileType
+		if (a.sz >= 4) {
+			uint32_t type = parser.read4();
+			switch (type) {
+			case 'mp41':
+				wcscpy_s(info.format_name, L"MP4 v1");
+				break;
+			case 'mp42':
+				wcscpy_s(info.format_name, L"MP4 v2");
+				break;
+			case 'isom':
+				wcscpy_s(info.format_name, L"MP4 Base Media v1");
+				break;
+			case 'iso2':
+				wcscpy_s(info.format_name, L"MP4 Base Media v2");
+				break;
+			case 'iso4':
+				wcscpy_s(info.format_name, L"MP4 Base Media v4");
+				break;
+			case 'avc1':
+				wcscpy_s(info.format_name, L"MP4 Base w/ AVC ext");
+				break;
+			case 'qt  ':
+				wcscpy_s(info.format_name, L"Apple QuickTime");
+				break;
+			case 'mqt ':
+				wcscpy_s(info.format_name, L"Sony/Mobile QuickTime");
+				break;
+			case '3gp4':
+			case '3gp5':
+				wcscpy_s(info.format_name, L"3GPP Media");
+				break;
+			case '3g2a':
+				wcscpy_s(info.format_name, L"3GPP2 Media");
+				break;
+			case 'dash':
+				wcscpy_s(info.format_name, L"MP4 DASH");
+				return IVDXInputFileDriver::kDC_Moderate;
+			default:
+				wcscpy_s(info.format_name, L"mp4,mov (ftyp=");
+				int i = wcslen(info.format_name);
+				info.format_name[i++] = ((char*)&type)[3];
+				info.format_name[i++] = ((char*)&type)[2];
+				info.format_name[i++] = ((char*)&type)[1];
+				info.format_name[i++] = ((char*)&type)[0];
+				info.format_name[i++] = ')';
+				info.format_name[i++] = 0;
+				return IVDXInputFileDriver::kDC_Moderate;
+			}
+			return IVDXInputFileDriver::kDC_High;
+		}
+		break;
+	case 'moov':
+		wcscpy_s(info.format_name, L"QuickTime Movie");
+		return IVDXInputFileDriver::kDC_High;
+	case 'wide':
 	case 'skip':
 	case 'mdat':
-	case 'moov':
-		wcscpy_s(info.format_name, L"iso media");
-		return IVDXInputFileDriver::kDC_High;
+	case 'udta':
+	case 'free':
+	case 'pnot':
+		wcscpy_s(info.format_name, L"mov (");
+		int i = wcslen(info.format_name);
+		info.format_name[i++] = ((char*)&a.t)[3];
+		info.format_name[i++] = ((char*)&a.t)[2];
+		info.format_name[i++] = ((char*)&a.t)[1];
+		info.format_name[i++] = ((char*)&a.t)[0];
+		info.format_name[i++] = ')';
+		info.format_name[i++] = 0;
+		return IVDXInputFileDriver::kDC_Moderate;
 	}
 
 	return IVDXInputFileDriver::kDC_None;
