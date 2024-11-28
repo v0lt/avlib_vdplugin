@@ -154,8 +154,8 @@ bool VDXAPIENTRY ff_create(const VDXInputDriverContext* pContext, IVDXInputFileD
 	return true;
 }
 
-#define option_video_init L"FFmpeg : video|*.mp4;*.mov;*.mkv;*.webm;*.flv;*.avi;*.nut"
-std::wstring option_video = option_video_init;
+#define OPTION_VIDEO_INIT L"FFmpeg : video|*.mp4;*.mov;*.mkv;*.webm;*.flv;*.avi;*.nut"
+std::wstring option_video = OPTION_VIDEO_INIT;
 //std::wstring pattern_video; // example "*.mov|*.mp4|*.avi"
 
 VDXInputDriverDefinition ff_video = {
@@ -172,8 +172,8 @@ VDXInputDriverDefinition ff_video = {
 	ff_create
 };
 
-#define option_image_init L"FFmpeg : images|*.jpg;*jpeg;*.png;*.tif;*.tiff;*.jxl;*.webp;*.dpx"
-std::wstring option_image = option_image_init;
+#define OPTION_IMAGE_INIT L"FFmpeg : images|*.jpg;*.jpeg;*.png;*.tif;*.tiff;*.jxl;*.webp;*.dpx"
+std::wstring option_image = OPTION_IMAGE_INIT;
 
 VDXInputDriverDefinition ff_image = {
 	sizeof(VDXInputDriverDefinition),
@@ -189,8 +189,8 @@ VDXInputDriverDefinition ff_image = {
 	ff_create
 };
 
-#define option_audio_init L"FFmpeg : audio|*.wav;*.ogg"
-std::wstring option_audio = option_audio_init;
+#define OPTION_AUDIO_INIT L"FFmpeg : audio|*.wav;*.ogg"
+std::wstring option_audio = OPTION_AUDIO_INIT;
 
 VDXInputDriverDefinition ff_audio = {
 	sizeof(VDXInputDriverDefinition),
@@ -235,7 +235,7 @@ VDPluginInfo* kPlugins[] = {
 	&ff_plugin_video,
 	&ff_plugin_image,
 	&ff_plugin_audio,
-	0
+	nullptr
 };
 
 extern "C" VDPluginInfo * *__cdecl VDGetPluginInfo()
@@ -321,7 +321,7 @@ void loadConfig()
 	ff_audio.mPriority = priority;
 
 	{
-		option_video = option_video_init;
+		option_video = OPTION_VIDEO_INIT;
 		size_t mp = option_video.rfind('|');
 		wchar_t mask[2048];
 		GetPrivateProfileStringW(L"file_mask", L"video", &option_video[mp + 1], mask, 2048, buf);
@@ -346,7 +346,7 @@ void loadConfig()
 	}
 
 	{
-		option_image = option_image_init;
+		option_image = OPTION_IMAGE_INIT;
 		size_t mp = option_image.rfind('|');
 		wchar_t mask[2048];
 		GetPrivateProfileStringW(L"file_mask", L"images", &option_image[mp + 1], mask, 2048, buf);
@@ -371,7 +371,7 @@ void loadConfig()
 	}
 
 	{
-		option_audio = option_audio_init;
+		option_audio = OPTION_AUDIO_INIT;
 		size_t mp = option_audio.rfind('|');
 		wchar_t mask[2048];
 		GetPrivateProfileStringW(L"file_mask", L"audio", &option_audio[mp + 1], mask, 2048, buf);
