@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -278,37 +278,36 @@ void VDFFInputFileInfoDialog::print_audio()
 {
 	AVStream* pAudioStream = segment->audio_source->m_pStream;
 	AVCodecContext* pAudioCtx = segment->audio_source->m_pCodecCtx;
-	if (!pAudioCtx) return;
-
-	wchar_t buf[128];
-	char bufA[128];
+	if (!pAudioCtx) {
+		return;
+	}
 
 	const AVCodec* pCodec = avcodec_find_decoder(pAudioCtx->codec_id);
 	const char* codec_name = pCodec ? pCodec->name: "N/A";
-
 	SetDlgItemTextA(mhdlg, IDC_AUDIO_CODECNAME, codec_name);
 
-	swprintf_s(buf, L"%d Hz", pAudioCtx->sample_rate);
-	SetDlgItemTextW(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
+	char buf[128];
 
-	av_channel_layout_describe(&pAudioCtx->ch_layout, bufA, sizeof(bufA));
-	sprintf(bufA+strlen(bufA), " (%d), ", pAudioCtx->ch_layout.nb_channels);
+	sprintf_s(buf, "%d Hz", pAudioCtx->sample_rate);
+	SetDlgItemTextA(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
+
+	av_channel_layout_describe(&pAudioCtx->ch_layout, buf, sizeof(buf));
+	size_t len = strlen(buf);
+	sprintf_s(buf + len, sizeof(buf) - len, " (%d), ", pAudioCtx->ch_layout.nb_channels);
 	if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE) {
-		strcat_s(bufA, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
+		strcat_s(buf, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
+	} else {
+		strcat_s(buf, "N/A");
 	}
-	else {
-		strcat_s(bufA, "N/A");
-	}
-	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, bufA);
+	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, buf);
 
 	int bits_per_sample = av_get_bits_per_sample(pAudioCtx->codec_id);
 	int64_t bit_rate = bits_per_sample ? pAudioCtx->sample_rate * pAudioCtx->ch_layout.nb_channels * bits_per_sample : pAudioCtx->bit_rate;
 	if (bit_rate) {
-		swprintf_s(buf, L"%I64d kb/sec", bit_rate / 1000);
-		SetDlgItemTextW(mhdlg, IDC_AUDIO_BITRATE, buf);
-	}
-	else {
-		SetDlgItemTextW(mhdlg, IDC_AUDIO_BITRATE, L"N/A");
+		sprintf_s(buf, "%I64d kb/sec", bit_rate / 1000);
+		SetDlgItemTextA(mhdlg, IDC_AUDIO_BITRATE, buf);
+	} else {
+		SetDlgItemTextA(mhdlg, IDC_AUDIO_BITRATE, "N/A");
 	}
 }
 
