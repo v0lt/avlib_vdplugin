@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -272,7 +272,7 @@ IVDXInputFileDriver::DetectionConfidence detect_mp4_mov(VDXMediaInfo& info, cons
 				return IVDXInputFileDriver::kDC_Moderate;
 			default:
 				wcscpy_s(info.format_name, L"mp4,mov (ftyp=");
-				int i = wcslen(info.format_name);
+				size_t i = wcslen(info.format_name);
 				info.format_name[i++] = ((char*)&type)[3];
 				info.format_name[i++] = ((char*)&type)[2];
 				info.format_name[i++] = ((char*)&type)[1];
@@ -294,7 +294,7 @@ IVDXInputFileDriver::DetectionConfidence detect_mp4_mov(VDXMediaInfo& info, cons
 	case 'free':
 	case 'pnot':
 		wcscpy_s(info.format_name, L"mov (");
-		int i = wcslen(info.format_name);
+		size_t i = wcslen(info.format_name);
 		info.format_name[i++] = ((char*)&a.t)[3];
 		info.format_name[i++] = ((char*)&a.t)[2];
 		info.format_name[i++] = ((char*)&a.t)[1];
