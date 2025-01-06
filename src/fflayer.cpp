@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,10 +12,10 @@
 #include <stdlib.h>
 #include <math.h>
 #include <malloc.h>
-#include <string>
 
 #include "fflayer.h"
 #include "resource.h"
+#include "Helper.h"
 
 extern HINSTANCE hInstance;
 
@@ -312,29 +312,31 @@ bool LogoDialog::modify_path()
 
 void LogoDialog::init_pos()
 {
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d", filter->param.pos_x);
-	SetDlgItemTextW(mhdlg, IDC_XPOS, buf);
-	swprintf_s(buf, L"%d", filter->param.pos_y);
-	SetDlgItemTextW(mhdlg, IDC_YPOS, buf);
+	std::wstring str;
+
+	str = std::to_wstring(filter->param.pos_x);
+	SetDlgItemTextW(mhdlg, IDC_XPOS, str.c_str());
+
+	str = std::to_wstring(filter->param.pos_y);
+	SetDlgItemTextW(mhdlg, IDC_YPOS, str.c_str());
 }
 
 void LogoDialog::init_rate()
 {
-	wchar_t buf[80];
-	swprintf_s(buf, L"%g", filter->param.rate);
-	SetDlgItemTextW(mhdlg, IDC_FOLLOW_RATE, buf);
+	auto str = std::format(L"{:g}", filter->param.rate);
+	SetDlgItemTextW(mhdlg, IDC_FOLLOW_RATE, str.c_str());
 }
 
 void LogoDialog::init_ref(int64 r)
 {
 	int rframe = filter->currentRFrame(r);
+	std::wstring str;
 
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d", filter->param.animMode == LogoParam::anim_single ? filter->param.refFrame : rframe);
-	SetDlgItemTextW(mhdlg, IDC_REF_SINGLE, buf);
-	swprintf_s(buf, L"%d", filter->param.animMode == LogoParam::anim_follow ? filter->param.refFrame : 0);
-	SetDlgItemTextW(mhdlg, IDC_REF_FOLLOW, buf);
+	str = std::to_wstring(filter->param.animMode == LogoParam::anim_single ? filter->param.refFrame : rframe);
+	SetDlgItemTextW(mhdlg, IDC_REF_SINGLE, str.c_str());
+
+	str = std::to_wstring(filter->param.animMode == LogoParam::anim_follow ? filter->param.refFrame : 0);
+	SetDlgItemTextW(mhdlg, IDC_REF_FOLLOW, str.c_str());
 }
 
 bool LogoDialog::modify_value(HWND item, int& v)
