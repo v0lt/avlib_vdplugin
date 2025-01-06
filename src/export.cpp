@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -114,16 +114,15 @@ bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 		ext = L".";
 	}
 
-	wchar_t filter[256];
-	swprintf_s(filter, L"Same as source (*%ls)", ext.c_str());
-	size_t n = wcslen(filter) + 1;
-	filter[n] = '*'; n++;
-	filter[n] = 0; wcscat(filter + n, ext.c_str()); n += ext.length();
-	filter[n] = 0; n++;
-	const wchar_t filter2[] = L"All files (*.*)\0*.*\0";
-	memcpy(filter + n, filter2, sizeof(filter2));
+	std::wstring filter = std::format(L"Same as source (*{0})\a*{0}\a", ext.c_str());
+	filter.append(L"All files (*.*)\a*.*\a");
+	for (auto it = filter.begin(); it != filter.end(); ++it) {
+		if (*it == '\a') {
+			*it = '\0';
+		}
+	}
 
-	ofn.lpstrFilter = filter;
+	ofn.lpstrFilter = filter.c_str();
 	ofn.nFilterIndex = 1;
 	ofn.lpstrFile = szFile;
 	ofn.nMaxFile = sizeof szFile;
@@ -214,19 +213,18 @@ void ProgressDialog::sync_state()
 void ProgressDialog::init_bytes(int64_t bytes)
 {
 	double n = double(bytes);
-	const wchar_t* x = L"K";
+	wchar_t x = L'K';
 	n = n / 1024;
 	if (n / 1024 > 8) {
 		n = n / 1024;
-		x = L"M";
+		x = L'M';
 	}
 	if (n / 1024 > 8) {
 		n = n / 1024;
-		x = L"G";
+		x = L'G';
 	}
-	wchar_t buf[1024];
-	swprintf_s(buf, L"%5.2f%s bytes copied", n, x);
-	SetDlgItemTextW(mhdlg, IDC_EXPORT_STATE, buf);
+	auto str = std::format(L"{:.2f}{} bytes copied", n, x);
+	SetDlgItemTextW(mhdlg, IDC_EXPORT_STATE, str.c_str());
 }
 
 void ProgressDialog::init_pos(double p)
