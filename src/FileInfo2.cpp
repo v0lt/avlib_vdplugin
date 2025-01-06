@@ -12,8 +12,8 @@
 #include "resource.h"
 #include "gopro.h"
 #include "Utils/StringUtil.h"
+#include "Helper.h"
 
-#include <string>
 
 static const char* vsnstr = "Version 2.1";
 
@@ -49,8 +49,12 @@ void VDFFInputFileInfoDialog::load_segment()
 	int start_frame = 0;
 	VDFFInputFile* f = source;
 	while (1) {
-		if (pos == segment_pos) break;
-		if (f->video_source) start_frame += f->video_source->sample_count;
+		if (pos == segment_pos) {
+			break;
+		}
+		if (f->video_source) {
+			start_frame += f->video_source->sample_count;
+		}
 		f = f->next_segment;
 		pos++;
 	}
@@ -63,15 +67,17 @@ void VDFFInputFileInfoDialog::load_segment()
 	if (p0 > name) name = p0 + 1;
 	if (p1 > name) name = p1 + 1;
 
-	const int buf_size = 80 + MAX_PATH;
-	wchar_t buf[buf_size];
-	swprintf_s(buf, L"Segment %d of %d: %ls", segment_pos + 1, segment_count, name);
-	SetDlgItemTextW(mhdlg, IDC_SEGMENT, buf);
+	std::wstring str;
+
+	str = std::format(L"Segment {} of {}: {}", segment_pos + 1, segment_count, name);
+	SetDlgItemTextW(mhdlg, IDC_SEGMENT, str.c_str());
 
 	int end_frame = start_frame;
-	if (segment->video_source) end_frame += segment->video_source->sample_count - 1;
-	swprintf_s(buf, L"Timeline: frame %d to %d", start_frame, end_frame);
-	SetDlgItemTextW(mhdlg, IDC_SEGMENT_TIMELINE, buf);
+	if (segment->video_source) {
+		end_frame += segment->video_source->sample_count - 1;
+	}
+	str = std::format(L"Timeline: frame {} to {}", start_frame, end_frame);
+	SetDlgItemTextW(mhdlg, IDC_SEGMENT_TIMELINE, str.c_str());
 
 	HWND prev = GetDlgItem(mhdlg, IDC_SEGMENT_PREV);
 	HWND next = GetDlgItem(mhdlg, IDC_SEGMENT_NEXT);
@@ -79,8 +85,12 @@ void VDFFInputFileInfoDialog::load_segment()
 	bool bnext = segment_pos < segment_count - 1;
 	EnableWindow(prev, true);
 	EnableWindow(next, true);
-	if (GetFocus() == prev && !bprev) SetFocus(next);
-	if (GetFocus() == next && !bnext) SetFocus(prev);
+	if (GetFocus() == prev && !bprev) {
+		SetFocus(next);
+	}
+	if (GetFocus() == next && !bnext) {
+		SetFocus(prev);
+	}
 	EnableWindow(prev, bprev);
 	EnableWindow(next, bnext);
 	SendMessageW(prev, BM_SETSTYLE, (WPARAM)BS_FLAT, TRUE);
@@ -89,8 +99,12 @@ void VDFFInputFileInfoDialog::load_segment()
 	print_format();
 	print_metadata();
 
-	if (segment->video_source) print_video();
-	if (segment->audio_source) print_audio();
+	if (segment->video_source) {
+		print_video();
+	}
+	if (segment->audio_source) {
+		print_audio();
+	}
 }
 
 INT_PTR VDFFInputFileInfoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -137,15 +151,15 @@ void VDFFInputFileInfoDialog::print_format()
 	const AVInputFormat* pInputFormat = pFormatCtx->iformat;
 
 	SetDlgItemTextA(mhdlg, IDC_STATICVerNumber, vsnstr);
-	wchar_t buf[128];
+	std::wstring str;
 
 	SetDlgItemTextA(mhdlg, IDC_FORMATNAME, pInputFormat->long_name);
 
 	if (segment->is_image) {
 		int n = segment->video_source->sample_count;
 		if (n > 1) {
-			swprintf_s(buf, L"%d images", n);
-			SetDlgItemTextW(mhdlg, IDC_DURATION, buf);
+			str = std::format(L"{} images", n);
+			SetDlgItemTextW(mhdlg, IDC_DURATION, str.c_str());
 		}
 		else {
 			SetDlgItemTextW(mhdlg, IDC_DURATION, L"single image");
@@ -173,31 +187,34 @@ void VDFFInputFileInfoDialog::print_format()
 			int minutes = (int)(seconds / 60);
 			seconds -= (minutes * 60);
 
-			swprintf_s(buf, L"%d h : %d min : %.2f sec", hours, minutes, seconds);
-			SetDlgItemTextW(mhdlg, IDC_DURATION, buf);
+			str = std::format(L"{} h : {} min : {:.2f} sec", hours, minutes, seconds);
+			SetDlgItemTextW(mhdlg, IDC_DURATION, str.c_str());
 		}
 	}
 
-	swprintf_s(buf, L"%I64d kb/sec", pFormatCtx->bit_rate / 1000);
-	SetDlgItemTextW(mhdlg, IDC_BITRATE, buf);
+	str = std::format(L"{} kb/sec", pFormatCtx->bit_rate / 1000);
+	SetDlgItemTextW(mhdlg, IDC_BITRATE, str.c_str());
 
-	swprintf_s(buf, L"%u", pFormatCtx->nb_streams);
-	SetDlgItemTextW(mhdlg, IDC_STREAMSCOUNT, buf);
+	str = std::to_wstring(pFormatCtx->nb_streams);
+	SetDlgItemTextW(mhdlg, IDC_STREAMSCOUNT, str.c_str());
 }
 
 void VDFFInputFileInfoDialog::print_video()
 {
-	AVStream* pVideoStream = segment->video_source->m_pStream;
 	AVCodecContext* pVideoCtx = segment->video_source->m_pCodecCtx;
+	if (!pVideoCtx) {
+		return;
+	}
+	AVStream* pVideoStream = segment->video_source->m_pStream;
 	AVCodecParameters* codecpar = pVideoStream->codecpar;
-	if (!pVideoCtx) return;
 
-	wchar_t buf[256];
 
 	const AVCodec* pCodec = avcodec_find_decoder(codecpar->codec_id);
 	const char* codec_name = "N/A";
-	if (pCodec) codec_name = pCodec->name; else {
-		if (codecpar->codec_id == AV_CODEC_ID_MPEG2TS) codec_name = "mpeg2ts";
+	if (pCodec) {
+		codec_name = pCodec->name;
+	} else if (codecpar->codec_id == AV_CODEC_ID_MPEG2TS) {
+		codec_name = "mpeg2ts";
 	}
 
 	SetDlgItemTextA(mhdlg, IDC_VIDEO_CODECNAME, codec_name);
@@ -240,17 +257,19 @@ void VDFFInputFileInfoDialog::print_video()
 		SetDlgItemTextW(mhdlg, IDC_VIDEO_PIXFMT, L"N/A");
 	}
 
+	std::wstring str;
+
 	if (segment->is_image) {
-		swprintf_s(buf, L"%d x %d", pVideoCtx->width, pVideoCtx->height);
-		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
+		str = std::format(L"{} x {}", pVideoCtx->width, pVideoCtx->height);
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, str.c_str());
 	}
 	else {
 		VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
-		swprintf_s(buf, L"%d x %d, %.3f fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
+		str = std::format(L"{} x {}, {:.3f} fps", pVideoCtx->width, pVideoCtx->height, (double)fr.mNumerator / fr.mDenominator);
 		if (segment->video_source->average_fr) {
-			wcscat_s(buf, L" (average)");
+			str.append(L" (average)");
 		}
-		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, buf);
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_WXH, str.c_str());
 	}
 
 	AVRational ar = av_make_q(1, 1);
@@ -262,50 +281,49 @@ void VDFFInputFileInfoDialog::print_video()
 	}
 	AVRational ar1;
 	av_reduce(&ar1.num, &ar1.den, ar.num, ar.den, INT_MAX);
-	swprintf_s(buf, L"%d : %d", ar1.num, ar1.den);
-	SetDlgItemTextW(mhdlg, IDC_VIDEO_ASPECTRATIO, buf);
+	str = std::format(L"{} : {}", ar1.num, ar1.den);
+	SetDlgItemTextW(mhdlg, IDC_VIDEO_ASPECTRATIO, str.c_str());
 
 	if (pVideoCtx->bit_rate) {
-		swprintf_s(buf, L"%I64d kb/sec", pVideoCtx->bit_rate / 1000);
-		SetDlgItemTextW(mhdlg, IDC_VIDEO_BITRATE, buf);
-	}
-	else {
+		str = std::format(L"{} kb/sec", pVideoCtx->bit_rate / 1000);
+		SetDlgItemTextW(mhdlg, IDC_VIDEO_BITRATE, str.c_str());
+	} else {
 		SetDlgItemTextW(mhdlg, IDC_VIDEO_BITRATE, L"N/A");
 	}
 }
 
 void VDFFInputFileInfoDialog::print_audio()
 {
-	AVStream* pAudioStream = segment->audio_source->m_pStream;
 	AVCodecContext* pAudioCtx = segment->audio_source->m_pCodecCtx;
 	if (!pAudioCtx) {
 		return;
 	}
+	AVStream* pAudioStream = segment->audio_source->m_pStream;
 
 	const AVCodec* pCodec = avcodec_find_decoder(pAudioCtx->codec_id);
 	const char* codec_name = pCodec ? pCodec->name: "N/A";
 	SetDlgItemTextA(mhdlg, IDC_AUDIO_CODECNAME, codec_name);
 
-	char buf[128];
-
-	sprintf_s(buf, "%d Hz", pAudioCtx->sample_rate);
-	SetDlgItemTextA(mhdlg, IDC_AUDIO_SAMPLERATE, buf);
-
-	av_channel_layout_describe(&pAudioCtx->ch_layout, buf, sizeof(buf));
-	size_t len = strlen(buf);
-	sprintf_s(buf + len, sizeof(buf) - len, " (%d), ", pAudioCtx->ch_layout.nb_channels);
+	std::string str(80, '\0');
+	av_channel_layout_describe(&pAudioCtx->ch_layout, str.data(), str.length());
+	str_truncate_after_null(str);
+	str += std::format(" ({}), ", pAudioCtx->ch_layout.nb_channels);
 	if (pAudioCtx->sample_fmt != AV_SAMPLE_FMT_NONE) {
-		strcat_s(buf, av_get_sample_fmt_name(pAudioCtx->sample_fmt));
+		str.append(av_get_sample_fmt_name(pAudioCtx->sample_fmt));
 	} else {
-		strcat_s(buf, "N/A");
+		str.append("N/A");
 	}
-	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, buf);
+	SetDlgItemTextA(mhdlg, IDC_AUDIO_CHANNELS, str.c_str());
+
+
+	str = std::format("{} Hz", pAudioCtx->sample_rate);
+	SetDlgItemTextA(mhdlg, IDC_AUDIO_SAMPLERATE, str.c_str());
 
 	int bits_per_sample = av_get_bits_per_sample(pAudioCtx->codec_id);
 	int64_t bit_rate = bits_per_sample ? pAudioCtx->sample_rate * pAudioCtx->ch_layout.nb_channels * bits_per_sample : pAudioCtx->bit_rate;
 	if (bit_rate) {
-		sprintf_s(buf, "%I64d kb/sec", bit_rate / 1000);
-		SetDlgItemTextA(mhdlg, IDC_AUDIO_BITRATE, buf);
+		str = std::format("{} kb/sec", bit_rate / 1000);
+		SetDlgItemTextA(mhdlg, IDC_AUDIO_BITRATE, str.c_str());
 	} else {
 		SetDlgItemTextA(mhdlg, IDC_AUDIO_BITRATE, "N/A");
 	}
@@ -456,18 +474,21 @@ void VDFFInputFileInfoDialog::print_performance()
 	}
 
 	int64_t mem_max = 0;
-	if (source->video_source) mem_max = source->video_source->frame_size;
+	if (source->video_source) {
+		mem_max = source->video_source->frame_size;
+	}
 	mem_max *= buf_max;
 	mem_max = (mem_max + 512 * 1024) / (1024 * 1024);
 
 	int buf_used = (buf_count * 200 + buf_max) / (buf_max * 2);
 
-	wchar_t buf[1024];
-	swprintf_s(buf, L"Memory cache: %d frames / %dM reserved, %d%% used", buf_max, int(mem_max), buf_used);
-	SetDlgItemTextW(mhdlg, IDC_MEMORY_INFO, buf);
+	std::wstring str;
 
-	swprintf_s(buf, L"Frames decoded: %d", decoded_count);
-	SetDlgItemTextW(mhdlg, IDC_STATS, buf);
+	str = std::format(L"Memory cache: {} frames / {}M reserved, {}% used", buf_max, mem_max, buf_used);
+	SetDlgItemTextW(mhdlg, IDC_MEMORY_INFO, str.c_str());
+
+	str = std::format(L"Frames decoded: {}", decoded_count);
+	SetDlgItemTextW(mhdlg, IDC_STATS, str.c_str());
 
 	if (segment->is_image) {
 		SetDlgItemTextW(mhdlg, IDC_INDEX_INFO, L"Seeking: image list (random access)");
@@ -484,7 +505,10 @@ void VDFFInputFileInfoDialog::print_performance()
 			else {
 				msg = L"Seeking: index present";
 			}
-			if (has_vfr) msg += L" (vfr)";
+
+			if (has_vfr) {
+				msg += L" (vfr)";
+			}
 		}
 		else {
 			msg = L"Seeking: index missing, reverse scan may be slow";
