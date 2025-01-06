@@ -530,18 +530,16 @@ void AConfigAAC::init_quality()
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 32);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 288);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, buf);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
 void AConfigAAC::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
 	codec_config->bitrate = x & ~15;
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, buf);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
 INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -656,9 +654,8 @@ void AConfigMp3::init_quality()
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, std::size(mp3_bitrate) - 1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, x);
-		wchar_t buf[80];
-		swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
@@ -675,9 +672,8 @@ void AConfigMp3::change_quality()
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
 		codec_config->bitrate = mp3_bitrate[x];
-		wchar_t buf[80];
-		swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 	}
 	else {
 		codec_config->quality = x;
@@ -1056,9 +1052,8 @@ void AConfigVorbis::init_quality()
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 240);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
-		wchar_t buf[80];
-		swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
 	}
 	else {
@@ -1075,9 +1070,8 @@ void AConfigVorbis::change_quality()
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
 		codec_config->bitrate = x;
-		wchar_t buf[80];
-		swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, buf);
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 	}
 	else {
 		codec_config->quality = x;
@@ -1208,9 +1202,8 @@ void AConfigOpus::init_quality()
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 6);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 256);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, buf);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
@@ -1229,9 +1222,8 @@ void AConfigOpus::change_bitrate()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
 	codec_config->bitrate = x;
-	wchar_t buf[80];
-	swprintf_s(buf, L"%d kbit/s", codec_config->bitrate);
-	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, buf);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
 void AConfigOpus::init_flags()

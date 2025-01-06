@@ -23,6 +23,7 @@ extern "C" {
 }
 #include "resource.h"
 #include "compress.h"
+#include "Helper.h"
 
 void init_av();
 extern HINSTANCE hInstance;
@@ -1100,9 +1101,8 @@ void ConfigBase::notify_hide()
 void ConfigBase::notify_bits_change(int bits_new, int bits_old)
 {
 	if (idc_message != -1) {
-		wchar_t buf[80];
-		swprintf_s(buf, L"(!) Bit depth adjusted (was %d)", bits_old);
-		SetDlgItemTextW(mhdlg, idc_message, buf);
+		auto str = std::format(L"(!) Bit depth adjusted (was {})", bits_old);
+		SetDlgItemTextW(mhdlg, idc_message, str.c_str());
 	}
 }
 
@@ -1395,9 +1395,8 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
 		for (int i = 1; i < std::size(ffv1_slice_tab); i++) {
-			wchar_t buf[10];
-			swprintf_s(buf, L"%d", ffv1_slice_tab[i]);
-			SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)buf);
+			auto str = std::to_wstring(ffv1_slice_tab[i]);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)str.c_str());
 		}
 		CheckDlgButton(mhdlg, IDC_ENC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
 		apply_level();

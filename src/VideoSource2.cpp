@@ -2285,9 +2285,8 @@ int VDFFVideoSource::handle_frame()
 			} else {
 				av_image_copy_to_buffer(dst, frame_size, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height, line_align);
 #if _DEBUG && 0
-				wchar_t filepath[MAX_PATH] = {};
-				swprintf_s(filepath, L"C:\\Temp\\VideoFrame%04d.bmp", pos);
-				DumpImageToFile(filepath, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height);
+				std::wstring filepath = std::format(L"C:\\Temp\\VideoFrame{:04}.bmp", pos);
+				DumpImageToFile(filepath.c_str(), m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height);
 #endif
 			}
 		}
