@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 v0lt
+ * Copyright (C) 2024-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -7,28 +7,23 @@
 #pragma once
 
 #include <string>
+#include <format>
 
 #if _DEBUG
 template <typename... Args>
-void DLog(const char* format, Args ...args)
+void DLog(const std::string_view format, Args ...args)
 {
-	char buf[2000];
+	std::string str = std::vformat(format, std::make_format_args(args...)) + '\n';
 
-	sprintf_s(buf, format, args...);
-	strcat_s(buf, "\n");
-
-	OutputDebugStringA(buf);
+	OutputDebugStringA(str.c_str());
 };
 
 template <typename... Args>
-void DLog(const wchar_t* format, Args ...args)
+void DLog(const std::wstring_view format, Args ...args)
 {
-	wchar_t buf[2000];
+	std::wstring str = std::vformat(format, std::make_wformat_args(args...)) + L'\n';
 
-	swprintf_s(buf, format, args...);
-	wcscat_s(buf, L"\n");
-
-	OutputDebugStringW(buf);
+	OutputDebugStringW(str.c_str());
 };
 #else
 #define DLog(...) __noop

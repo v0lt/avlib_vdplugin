@@ -544,7 +544,7 @@ void VDFFInputFile::DisplayInfo(VDXHWND hwndParent)
 
 void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 {
-	DLog(L"VDFFInputFile::Init - %s", szFile);
+	DLog(L"VDFFInputFile::Init - {}", szFile);
 
 	if (!szFile) {
 		mContext.mpCallbacks->SetError("No File Given");
