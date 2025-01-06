@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,11 +11,11 @@
 #include <vd2/plugin/vdplugin.h>
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
-#include <string>
 #include "InputFile2.h"
 #include "export.h"
 #include "a_compress.h"
 #include "resource.h"
+#include "Helper.h"
 
 #pragma comment(lib, "avcodec")
 #pragma comment(lib, "avformat")
@@ -90,9 +90,8 @@ float GetDlgItemFloat(HWND wnd, int id, float bv)
 void SetDlgItemFloat(HWND wnd, int id, float v)
 {
 	HWND w1 = GetDlgItem(wnd, id);
-	wchar_t buf[128];
-	swprintf_s(buf, L"%g", v);
-	SetWindowTextW(w1, buf);
+	auto str = std::format(L"{:.2}", v);
+	SetWindowTextW(w1, str.c_str());
 }
 
 void ConfigureDialog::init_cache()
@@ -265,9 +264,8 @@ void saveConfig()
 	WritePrivateProfileStringW(L"decode_model", L"force_frame_thread", config_force_thread ? L"1" : L"0", buf);
 	WritePrivateProfileStringW(L"decode_model", L"disable_cache", config_disable_cache ? L"1" : L"0", buf);
 
-	wchar_t buf2[128];
-	swprintf_s(buf2, L"%g", config_cache_size);
-	WritePrivateProfileStringW(L"decode_model", L"cache_size", buf2, buf);
+	auto str = std::format(L"{:.2}", config_cache_size);
+	WritePrivateProfileStringW(L"decode_model", L"cache_size", str.c_str(), buf);
 
 	WritePrivateProfileStringW(0, 0, 0, buf);
 }
