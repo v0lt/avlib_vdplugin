@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -78,17 +78,6 @@ const char* DecipherValue(const char** strarray, size_t count, unsigned int valu
 		return str_unknown;
 }
 
-template <typename... Args>
-inline int print_to_string(char* p, const char* fmt, Args&& ...args)
-{
-	int ret = sprintf(p, fmt, args...);
-	assert(ret > 0);
-	if (ret > 0) {
-		return ret;
-	}
-	return 0;
-};
-
 void GoproInfo::get_settings(unsigned int* sett, int n)
 {
 	unsigned int sett1 = sett[0];
@@ -114,38 +103,35 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 	unsigned int protune_wb        = (sett2 >> 0x10) & ((1 << 2) - 1);
 	unsigned int broadcast_privacy = (sett2 >> 0x12) & ((1 << 2) - 1);
 
-	setup_info.resize(1024);
-	char* p = setup_info.data();
+	setup_info.reserve(300);
 
 	// 0 video
 	if (mode) {
-		p += print_to_string(p, "\tmode:\t%u\r\n", mode);
-		p += print_to_string(p, "\tsubmode:\t%u\r\n", submode);
+		setup_info += std::format("\tmode:\t{}\r\n", mode);
+		setup_info += std::format("\tsubmode:\t{}\r\n", submode);
 	}
 	else {
-		p += print_to_string(p, "\tmode:\t%s\r\n", DecipherValue(strs_vmode, std::size(strs_vmode), submode));
+		setup_info += std::format("\tmode:\t{}\r\n", DecipherValue(strs_vmode, std::size(strs_vmode), submode));
 	}
 
-	p += print_to_string(p, "\torientation:\t%s\r\n", DecipherValue(strs_orient, std::size(strs_orient), orientation));
-	p += print_to_string(p, "\tspotmeter:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), spotmeter));
+	setup_info += std::format("\torientation:\t{}\r\n", DecipherValue(strs_orient, std::size(strs_orient), orientation));
+	setup_info += std::format("\tspotmeter:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), spotmeter));
 
 	if (n > 1) {
-		p += print_to_string(p, "\tfov:\t%s\r\n", DecipherValue(strs_fov, std::size(strs_fov), fov));
+		setup_info += std::format("\tfov:\t{}\r\n", DecipherValue(strs_fov, std::size(strs_fov), fov));
 
-		p += print_to_string(p, "\tlowlight:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), lowlight));
-		p += print_to_string(p, "\tsuperview:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), superview));
+		setup_info += std::format("\tlowlight:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), lowlight));
+		setup_info += std::format("\tsuperview:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), superview));
 	}
 
-	p += print_to_string(p, "\tprotune:\t%s\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), protune));
+	setup_info += std::format("\tprotune:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), protune));
 	if (protune && n > 1) {
-		p += print_to_string(p, "\tprotune_wb:\t%s\r\n", DecipherValue(strs_pt_wb, std::size(strs_pt_wb), protune_wb));
-		p += print_to_string(p, "\tprotune_color:\t%s\r\n", DecipherValue(strs_pt_color, std::size(strs_pt_color), protune_color));
-		p += print_to_string(p, "\tprotune_iso:\t%s\r\n", DecipherValue(strs_pt_iso_video, std::size(strs_pt_iso_video), protune_iso));
-		p += print_to_string(p, "\tprotune_sharpness:\t%s\r\n", DecipherValue(strs_pt_sharpness, std::size(strs_pt_sharpness), protune_sharpness));
-		p += print_to_string(p, "\tprotune_ev:\t%s\r\n", DecipherValue(strs_pt_ev, std::size(strs_pt_ev), protune_ev));
+		setup_info += std::format("\tprotune_wb:\t{}\r\n", DecipherValue(strs_pt_wb, std::size(strs_pt_wb), protune_wb));
+		setup_info += std::format("\tprotune_color:\t{}\r\n", DecipherValue(strs_pt_color, std::size(strs_pt_color), protune_color));
+		setup_info += std::format("\tprotune_iso:\t{}\r\n", DecipherValue(strs_pt_iso_video, std::size(strs_pt_iso_video), protune_iso));
+		setup_info += std::format("\tprotune_sharpness:\t{}\r\n", DecipherValue(strs_pt_sharpness, std::size(strs_pt_sharpness), protune_sharpness));
+		setup_info += std::format("\tprotune_ev:\t{}\r\n", DecipherValue(strs_pt_ev, std::size(strs_pt_ev), protune_ev));
 	}
-
-	setup_info.erase(p - setup_info.data(), std::string::npos);
 }
 
 void GoproInfo::find_info(const std::wstring& name)
@@ -182,10 +168,10 @@ void GoproInfo::find_info(const std::wstring& name)
 							std::unique_ptr<char[]> buf;
 							int size;
 							parser.read(c, buf, size);
-							cam_serial.resize(size * 2);
+							cam_serial.reserve(size * 2);
 							for (int i = 0; i < size; i++) {
 								unsigned val = ((unsigned char*)buf.get())[i];
-								print_to_string(cam_serial.data() + i * 2, "%02x", val);
+								cam_serial += std::format("{:02x}", val);
 							}
 						}
 						break;
