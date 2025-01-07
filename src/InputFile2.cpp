@@ -131,21 +131,18 @@ IVDXInputFileDriver::DetectionConfidence detect_avi(VDXMediaInfo& info, const vo
 		init_av();
 		bool have_codec = false;
 		DWORD h1 = sh.fccHandler;
+
 		char* ch = (char*)(&h1);
-		info.vcodec_name[0] = 0;
+		std::wstring str;
 		for (int i = 0; i < 4; i++) {
-			int v = ch[i];
+			wchar_t v = ch[i];
 			if (v >= 32) {
-				wchar_t vc[] = { 0,0 };
-				vc[0] = v;
-				wcscat_s(info.vcodec_name, vc);
-			}
-			else {
-				wchar_t vc[10];
-				swprintf_s(vc, L"[%d]", v);
-				wcscat_s(info.vcodec_name, vc);
+				str += v;
+			} else {
+				str += std::format(L"[{}]", (int)v);
 			}
 		}
+		wcscpy_s(info.vcodec_name, str.c_str());
 
 		// skip internally supported formats
 		if (!config_decode_raw) {
@@ -584,19 +581,23 @@ int VDFFInputFile::GetFileFlags()
 void VDFFInputFile::do_auto_append(const wchar_t* szFile)
 {
 	const wchar_t* ext = GetFileExt(szFile);
-	if (!ext) return;
-	if (ext - szFile < 3) return;
+	if (!ext) {
+		return;
+	}
+	if (ext - szFile < 3) {
+		return;
+	}
 	if (ext[-3] == '.' && ext[-2] == '0' && ext[-1] == '0') {
 		int x = 1;
+		const std::wstring base(szFile, ext - szFile - 3);
 		while (1) {
-			wchar_t buf[MAX_PATH + 128];
-			wcsncpy_s(buf, szFile, ext - szFile - 3); buf[ext - szFile - 3] = 0;
-			wchar_t buf1[32];
-			swprintf_s(buf1, L".%02d", x);
-			wcscat_s(buf, buf1);
-			wcscat_s(buf, ext);
-			if (!FileExist(buf)) break;
-			if (!Append(buf)) break;
+			std::wstring filepath = base + std::format(L".{:02}", x) + ext;
+			if (!FileExist(filepath.c_str())) {
+				break;
+			}
+			if (!Append(filepath.c_str())) {
+				break;
+			}
 			x++;
 		}
 	}
@@ -786,9 +787,8 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 				AVDictionary* options = nullptr;
 				av_dict_set_int(&options, "start_number", start, 0);
 				if (r_fr.num != 0) {
-					char buf[32];
-					sprintf_s(buf, "%d/%d", r_fr.num, r_fr.den);
-					av_dict_set(&options, "framerate", buf, 0);
+					std::string str = std::format("{}/{}", r_fr.num, r_fr.den);
+					av_dict_set(&options, "framerate", str.c_str(), 0);
 				}
 				err = avformat_open_input(&fmt, ff_path.c_str(), fmt_image2, &options);
 				av_dict_free(&options);
