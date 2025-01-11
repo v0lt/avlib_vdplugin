@@ -644,7 +644,7 @@ public:
 void AConfigMp3::init_quality()
 {
 	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
-		int x = 0;
+		size_t x = 0;
 		for (; x < std::size(mp3_bitrate); x++) {
 			if (mp3_bitrate[x] == codec_config->bitrate) {
 				break;

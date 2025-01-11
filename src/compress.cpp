@@ -1030,8 +1030,8 @@ void ConfigBase::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
 }
@@ -1051,8 +1051,8 @@ void ConfigBase::adjust_bits()
 		};
 
 		int bits1 = 0;
-		for (int i = 0; i < std::size(option); i++) {
-			int x = option[i];
+		for (const auto& opt : option) {
+			int x = opt;
 			if (x) {
 				bits1 = x;
 			}
@@ -1339,8 +1339,8 @@ void ConfigFFV1::apply_level()
 void ConfigFFV1::init_slices()
 {
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
-	int x = 0;
-	for (int i = 1; i < std::size(ffv1_slice_tab); i++) {
+	size_t x = 0;
+	for (size_t i = 1; i < std::size(ffv1_slice_tab); i++) {
 		if (ffv1_slice_tab[i] == config->slice) {
 			x = i;
 		}
@@ -1380,8 +1380,8 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			"FFV1.3",
 		};
 		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(v_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_names[i]);
+		for (const auto& v_name : v_names) {
+			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_name);
 		}
 		int x = 0;
 		if (config->level == 1) {
@@ -1394,8 +1394,8 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
-		for (int i = 1; i < std::size(ffv1_slice_tab); i++) {
-			auto str = std::to_wstring(ffv1_slice_tab[i]);
+		for (const auto& slice_tab : ffv1_slice_tab) {
+			auto str = std::to_wstring(slice_tab);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)str.c_str());
 		}
 		CheckDlgButton(mhdlg, IDC_ENC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
@@ -1527,8 +1527,8 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(pred_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_names[i]);
+		for (const auto& pred_name : pred_names) {
+			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_name);
 		}
 		CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
@@ -1687,8 +1687,8 @@ void ConfigProres::init_profile()
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(profile_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		for (const auto& profile_name : profile_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile - 4, 0);
 
@@ -1704,8 +1704,8 @@ void ConfigProres::init_profile()
 		};
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(profile_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_names[i]);
+		for (const auto& profile_name : profile_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
 	}
@@ -1720,8 +1720,8 @@ void ConfigProres::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name: color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_yuv422
 	if (codec->config->format == CodecBase::format_yuv444) {
@@ -1845,14 +1845,14 @@ INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 	{
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(x264_preset_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x264_preset_names[i]);
+		for (const auto& preset_name : x264_preset_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(x264_tune_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)x264_tune_names[i]);
+		for (const auto& tune_name : x264_tune_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)tune_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
 
@@ -1899,8 +1899,8 @@ void ConfigH264::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_yuv420
 	if (codec->config->format == CodecBase::format_yuv422) {
@@ -2067,14 +2067,14 @@ INT_PTR ConfigH265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 	{
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(x265_preset_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)x265_preset_names[i]);
+		for (const auto& preset_name : x265_preset_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_RESETCONTENT, 0, 0);
-		for (int i = 0; i < std::size(x265_tune_names); i++) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)x265_tune_names[i]);
+		for (const auto& tune_name : x265_tune_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)tune_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
 
@@ -2122,8 +2122,8 @@ void ConfigH265::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_rgb
 	if (codec->config->format == CodecBase::format_yuv420) {
@@ -2259,8 +2259,8 @@ void ConfigVP8::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_yuv420
 	if (codec->config->format == CodecBase::format_yuva420) {
@@ -2389,8 +2389,8 @@ void ConfigVP9::init_format()
 	};
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = 0; i < std::size(color_names); i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_names[i]);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_rgb
 	if (codec->config->format == CodecBase::format_yuv420) {

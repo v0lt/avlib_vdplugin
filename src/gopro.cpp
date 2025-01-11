@@ -16,7 +16,7 @@
 void GoproInfo::get_camera_type()
 {
 	// https://github.com/KonradIT/gopro-firmware-archive/blob/main/README.md
-	static const CameraType types[] = {
+	static const CameraType cam_types[] = {
 		{ "HD3.01", "HERO3 White"       },
 		{ "HD3.02", "HERO3 Silver"      },
 		{ "HD3.03", "HERO3 Black"       },
@@ -46,9 +46,9 @@ void GoproInfo::get_camera_type()
 	};
 
 	if (firmware.length() >= 6) {
-		for (int i = 0; i < std::size(types); i++) {
-			if (memcmp(firmware.data(), types[i].Compare, 6) == 0) {
-				type = &types[i];
+		for (const auto& cam_type : cam_types) {
+			if (memcmp(firmware.data(), cam_type.Compare, 6) == 0) {
+				type = &cam_type;
 				break;
 			}
 		}
