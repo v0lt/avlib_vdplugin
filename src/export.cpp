@@ -362,13 +362,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			out_stream->sample_aspect_ratio = in_stream->sample_aspect_ratio;
 			out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 			out_stream->time_base = in_stream->time_base;
-			err = avformat_transfer_internal_stream_timing_info(ofmt->oformat, out_stream, in_stream, AVFMT_TBCF_AUTO);
-			if (err < 0) {
-				goto end;
-			}
-
 			out_stream->r_frame_rate = in_stream->r_frame_rate;
-			out_stream->avg_frame_rate = in_stream->avg_frame_rate;
 
 			if (i == video) {
 				out_video = out_stream;
