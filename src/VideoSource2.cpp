@@ -218,6 +218,11 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	avcodec_parameters_to_context(m_pCodecCtx, m_pStream->codecpar);
 
 	AVRational r_fr = m_pStream->r_frame_rate;
+	if (r_fr.num <= 0 || r_fr.den <= 0) {
+		mContext.mpCallbacks->SetError("FFMPEG: Ñorrupted video frame rate value (%d/%d)", r_fr.num, r_fr.den);
+		return -1;
+	}
+
 	if (m_pStream->codecpar->field_order > AV_FIELD_PROGRESSIVE) {
 		// interlaced seems to double r_framerate
 		// example: 00005.MTS
