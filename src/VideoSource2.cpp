@@ -219,7 +219,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	AVRational r_fr = m_pStream->r_frame_rate;
 	if (r_fr.num <= 0 || r_fr.den <= 0) {
-		mContext.mpCallbacks->SetError("FFMPEG: Ñorrupted video frame rate value (%d/%d)", r_fr.num, r_fr.den);
+		mContext.mpCallbacks->SetError("FFMPEG: Corrupted video frame rate value (%d/%d)", r_fr.num, r_fr.den);
 		return -1;
 	}
 
