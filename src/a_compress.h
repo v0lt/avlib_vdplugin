@@ -113,7 +113,7 @@ public:
 	virtual int SuggestFileFormat(const char* name);
 };
 
-class VDFFAudio_aac : public VDFFAudio
+class VDFFAudio_aac final : public VDFFAudio
 {
 public:
 	struct Config :public VDFFAudio::Config {
@@ -132,7 +132,7 @@ public:
 	virtual void ShowConfig(VDXHWND parent);
 };
 
-class VDFFAudio_mp3 : public VDFFAudio
+class VDFFAudio_mp3 final : public VDFFAudio
 {
 public:
 	enum { flag_jointstereo = 2 };
@@ -152,7 +152,7 @@ public:
 	virtual void ShowConfig(VDXHWND parent);
 };
 
-class VDFFAudio_flac : public VDFFAudio
+class VDFFAudio_flac final : public VDFFAudio
 {
 public:
 	enum { flag_jointstereo = 2 };
@@ -172,7 +172,7 @@ public:
 	virtual void ShowConfig(VDXHWND parent);
 };
 
-class VDFFAudio_alac : public VDFFAudio
+class VDFFAudio_alac final : public VDFFAudio
 {
 public:
 	struct Config :public VDFFAudio::Config {
@@ -191,7 +191,7 @@ public:
 	virtual void ShowConfig(VDXHWND parent);
 };
 
-class VDFFAudio_vorbis : public VDFFAudio
+class VDFFAudio_vorbis final : public VDFFAudio
 {
 public:
 	struct Config :public VDFFAudio::Config {
@@ -211,7 +211,7 @@ public:
 	virtual void ShowConfig(VDXHWND parent);
 };
 
-class VDFFAudio_opus : public VDFFAudio
+class VDFFAudio_opus final : public VDFFAudio
 {
 public:
 	enum { flag_limited_rate = 4 };

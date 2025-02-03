@@ -109,7 +109,7 @@ struct IOWBuffer {
 	}
 };
 
-class FFOutputFile : public  vdxunknown<IVDXOutputFile>
+class FFOutputFile final : public  vdxunknown<IVDXOutputFile>
 {
 public:
 	const VDXInputDriverContext& mContext;
