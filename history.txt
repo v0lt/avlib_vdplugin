@@ -1,6 +1,6 @@
 avlib.vdplugin history
 
-0.7.1.x dev
+0.7.1.220 - 2025-01-03
 ----------------------
 Video files with incorrect (or unrecognized) frame rates are not supported. This fixes the plugin crash.
 Code refactoring for modern compilers.
