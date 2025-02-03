@@ -27,7 +27,7 @@
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 
 namespace {
-#if defined(_MSC_VER) && _MSC_VER >= 1300
+#if defined(_MSC_VER)
 		extern "C" char __ImageBase;
 
 	HINSTANCE GetLocalHInstance() {
