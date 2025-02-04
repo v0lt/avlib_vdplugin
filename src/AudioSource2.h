@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -117,6 +117,6 @@ private:
 	void invalidate(int64_t start, uint32_t count);
 	void alloc_page(int i);
 	void reset_cache();
-	void reset_swr();
+	int reset_swr();
 	int64_t frame_to_pts(sint64 start, AVStream* video);
 };

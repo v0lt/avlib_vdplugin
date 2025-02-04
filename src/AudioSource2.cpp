@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,6 +13,7 @@
 #include <functional>
 #include <cassert>
 #include "Utils/StringUtil.h"
+#include "Helper.h"
 
 VDFFAudioSource::VDFFAudioSource(const VDXInputDriverContext& context)
 	:mContext(context)
@@ -54,6 +55,20 @@ void* VDXAPIENTRY VDFFAudioSource::AsInterface(uint32_t iid)
 		return static_cast<IVDXAudioSource*>(this);
 
 	return vdxunknown<IVDXStreamSource>::AsInterface(iid);
+}
+
+uint64_t GetChannelLayout(AVCodecContext* pCodecCtx)
+{
+	if (pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
+		return pCodecCtx->ch_layout.u.mask;
+	}
+	if (pCodecCtx->ch_layout.nb_channels == 1) {
+		return AV_CH_LAYOUT_MONO;
+	}
+	if (pCodecCtx->ch_layout.nb_channels == 2) {
+		return AV_CH_LAYOUT_STEREO;
+	}
+	return 0;
 }
 
 int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
@@ -157,7 +172,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		return -1;
 	}
 
-	if (m_pCodecCtx->ch_layout.order > AV_CHANNEL_ORDER_NATIVE || (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_UNSPEC && m_pCodecCtx->ch_layout.nb_channels > 2)) {
+	if (!GetChannelLayout(m_pCodecCtx)) {
 		mContext.mpCallbacks->SetError("FFMPEG: Unsupported channel layout.");
 		return -1;
 	}
@@ -212,16 +227,7 @@ AVFormatContext* VDFFAudioSource::OpenAudioFile(std::wstring_view path, int stre
 
 void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 {
-	uint64_t in_layout = 0;
-	if (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
-		in_layout = m_pCodecCtx->ch_layout.u.mask;
-	}
-	else {
-		// hmmm
-		AVChannelLayout ch_layout_def = {};
-		av_channel_layout_default(&ch_layout_def, m_pCodecCtx->ch_layout.nb_channels);
-		in_layout = ch_layout_def.u.mask;
-	}
+	const uint64_t in_layout = GetChannelLayout(m_pCodecCtx);
 
 	uint64 layout = in_layout;
 	AVSampleFormat fmt;
@@ -303,21 +309,16 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 	reset_cache();
 }
 
-void VDFFAudioSource::reset_swr()
+int VDFFAudioSource::reset_swr()
 {
-	uint64_t in_layout = 0;
-	if (m_pCodecCtx->ch_layout.order == AV_CHANNEL_ORDER_NATIVE) {
-		in_layout = m_pCodecCtx->ch_layout.u.mask;
-	}
-	else {
-		// hmmm
-		AVChannelLayout ch_layout_def = {};
-		av_channel_layout_default(&ch_layout_def, m_pCodecCtx->ch_layout.nb_channels);
-		in_layout = ch_layout_def.u.mask;
+	const uint64_t in_layout = GetChannelLayout(m_pCodecCtx);
+	if (!in_layout) {
+		DLog(L"ERROR: Audio parameters suddenly changed to unsupported. Corrupted stream?");
+		return AVERROR_INVALIDDATA;
 	}
 
 	if (in_layout == swr_layout && m_pCodecCtx->sample_rate == swr_rate && m_pCodecCtx->sample_fmt == swr_fmt) {
-		return;
+		return 0;
 	}
 
 	swr_layout = in_layout;
@@ -347,6 +348,8 @@ void VDFFAudioSource::reset_swr()
 	if (ret < 0) {
 		mContext.mpCallbacks->SetError("FFMPEG: Audio resampler error.");
 	}
+
+	return ret;
 }
 
 void VDFFAudioSource::init_start_time()
@@ -620,7 +623,10 @@ int VDFFAudioSource::read_packet(AVPacket* pkt, ReadInfo& ri)
 			break;
 		}
 
-		reset_swr();
+		ret = reset_swr();
+		if (ret < 0) {
+			return ret;
+		}
 		int count = m_pFrame->nb_samples;
 		int64_t frame_start = next_sample;
 		if (m_pFrame->pts != AV_NOPTS_VALUE) {
