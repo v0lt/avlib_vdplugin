@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -163,6 +163,7 @@ protected:
 	static bool test_append(VDFFInputFile* f0, VDFFInputFile* f1);
 };
 
-#define AV_SEEK_START INT64_MIN
+// Don't use INT64_MIN because av_seek_frame may not work correctly. INT64_MIN/2 seems to work fine.
+#define AV_SEEK_START (INT64_MIN/2)
 
 int seek_frame(AVFormatContext* s, int stream_index, int64_t timestamp, int flags);
