@@ -39,15 +39,23 @@ static int av_log_level = AV_LOG_INFO;
 
 void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
 {
+	char prefix[] = "FFLog: ";
+	static size_t newline = std::size(prefix) - 1;
+
 	if (level > av_log_level) {
 		return;
 	}
 
 	char buf[1024];
-	memcpy(buf, "FFLog: ", 7);
-	vsprintf_s(&buf[7], std::size(buf) - 7, fmt, vl);
-	OutputDebugStringA(buf);
-	//DebugBreak();
+	if (newline) {
+		memcpy(buf, prefix, newline);
+	}
+	int ret = vsprintf_s(&buf[newline], std::size(buf) - newline, fmt, vl);
+	if (ret > 0) {
+		OutputDebugStringA(buf);
+		newline = (buf[newline + (ret - 1)] == '\n') ? std::size(prefix) - 1 : 0;
+	}
+	//DebugBreak(); 
 }
 
 void init_av()
