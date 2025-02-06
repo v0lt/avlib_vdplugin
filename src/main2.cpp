@@ -33,13 +33,13 @@ bool config_disable_cache = false;
 float config_cache_size = 0.5;
 void saveConfig();
 
-int av_initialized;
+int av_initialized = 0;
 
 static int av_log_level = AV_LOG_INFO;
 
 void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
 {
-	char prefix[] = "FFLog: ";
+	const char prefix[] = "FFLog: ";
 	static size_t newline = std::size(prefix) - 1;
 
 	if (level > av_log_level) {
@@ -50,7 +50,7 @@ void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
 	if (newline) {
 		memcpy(buf, prefix, newline);
 	}
-	int ret = vsprintf_s(&buf[newline], std::size(buf) - newline, fmt, vl);
+	const int ret = vsprintf_s(&buf[newline], std::size(buf) - newline, fmt, vl);
 	if (ret > 0) {
 		OutputDebugStringA(buf);
 		newline = (buf[newline + (ret - 1)] == '\n') ? std::size(prefix) - 1 : 0;
