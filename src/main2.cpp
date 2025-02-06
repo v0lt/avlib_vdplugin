@@ -44,7 +44,8 @@ void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
 	}
 
 	char buf[1024];
-	vsprintf_s(buf, fmt, vl);
+	memcpy(buf, "FFLog: ", 7);
+	vsprintf_s(&buf[7], std::size(buf) - 7, fmt, vl);
 	OutputDebugStringA(buf);
 	//DebugBreak();
 }
