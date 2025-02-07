@@ -1068,6 +1068,11 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	// which is best default? rgb afraid to use; sws can do either fast-bad or slow-good, but vd can do good-fast-enough
 	using namespace nsVDXPixmap;
 
+	if (frame_width != m_pCodecCtx->width && frame_height != m_pCodecCtx->height) {
+		DLog("ERROR: frame size has changed!");
+		return false;
+	}
+
 	bool default_rgb = false;
 	bool fast_rgb = false;
 
