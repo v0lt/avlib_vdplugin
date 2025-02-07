@@ -163,7 +163,7 @@ protected:
 	static bool test_append(VDFFInputFile* f0, VDFFInputFile* f1);
 };
 
-// Don't use INT64_MIN because av_seek_frame may not work correctly. INT64_MIN/2 seems to work fine.
-#define AV_SEEK_START (INT64_MIN/2)
+// Don't use INT64_MIN because av_seek_frame may not work correctly. INT32_MIN seems to work fine.
+#define AV_SEEK_START (int64_t)INT32_MIN
 
 int seek_frame(AVFormatContext* s, int stream_index, int64_t timestamp, int flags);
