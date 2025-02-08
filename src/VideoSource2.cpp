@@ -831,7 +831,7 @@ void VDFFVideoSource::GetSampleInfo(sint64 sample, VDXVideoFrameInfo& frameInfo)
 	else if (IsKey(sample))
 		frameInfo.mTypeChar = 'K';
 	else
-		frameInfo.mTypeChar = frame_type[sample];
+		frameInfo.mTypeChar = frame_type[(size_t)sample];
 }
 
 bool VDFFVideoSource::IsKey(int64_t sample)
@@ -922,7 +922,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 		return 0;
 	}
 
-	BufferPage* page = frame_array[targetFrame];
+	BufferPage* page = frame_array[(size_t)targetFrame];
 	if (!page) {
 		// this now must be impossible with help of kFlagSyncDecode
 		mContext.mpCallbacks->SetError("Cache overflow: set \"Performance \\ Video buffering\" to 32 or less");
@@ -1990,7 +1990,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 		return true;
 	}
 
-	if (m_copy_mode && frame_type[start] == 'D') {
+	if (m_copy_mode && frame_type[(size_t)start] == 'D') {
 		*lBytesRead = 0;
 		return true;
 	}
@@ -1998,7 +1998,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	if (!m_copy_mode) {
 		// 0 bytes identifies "drop frame"
 		int size = 1;
-		if (frame_type[start] == 'D') {
+		if (frame_type[(size_t)start] == 'D') {
 			size = 0;
 		}
 		*lBytesRead = size;
@@ -2092,7 +2092,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 			return true;
 		}
 
-		if (!m_copy_mode && frame_array[start]) {
+		if (!m_copy_mode && frame_array[(size_t)start]) {
 			return true;
 		}
 
