@@ -409,6 +409,21 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 		}
 	}
 
+	if (pHeader && nHeaderSize >= 10) {
+		const unsigned char header_bom_u8[] = { 0xEF, 0xBB, 0xBF };
+		const char header_m3u[] = { '#','E','X','T','M','3','U' };
+
+		auto p = (const unsigned char*)pHeader;
+
+		if (memcmp(p, header_bom_u8, std::size(header_bom_u8)) == 0) {
+			p += std::size(header_bom_u8);
+		}
+		if (memcmp(p, header_m3u, std::size(header_m3u)) == 0) {
+			// ignore m3u files as playlists are not supported and may take a long time to open
+			return kDC_None;
+		}
+	}
+
 	auto detConf = detect_avi(info, pHeader, nHeaderSize);
 	if (detConf >= kDC_Moderate) {
 		return detConf;
