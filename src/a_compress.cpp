@@ -573,9 +573,6 @@ void VDFFAudio_aac::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_aacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_aac(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -731,9 +728,6 @@ void VDFFAudio_mp3::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_mp3enc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_mp3(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -789,9 +783,6 @@ void VDFFAudio_flac::InitContext()
 bool VDXAPIENTRY ff_create_flacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_flac(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -909,9 +900,6 @@ void VDFFAudio_alac::InitContext()
 bool VDXAPIENTRY ff_create_alacenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_alac(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -1122,9 +1110,6 @@ void VDFFAudio_vorbis::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_vorbisenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_vorbis(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;
@@ -1288,9 +1273,6 @@ void VDFFAudio_opus::ShowConfig(VDXHWND parent)
 bool VDXAPIENTRY ff_create_opusenc(const VDXInputDriverContext* pContext, IVDXAudioEnc** ppDriver)
 {
 	VDFFAudio* p = new VDFFAudio_opus(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;

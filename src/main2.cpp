@@ -150,7 +150,6 @@ bool VDXAPIENTRY StaticConfigureProc(VDXHWND parent)
 bool VDXAPIENTRY ff_create(const VDXInputDriverContext* pContext, IVDXInputFileDriver** ppDriver)
 {
 	VDFFInputFileDriver* p = new VDFFInputFileDriver(*pContext);
-	if (!p) return false;
 	*ppDriver = p;
 	p->AddRef();
 	return true;

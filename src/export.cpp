@@ -1301,9 +1301,6 @@ bool VDXAPIENTRY VDFFOutputFileDriver::EnumFormats(int i, wchar_t* filter, wchar
 bool VDXAPIENTRY ff_create_output(const VDXInputDriverContext* pContext, IVDXOutputFileDriver** ppDriver)
 {
 	VDFFOutputFileDriver* p = new VDFFOutputFileDriver(*pContext);
-	if (!p) {
-		return false;
-	}
 	*ppDriver = p;
 	p->AddRef();
 	return true;

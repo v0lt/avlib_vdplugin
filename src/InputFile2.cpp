@@ -427,7 +427,6 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 bool VDXAPIENTRY VDFFInputFileDriver::CreateInputFile(uint32_t flags, IVDXInputFile** ppFile)
 {
 	VDFFInputFile* p = new VDFFInputFile(mContext);
-	if (!p) return false;
 
 	if (flags & kOF_AutoSegmentScan) p->auto_append = true;
 	if (flags & kOF_SingleFile) p->single_file_mode = true;
@@ -917,8 +916,6 @@ bool VDFFInputFile::GetVideoSource(int index, IVDXVideoSource** ppVS)
 
 	VDFFVideoSource* pVS = new VDFFVideoSource(mContext);
 
-	if (!pVS) return false;
-
 	if (pVS->initStream(this, index) < 0) {
 		delete pVS;
 		return false;
@@ -966,8 +963,6 @@ bool VDFFInputFile::GetAudioSource(int index, IVDXAudioSource** ppAS)
 	if (m_pFormatCtx->streams[s_index]->codecpar->codec_id == AV_CODEC_ID_NONE) return false;
 
 	VDFFAudioSource* pAS = new VDFFAudioSource(mContext);
-
-	if (!pAS) return false;
 
 	if (pAS->initStream(this, s_index) < 0) {
 		delete pAS;
