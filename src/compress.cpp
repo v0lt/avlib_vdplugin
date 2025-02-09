@@ -2293,7 +2293,6 @@ struct CodecVP9 : public CodecBase {
 	enum { tag = MKTAG('V', 'P', '9', '0') };
 	struct Config : public CodecBase::Config {
 		int crf; // 0-63
-		int profile;
 
 		Config() { set_default(); }
 		void clear() { CodecBase::Config::clear(); set_default(); }
