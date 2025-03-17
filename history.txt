@@ -2,8 +2,11 @@ avlib.vdplugin history
 
 0.7.1.x dev
 ----------------------
+FFmpeg 7.1.1 is now supported.
 Fixed crash on problematic AAC audio.
 Fixed missing sound for some MP4 files with AAC audio.
+Fixed a crash when playing video files with changing video frame size.
+Ignore m3u playlist files.
 
 
 0.7.1.220 - 2025-02-03
