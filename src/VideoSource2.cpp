@@ -347,6 +347,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 			if (d > keyframe_gap) {
 				keyframe_gap = d;
 			}
+			DLog(L"VDFFVideoSource::initStream: trust index, keyframe gap = {}", keyframe_gap);
 		}
 		else if (nb_index_entries > 1) {
 			sparse_index = true;
@@ -369,6 +370,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 			if (d > keyframe_gap) {
 				keyframe_gap = d;
 			}
+			DLog(L"VDFFVideoSource::initStream: sparse index, keyframe gap = {}", keyframe_gap);
 		}
 	}
 
