@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -102,10 +102,10 @@ public:
 	AVStream*       m_pStream   = nullptr;
 	AVCodecContext* m_pCodecCtx = nullptr;
 	VDXStreamSourceInfoV3 m_streamInfo = {};
-	int m_streamIndex   = 0;
-	int sample_count    = 0;
-	AVRational frame_ts = {}; // how many timestamps are there per frame
-	int64_t start_time  = 0;
+	int m_streamIndex     = 0;
+	int m_sample_count    = 0;
+	AVRational m_frame_ts = {}; // how many timestamps are there per frame
+	int64_t m_start_time  = 0;
 
 private:
 	std::unique_ptr<uint8_t[]> direct_format;
@@ -130,7 +130,7 @@ public:
 		bool in_subs     = false;
 		bool out_rgb     = false;
 		bool out_garbage = false;
-	} convertInfo;
+	} m_convertInfo;
 
 	struct BufferPage {
 		enum {

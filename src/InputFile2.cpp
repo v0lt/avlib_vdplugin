@@ -674,11 +674,11 @@ bool VDXAPIENTRY VDFFInputFile::Append2(const wchar_t* szFile, int flags, IVDXIn
 
 	if (head->video_source) {
 		if (f->GetVideoSource(0, 0)) {
-			VDFFVideoSource::ConvertInfo& convertInfo = head->video_source->convertInfo;
+			VDFFVideoSource::ConvertInfo& convertInfo = head->video_source->m_convertInfo;
 			f->video_source->SetTargetFormat(convertInfo.req_format, convertInfo.req_dib, head->video_source);
 			VDFFInputFile* f1 = head;
 			while (1) {
-				f1->video_source->m_streamInfo.mInfo.mSampleCount += f->video_source->sample_count;
+				f1->video_source->m_streamInfo.mInfo.mSampleCount += f->video_source->m_sample_count;
 				f1 = f1->next_segment;
 				if (!f1) break;
 				if (f1 == f) break;

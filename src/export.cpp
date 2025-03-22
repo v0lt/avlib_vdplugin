@@ -272,7 +272,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		sint64 end;
 		if (!state->GetSelection(start, end)) {
 			start = 0;
-			end = video_source->sample_count;
+			end = video_source->m_sample_count;
 		}
 
 		const wchar_t* ext0 = GetFileExt(m_path.c_str());
@@ -390,7 +390,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		if(out_audio) at_end = audio_source->frame_to_pts(end,video_source->m_pStream);
 		*/
 
-		pos1 = end * video_source->frame_ts.num / video_source->frame_ts.den + video_source->start_time;
+		pos1 = end * video_source->m_frame_ts.num / video_source->m_frame_ts.den + video_source->m_start_time;
 		av_seek_frame(fmt, video, pos1, 0);
 
 		while (1) {
@@ -423,7 +423,7 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 			}
 		}
 
-		pos0 = start * video_source->frame_ts.num / video_source->frame_ts.den + video_source->start_time;
+		pos0 = start * video_source->m_frame_ts.num / video_source->m_frame_ts.den + video_source->m_start_time;
 		av_seek_frame(fmt, video, pos0, AVSEEK_FLAG_BACKWARD);
 
 		v_end = out_video == 0;

@@ -92,12 +92,12 @@ void* VDXAPIENTRY VDFFVideoSource::AsInterface(uint32_t iid)
 int VDFFVideoSource::init_duration(const AVRational fr)
 {
 	AVRational tb = m_pStream->time_base;
-	av_reduce(&frame_ts.num, &frame_ts.den, int64_t(fr.den) * tb.den, int64_t(fr.num) * tb.num, INT_MAX);
+	av_reduce(&m_frame_ts.num, &m_frame_ts.den, int64_t(fr.den) * tb.den, int64_t(fr.num) * tb.num, INT_MAX);
 
 	int sample_count_error = 2;
 
 	if (m_pSource->is_image_list) {
-		sample_count = (int)m_pStream->nb_frames;
+		m_sample_count = (int)m_pStream->nb_frames;
 		sample_count_error = 0;
 
 	}
@@ -128,9 +128,9 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 				duration += start_pts;
 				start_pts = 0; // ignore count_error
 			}
-			const int rndd = frame_ts.num / 2;
-			sample_count = (int)((duration * frame_ts.den + rndd) / frame_ts.num);
-			int e = (int)((start_pts * frame_ts.den + rndd) / frame_ts.num);
+			const int rndd = m_frame_ts.num / 2;
+			m_sample_count = (int)((duration * m_frame_ts.den + rndd) / m_frame_ts.num);
+			int e = (int)((start_pts * m_frame_ts.den + rndd) / m_frame_ts.num);
 			e = abs(e);
 			if (e > sample_count_error) {
 				sample_count_error = e;
@@ -144,7 +144,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 		}
 		else {
 			if (m_pSource->is_image) {
-				sample_count = 1;
+				m_sample_count = 1;
 			}
 			else {
 				mContext.mpCallbacks->SetError("FFMPEG: Cannot figure stream duration. Unsupported.");
@@ -153,10 +153,10 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 		}
 	}
 
-	if (sample_count == 0) {
+	if (m_sample_count == 0) {
 		// found in 1-frame nut
 		if (m_pFormatCtx->iformat == av_find_input_format("nut")) {
-			sample_count = 1;
+			m_sample_count = 1;
 		}
 	}
 
@@ -254,7 +254,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 			// works for FLV and MKV
 			int64_t pos = m_pStream->duration;
 			if (pos == AV_NOPTS_VALUE) {
-				pos = int64_t(sample_count) * frame_ts.num / frame_ts.den;
+				pos = int64_t(m_sample_count) * m_frame_ts.num / m_frame_ts.den;
 			}
 			seek_frame(m_pFormatCtx, m_streamIndex, pos, AVSEEK_FLAG_BACKWARD);
 			seek_frame(m_pFormatCtx, m_streamIndex, AV_SEEK_START, AVSEEK_FLAG_BACKWARD);
@@ -267,12 +267,12 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		if (nb_index_entries > 2) {
 			// when avi has dropped frames ffmpeg removes these entries from index - find way to avoid this?
 			if (m_pFormatCtx->iformat == av_find_input_format("avi")) {
-				//sample_count = m_pStream->nb_index_entries;
+				//m_sample_count = m_pStream->nb_index_entries;
 				//trust_index = true;
-				trust_index = (sample_count == nb_index_entries);
+				trust_index = (m_sample_count == nb_index_entries);
 			}
-			else if (abs(nb_index_entries - sample_count) <= sample_count_error) {
-				sample_count = nb_index_entries;
+			else if (abs(nb_index_entries - m_sample_count) <= sample_count_error) {
+				m_sample_count = nb_index_entries;
 				trust_index = true;
 			}
 			else {
@@ -283,8 +283,8 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 				// 0 found in some wmv
 				if (avg_fr.num != 0) {
 					sample_count_error = init_duration(avg_fr);
-					if (abs(nb_index_entries - sample_count) <= sample_count_error) {
-						sample_count = nb_index_entries;
+					if (abs(nb_index_entries - m_sample_count) <= sample_count_error) {
+						m_sample_count = nb_index_entries;
 						trust_index = true;
 						average_fr = true;
 					}
@@ -297,7 +297,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		}
 
 		if (trust_index) {
-			int64_t exp_dt = frame_ts.num / frame_ts.den;
+			int64_t exp_dt = m_frame_ts.num / m_frame_ts.den;
 			int64_t min_dt = exp_dt;
 			for (int i = 1; i < nb_index_entries; i++) {
 				const AVIndexEntry* i0 = avformat_index_get_entry(m_pStream, i - 1);
@@ -357,8 +357,8 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 				if (index_entry->flags & AVINDEX_KEYFRAME) {
 					int64_t ts = index_entry->timestamp;
 					ts -= m_pStream->start_time;
-					const int rndd = frame_ts.num / 2;
-					int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
+					const int rndd = m_frame_ts.num / 2;
+					int pos = int((ts * m_frame_ts.den + rndd) / m_frame_ts.num);
 					int d = pos - p0;
 					p0 = pos;
 					if (d > keyframe_gap) {
@@ -366,7 +366,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 					}
 				}
 			}
-			int d = sample_count - p0;
+			int d = m_sample_count - p0;
 			if (d > keyframe_gap) {
 				keyframe_gap = d;
 			}
@@ -414,14 +414,14 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	if (buffer_reserve < pSource->cfg_frame_buffers) {
 		buffer_reserve = pSource->cfg_frame_buffers;
 	}
-	if (buffer_reserve > sample_count) {
-		buffer_reserve = sample_count;
+	if (buffer_reserve > m_sample_count) {
+		buffer_reserve = m_sample_count;
 	}
 
 	frame_array.clear();
-	frame_array.resize(sample_count);
+	frame_array.resize(m_sample_count);
 	frame_type.clear();
-	frame_type.resize(sample_count, ' ');
+	frame_type.resize(m_sample_count, ' ');
 
 	if (m_pCodecCtx->pix_fmt == AV_PIX_FMT_NONE) {
 		// read the first frame to get the correct pix_fmt
@@ -510,7 +510,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	m_streamInfo.mFlags = 0;
 	m_streamInfo.mfccHandler = export_avi_fcc(m_pStream);
 
-	m_streamInfo.mInfo.mSampleCount = sample_count;
+	m_streamInfo.mInfo.mSampleCount = m_sample_count;
 
 	AVRational ar = av_make_q(1, 1);
 	if (m_pCodecCtx->sample_aspect_ratio.num) {
@@ -547,19 +547,19 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 		for (int i = 0; i < nb_index_entries; i++) {
 			int64_t ts = avformat_index_get_entry(m_pStream, i)->timestamp;
 			ts -= m_pStream->start_time;
-			const int rndd = frame_ts.num / 2;
-			int pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
-			if (pos >= 0 && pos < sample_count) {
+			const int rndd = m_frame_ts.num / 2;
+			int pos = int((ts * m_frame_ts.den + rndd) / m_frame_ts.num);
+			if (pos >= 0 && pos < m_sample_count) {
 				frame_type[pos] = ' ';
 			}
 		}
 	}
 
-	// start_time rarely known before actually decoding, init from here
+	// m_start_time rarely known before actually decoding, init from here
 	read_frame(0, true);
 	// workaround for unspecified delay
 	// found in MVI_4722.MP4
-	if (sample_count > 1 && !m_pCodecCtx->has_b_frames && possible_delay()) {
+	if (m_sample_count > 1 && !m_pCodecCtx->has_b_frames && possible_delay()) {
 		read_frame(1, false);
 		if (m_pCodecCtx->has_b_frames) {
 			free_buffers();
@@ -818,10 +818,10 @@ bool VDFFVideoSource::CreateVideoDecoderModel(IVDXVideoDecoderModel** ppModel)
 
 void VDFFVideoSource::GetSampleInfo(sint64 sample, VDXVideoFrameInfo& frameInfo)
 {
-	if (sample >= sample_count) {
+	if (sample >= m_sample_count) {
 		if (m_pSource->next_segment) {
 			auto v1 = m_pSource->next_segment->video_source;
-			v1->GetSampleInfo(sample - sample_count, frameInfo);
+			v1->GetSampleInfo(sample - m_sample_count, frameInfo);
 		}
 		return;
 	}
@@ -838,10 +838,10 @@ void VDFFVideoSource::GetSampleInfo(sint64 sample, VDXVideoFrameInfo& frameInfo)
 
 bool VDFFVideoSource::IsKey(int64_t sample)
 {
-	if (sample >= sample_count) {
+	if (sample >= m_sample_count) {
 		if (m_pSource->next_segment) {
 			auto v1 = m_pSource->next_segment->video_source;
-			return v1->IsKey(sample - sample_count);
+			return v1->IsKey(sample - m_sample_count);
 		}
 		return false;
 	}
@@ -910,16 +910,16 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 	m_pixmap_frame = int(targetFrame);
 	m_pixmap_info.frame_num = -1;
 
-	if (targetFrame >= sample_count) {
+	if (targetFrame >= m_sample_count) {
 		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (!v1) return 0;
-		return v1->DecodeFrame(inputBuffer, data_len, is_preroll, streamFrame, targetFrame - sample_count);
+		return v1->DecodeFrame(inputBuffer, data_len, is_preroll, streamFrame, targetFrame - m_sample_count);
 	}
 
 	if (is_preroll) return 0;
 
-	if (convertInfo.out_garbage) {
+	if (m_convertInfo.out_garbage) {
 		mContext.mpCallbacks->SetError("Segment has incompatible format: try changing decode format to RGBA");
 		return 0;
 	}
@@ -940,7 +940,7 @@ const void* VDFFVideoSource::DecodeFrame(const void* inputBuffer, uint32_t data_
 	open_read(page);
 	uint8_t* src = page->pic_data;
 
-	if (convertInfo.direct_copy) {
+	if (m_convertInfo.direct_copy) {
 		set_pixmap_layout(src);
 		return src;
 
@@ -980,7 +980,7 @@ bool VDFFVideoSource::IsFrameBufferValid()
 	if (m_pixmap_data) return true;
 	if (m_pixmap_frame == -1) return false;
 
-	if (m_pixmap_frame >= sample_count) {
+	if (m_pixmap_frame >= m_sample_count) {
 		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) v1 = m_pSource->next_segment->video_source;
 		if (!v1) return 0;
@@ -993,7 +993,7 @@ bool VDFFVideoSource::IsFrameBufferValid()
 
 const VDXPixmap& VDFFVideoSource::GetFrameBuffer()
 {
-	if (m_pixmap_frame >= sample_count) {
+	if (m_pixmap_frame >= m_sample_count) {
 		if (m_pSource->next_segment) {
 			auto v1 = m_pSource->next_segment->video_source;
 			return v1->GetFrameBuffer();
@@ -1005,7 +1005,7 @@ const VDXPixmap& VDFFVideoSource::GetFrameBuffer()
 
 const FilterModPixmapInfo& VDFFVideoSource::GetFrameBufferInfo()
 {
-	if (m_pixmap_frame >= sample_count) {
+	if (m_pixmap_frame >= m_sample_count) {
 		if (m_pSource->next_segment) {
 			auto v1 = m_pSource->next_segment->video_source;
 			return v1->GetFrameBufferInfo();
@@ -1024,7 +1024,7 @@ const void* VDFFVideoSource::GetFrameBufferBase()
 		return nullptr;
 	}
 
-	if (m_pixmap_frame >= sample_count) {
+	if (m_pixmap_frame >= m_sample_count) {
 		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) {
 			v1 = m_pSource->next_segment->video_source;
@@ -1078,8 +1078,8 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	bool default_rgb = false;
 	bool fast_rgb = false;
 
-	if (convertInfo.ext_format && opt_format == kPixFormat_Null) {
-		convertInfo.ext_format = kPixFormat_Null;
+	if (m_convertInfo.ext_format && opt_format == kPixFormat_Null) {
+		m_convertInfo.ext_format = kPixFormat_Null;
 		init_format();
 	}
 
@@ -1091,15 +1091,15 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	AVPixelFormat src_fmt = frame_fmt;
 	bool perfect_bitexact = false;
 
-	convertInfo.req_format = opt_format;
-	convertInfo.req_dib = useDIBAlignment;
-	convertInfo.direct_copy = false;
-	convertInfo.out_rgb = false;
-	convertInfo.out_garbage = false;
+	m_convertInfo.req_format = opt_format;
+	m_convertInfo.req_dib = useDIBAlignment;
+	m_convertInfo.direct_copy = false;
+	m_convertInfo.out_rgb = false;
+	m_convertInfo.out_garbage = false;
 
 	const AVPixFmtDescriptor* desc = av_pix_fmt_desc_get(frame_fmt);
-	convertInfo.in_yuv = !(desc->flags & AV_PIX_FMT_FLAG_RGB) && desc->nb_components >= 3;
-	convertInfo.in_subs = convertInfo.in_yuv && (desc->log2_chroma_w + desc->log2_chroma_h) > 0;
+	m_convertInfo.in_yuv = !(desc->flags & AV_PIX_FMT_FLAG_RGB) && desc->nb_components >= 3;
+	m_convertInfo.in_subs = m_convertInfo.in_yuv && (desc->log2_chroma_w + desc->log2_chroma_h) > 0;
 	int src_max_value = (1 << desc->comp[0].depth) - 1;
 
 	bool colorspaceBT709 = false; // BT.601
@@ -1317,13 +1317,13 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	if (opt_format == 0) {
 		if (default_rgb) {
 			base_format = kPixFormat_XRGB8888;
-			convertInfo.av_fmt = AV_PIX_FMT_BGRA;
-			if (base_format == perfect_format) convertInfo.direct_copy = perfect_bitexact;
+			m_convertInfo.av_fmt = AV_PIX_FMT_BGRA;
+			if (base_format == perfect_format) m_convertInfo.direct_copy = perfect_bitexact;
 		}
 		else {
 			base_format = perfect_format;
-			convertInfo.av_fmt = perfect_av_fmt;
-			convertInfo.direct_copy = perfect_bitexact;
+			m_convertInfo.av_fmt = perfect_av_fmt;
+			m_convertInfo.direct_copy = perfect_bitexact;
 		}
 
 	}
@@ -1336,8 +1336,8 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		case kPixFormat_YUV422_YUYV:
 			if (opt_format == trigger) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else return false;
 			break;
@@ -1345,13 +1345,13 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		case kPixFormat_YUV444_Planar:
 			if (opt_format == trigger) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 
 			}
-			else if (convertInfo.in_yuv) {
+			else if (m_convertInfo.in_yuv) {
 				base_format = kPixFormat_YUV444_Planar;
-				convertInfo.av_fmt = AV_PIX_FMT_YUV444P;
+				m_convertInfo.av_fmt = AV_PIX_FMT_YUV444P;
 			}
 			else return false;
 			break;
@@ -1359,13 +1359,13 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		case kPixFormat_YUV444_Planar16:
 			if (opt_format == trigger) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 
 			}
-			else if (convertInfo.in_yuv) {
+			else if (m_convertInfo.in_yuv) {
 				base_format = kPixFormat_YUV444_Planar16;
-				convertInfo.av_fmt = AV_PIX_FMT_YUV444P16;
+				m_convertInfo.av_fmt = AV_PIX_FMT_YUV444P16;
 			}
 			else return false;
 			break;
@@ -1373,65 +1373,65 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		case kPixFormat_XRGB64:
 			if (opt_format == perfect_format) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else {
 				base_format = kPixFormat_XRGB64;
-				convertInfo.av_fmt = AV_PIX_FMT_BGRA64;
-				convertInfo.direct_copy = false;
+				m_convertInfo.av_fmt = AV_PIX_FMT_BGRA64;
+				m_convertInfo.direct_copy = false;
 			}
 			break;
 
 		case kPixFormat_XRGB1555:
 			if (opt_format == perfect_format) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else {
 				base_format = kPixFormat_XRGB1555;
-				convertInfo.av_fmt = AV_PIX_FMT_RGB555;
-				convertInfo.direct_copy = false;
+				m_convertInfo.av_fmt = AV_PIX_FMT_RGB555;
+				m_convertInfo.direct_copy = false;
 			}
 			break;
 
 		case kPixFormat_RGB565:
 			if (opt_format == perfect_format) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else {
 				base_format = kPixFormat_RGB565;
-				convertInfo.av_fmt = AV_PIX_FMT_RGB565;
-				convertInfo.direct_copy = false;
+				m_convertInfo.av_fmt = AV_PIX_FMT_RGB565;
+				m_convertInfo.direct_copy = false;
 			}
 			break;
 
 		case kPixFormat_RGB888:
 			if (opt_format == perfect_format) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else {
 				base_format = kPixFormat_RGB888;
-				convertInfo.av_fmt = AV_PIX_FMT_BGR24;
-				convertInfo.direct_copy = false;
+				m_convertInfo.av_fmt = AV_PIX_FMT_BGR24;
+				m_convertInfo.direct_copy = false;
 			}
 			break;
 
 		case kPixFormat_XRGB8888:
 			if (opt_format == perfect_format) {
 				base_format = perfect_format;
-				convertInfo.av_fmt = perfect_av_fmt;
-				convertInfo.direct_copy = perfect_bitexact;
+				m_convertInfo.av_fmt = perfect_av_fmt;
+				m_convertInfo.direct_copy = perfect_bitexact;
 			}
 			else {
 				base_format = kPixFormat_XRGB8888;
-				convertInfo.av_fmt = AV_PIX_FMT_BGRA;
-				convertInfo.direct_copy = false;
+				m_convertInfo.av_fmt = AV_PIX_FMT_BGRA;
+				m_convertInfo.direct_copy = false;
 			}
 			break;
 
@@ -1440,15 +1440,15 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		}
 	}
 
-	if (convertInfo.direct_copy) convertInfo.req_dib = false;
+	if (m_convertInfo.direct_copy) m_convertInfo.req_dib = false;
 
-	const AVPixFmtDescriptor* out_desc = av_pix_fmt_desc_get(convertInfo.av_fmt);
-	convertInfo.out_rgb = (out_desc->flags & AV_PIX_FMT_FLAG_RGB) && out_desc->nb_components >= 3;
+	const AVPixFmtDescriptor* out_desc = av_pix_fmt_desc_get(m_convertInfo.av_fmt);
+	m_convertInfo.out_rgb = (out_desc->flags & AV_PIX_FMT_FLAG_RGB) && out_desc->nb_components >= 3;
 
 	// tweak output yuv formats for VD here
 	VDXPixmapFormat format = base_format;
 
-	/*if (format==kPixFormat_YUV420_Planar && convertInfo.av_fmt==AV_PIX_FMT_YUV420P && opt_format!=kPixFormat_YUV420_Planar) {
+	/*if (format==kPixFormat_YUV420_Planar && m_convertInfo.av_fmt==AV_PIX_FMT_YUV420P && opt_format!=kPixFormat_YUV420_Planar) {
 		AVFieldOrder fo = m_pCodecCtx->field_order;
 		if(fo==AV_FIELD_TT) format = kPixFormat_YUV420it_Planar;
 		if(fo==AV_FIELD_BB) format = kPixFormat_YUV420ib_Planar;
@@ -1532,14 +1532,14 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 
 	if (head && head->m_pixmap.format != format) {
 		format = (VDXPixmapFormat)head->m_pixmap.format;
-		ext_format = head->convertInfo.ext_format;
-		convertInfo.av_fmt = head->convertInfo.av_fmt;
-		convertInfo.direct_copy = false;
-		convertInfo.out_garbage = true;
+		ext_format = head->m_convertInfo.ext_format;
+		m_convertInfo.av_fmt = head->m_convertInfo.av_fmt;
+		m_convertInfo.direct_copy = false;
+		m_convertInfo.out_garbage = true;
 	}
 
-	if (ext_format != convertInfo.ext_format) {
-		convertInfo.ext_format = ext_format;
+	if (ext_format != m_convertInfo.ext_format) {
+		m_convertInfo.ext_format = ext_format;
 		init_format();
 		desc = av_pix_fmt_desc_get(frame_fmt);
 	}
@@ -1577,7 +1577,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	case kPixFormat_YUV444_Alpha_Planar16:
 		m_pixmap_info.ref_r = 0xFFFF;
 		m_pixmap_info.ref_a = 0xFFFF;
-		if (convertInfo.direct_copy) {
+		if (m_convertInfo.direct_copy) {
 			m_pixmap_info.ref_r = src_max_value;
 			m_pixmap_info.ref_a = src_max_value;
 		}
@@ -1609,16 +1609,16 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		}
 	}
 
-	if (convertInfo.direct_copy || convertInfo.out_garbage) {
+	if (m_convertInfo.direct_copy || m_convertInfo.out_garbage) {
 		av_freep(&m_pixmap_data);
 	}
 	else {
-		uint32_t size = av_image_get_buffer_size(convertInfo.av_fmt, w, h, line_align);
+		uint32_t size = av_image_get_buffer_size(m_convertInfo.av_fmt, w, h, line_align);
 		m_pixmap_data = (uint8_t*)av_realloc(m_pixmap_data, size);
 		set_pixmap_layout(m_pixmap_data);
 		if (m_pSwsCtx) sws_freeContext(m_pSwsCtx);
 		int flags = 0;
-		if (convertInfo.in_subs) {
+		if (m_convertInfo.in_subs) {
 			// bicubic is needed to best preserve detail, ex color_420.jpg
 			// bilinear also not bad if the material is blurry
 			flags |= SWS_BICUBIC;
@@ -1717,8 +1717,8 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 			src_fmt = proxy_fmt;
 		}
 
-		m_pSwsCtx = sws_getContext(w, h, src_fmt, w, h, convertInfo.av_fmt, flags, nullptr, nullptr, nullptr);
-		if (convertInfo.in_yuv && convertInfo.out_rgb) {
+		m_pSwsCtx = sws_getContext(w, h, src_fmt, w, h, m_convertInfo.av_fmt, flags, nullptr, nullptr, nullptr);
+		if (m_convertInfo.in_yuv && m_convertInfo.out_rgb) {
 			// range and color space only makes sence for yuv->rgb
 			// rgb->rgb is always exact
 			// rgb->yuv is useless as input
@@ -1744,7 +1744,7 @@ void VDFFVideoSource::set_pixmap_layout(uint8_t* p)
 	int h = m_pixmap.h;
 
 	AVFrame pic = { 0 };
-	av_image_fill_arrays(pic.data, pic.linesize, p, convertInfo.av_fmt, w, h, line_align);
+	av_image_fill_arrays(pic.data, pic.linesize, p, m_convertInfo.av_fmt, w, h, line_align);
 
 	if (m_pixmap.format == kPixFormat_YUV422_V210) {
 		int row = (w + 47) / 48 * 128;
@@ -1761,7 +1761,7 @@ void VDFFVideoSource::set_pixmap_layout(uint8_t* p)
 	m_pixmap.pitch3 = pic.linesize[2];
 	m_pixmap.pitch4 = pic.linesize[3];
 
-	if (convertInfo.req_dib ^ flip_image) {
+	if (m_convertInfo.req_dib ^ flip_image) {
 		switch (m_pixmap.format) {
 		case kPixFormat_XRGB1555:
 		case kPixFormat_RGB565:
@@ -1802,7 +1802,7 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 		return pos;
 	}
 	else {
-		int64_t pos = start * frame_ts.num / frame_ts.den + start_time;
+		int64_t pos = start * m_frame_ts.num / m_frame_ts.den + m_start_time;
 		return pos;
 	}
 }
@@ -1810,18 +1810,18 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 // return frame num (guessed)
 int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
 {
-	// somehow start_time is not included in the index timestamps
+	// somehow m_start_time is not included in the index timestamps
 	// works with 10 bit.mp4: sample*den/num = exactly key timestamp
 	// half-frame bias helps with some rounding noise
 	// works with 2017-04-07 08-53-48.flv
-	int64_t pos1 = (sample * frame_ts.num + frame_ts.num / 2) / frame_ts.den;
+	int64_t pos1 = (sample * m_frame_ts.num + m_frame_ts.num / 2) / m_frame_ts.den;
 	int x = av_index_search_timestamp(m_pStream, pos1, AVSEEK_FLAG_BACKWARD);
 	if (x == -1) {
 		return -1;
 	}
 	pos = avformat_index_get_entry(m_pStream, x)->timestamp;
-	const int rndd = frame_ts.num / 2;
-	int frame = int((pos * frame_ts.den + rndd) / frame_ts.num);
+	const int rndd = m_frame_ts.num / 2;
+	int frame = int((pos * m_frame_ts.den + rndd) / m_frame_ts.num);
 	return frame;
 }
 
@@ -1829,7 +1829,7 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 {
 	if (is_image_list) {
 		if (next_frame == -1 || jump > next_frame + fw_seek_threshold || jump < next_frame) {
-			pos = int64_t(jump) * frame_ts.num / frame_ts.den + start_time;
+			pos = int64_t(jump) * m_frame_ts.num / m_frame_ts.den + m_start_time;
 			return jump;
 		}
 		return -1;
@@ -1869,12 +1869,12 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 		if (jump == last_seek_frame) return -1;
 
 		// required to seek somewhere
-		pos = int64_t(jump) * frame_ts.num / frame_ts.den + start_time;
+		pos = int64_t(jump) * m_frame_ts.num / m_frame_ts.den + m_start_time;
 		int dst = jump;
 
 		if (!(m_pFormatCtx->iformat->flags & AVFMT_SEEK_TO_PTS)) {
 			// because seeking works on DTS it needs some unknown offset to work
-			pos -= int64_t(8) * frame_ts.num / frame_ts.den; // better than nothing
+			pos -= int64_t(8) * m_frame_ts.num / m_frame_ts.den; // better than nothing
 			dst -= 8;
 			if (pos < 0) pos = 0;
 			if (dst < 0) dst = 0;
@@ -1960,17 +1960,17 @@ int VDFFVideoSource::calc_prefetch(int jump)
 
 bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 cbBuffer, uint32* lBytesRead, uint32* lSamplesRead)
 {
-	if (start >= sample_count) {
+	if (start >= m_sample_count) {
 		VDFFVideoSource* v1 = nullptr;
 		if (m_pSource->next_segment) {
 			v1 = m_pSource->next_segment->video_source;
 		}
 		if (v1) {
-			return v1->Read(start - sample_count, lCount, lpBuffer, cbBuffer, lBytesRead, lSamplesRead);
+			return v1->Read(start - m_sample_count, lCount, lpBuffer, cbBuffer, lBytesRead, lSamplesRead);
 		}
 	}
 
-	if (start == sample_count) {
+	if (start == m_sample_count) {
 		*lBytesRead = 0;
 		*lSamplesRead = 0;
 		return true;
@@ -2214,7 +2214,7 @@ void VDFFVideoSource::set_start_time()
 	if (t2 == AV_NOPTS_VALUE) {
 		t2 = m_pFrame->pkt_dts;
 	}
-	start_time = t2;
+	m_start_time = t2;
 	if (frame_fmt == -1) {
 		init_format();
 	}
@@ -2231,7 +2231,7 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 	int pos = next_frame;
 
 	if (avi_drop_index && pos != -1) {
-		while (pos < sample_count && frame_type[pos] == 'D') pos++;
+		while (pos < m_sample_count && frame_type[pos] == 'D') pos++;
 	}
 	else if (!trust_index && !is_image_list) {
 		if (ts == AV_NOPTS_VALUE && pos == -1) {
@@ -2241,9 +2241,9 @@ int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
 		if (ts != AV_NOPTS_VALUE) {
 			// guess where we are
 			// timestamp to frame number is at times unreliable
-			ts -= start_time;
-			const int rndd = frame_ts.num / 2;
-			pos = int((ts * frame_ts.den + rndd) / frame_ts.num);
+			ts -= m_start_time;
+			const int rndd = m_frame_ts.num / 2;
+			pos = int((ts * m_frame_ts.den + rndd) / m_frame_ts.num);
 		}
 	}
 
@@ -2273,7 +2273,7 @@ int VDFFVideoSource::handle_frame()
 	next_frame = pos + 1;
 
 	// ignore anything outside promised range
-	if (pos < 0 || pos >= sample_count) {
+	if (pos < 0 || pos >= m_sample_count) {
 		return -1;
 	}
 
@@ -2292,7 +2292,7 @@ int VDFFVideoSource::handle_frame()
 		}
 		else {
 			uint8_t* dst = page->pic_data;
-			if (convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210) {
+			if (m_convertInfo.ext_format == nsVDXPixmap::kPixFormat_YUV422_V210) {
 				memcpy(dst, m_pFrame->data[0], m_pFrame->linesize[0] * m_pFrame->height);
 			} else {
 				av_image_copy_to_buffer(dst, frame_size, m_pFrame->data, m_pFrame->linesize, (AVPixelFormat)m_pFrame->format, m_pFrame->width, m_pFrame->height, line_align);

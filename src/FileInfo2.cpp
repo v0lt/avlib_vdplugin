@@ -53,7 +53,7 @@ void VDFFInputFileInfoDialog::load_segment()
 			break;
 		}
 		if (f->video_source) {
-			start_frame += f->video_source->sample_count;
+			start_frame += f->video_source->m_sample_count;
 		}
 		f = f->next_segment;
 		pos++;
@@ -74,7 +74,7 @@ void VDFFInputFileInfoDialog::load_segment()
 
 	int end_frame = start_frame;
 	if (segment->video_source) {
-		end_frame += segment->video_source->sample_count - 1;
+		end_frame += segment->video_source->m_sample_count - 1;
 	}
 	str = std::format(L"Timeline: frame {} to {}", start_frame, end_frame);
 	SetDlgItemTextW(mhdlg, IDC_SEGMENT_TIMELINE, str.c_str());
@@ -156,7 +156,7 @@ void VDFFInputFileInfoDialog::print_format()
 	SetDlgItemTextA(mhdlg, IDC_FORMATNAME, pInputFormat->long_name);
 
 	if (segment->is_image) {
-		int n = segment->video_source->sample_count;
+		int n = segment->video_source->m_sample_count;
 		if (n > 1) {
 			str = std::format(L"{} images", n);
 			SetDlgItemTextW(mhdlg, IDC_DURATION, str.c_str());
@@ -169,7 +169,7 @@ void VDFFInputFileInfoDialog::print_format()
 		double seconds = 0;
 		if (segment->is_anim_image) {
 			VDXFraction fr = segment->video_source->m_streamInfo.mInfo.mSampleRate;
-			seconds = double(segment->video_source->sample_count) * fr.mDenominator / fr.mNumerator;
+			seconds = double(segment->video_source->m_sample_count) * fr.mDenominator / fr.mNumerator;
 		}
 		else {
 			if (pFormatCtx->duration == AV_NOPTS_VALUE)
