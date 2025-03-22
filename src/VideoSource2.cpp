@@ -634,8 +634,8 @@ bool VDFFVideoSource::is_intra()
 
 bool VDFFVideoSource::allow_copy()
 {
-	if (is_intra()) return true;
-	return false;
+	bool intra = is_intra();
+	return intra;
 }
 
 void VDFFVideoSource::init_format()
@@ -644,7 +644,9 @@ void VDFFVideoSource::init_format()
 	frame_width = m_pCodecCtx->width;
 	frame_height = m_pCodecCtx->height;
 	frame_size = av_image_get_buffer_size(frame_fmt, frame_width, frame_height, line_align);
-	if (frame_fmt == -1) frame_size = 0;
+	if (frame_fmt == AV_PIX_FMT_NONE) {
+		frame_size = 0;
+	}
 	if (direct_buffer) {
 		// 6 px per 16 bytes, 128 byte aligned
 		int row = (frame_width + 47) / 48 * 128;
@@ -2217,7 +2219,7 @@ void VDFFVideoSource::set_start_time()
 		t2 = m_pFrame->pkt_dts;
 	}
 	m_start_time = t2;
-	if (frame_fmt == -1) {
+	if (frame_fmt == AV_PIX_FMT_NONE) {
 		init_format();
 	}
 }
