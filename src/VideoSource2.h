@@ -108,8 +108,7 @@ public:
 	int64_t m_start_time  = 0;
 
 private:
-	std::unique_ptr<uint8_t[]> direct_format;
-	int direct_format_len = 0;
+	std::vector<uint8_t> m_direct_format;
 
 	AVFrame*    m_pFrame  = nullptr;
 	SwsContext* m_pSwsCtx = nullptr;

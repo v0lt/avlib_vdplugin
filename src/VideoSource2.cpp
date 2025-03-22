@@ -525,17 +525,15 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
 	m_streamInfo.mInfo.mPixelAspectRatio.mDenominator = ar1.den;
 
 	if (allow_copy()) {
-		direct_format_len = sizeof(BITMAPINFOHEADER);
-		direct_format_len += (m_pCodecCtx->extradata_size + 1) & ~1;
-		direct_format.reset(new uint8_t[direct_format_len]);
-		memset(direct_format.get(), 0, direct_format_len);
+		const size_t direct_format_len = sizeof(BITMAPINFOHEADER) + ((m_pCodecCtx->extradata_size + 1) & ~1);
+		m_direct_format.resize(direct_format_len);
 
-		BITMAPINFOHEADER* outhdr = (BITMAPINFOHEADER*)direct_format.get();
+		BITMAPINFOHEADER* outhdr = (BITMAPINFOHEADER*)m_direct_format.data();
 		outhdr->biSize = sizeof(BITMAPINFOHEADER) + m_pCodecCtx->extradata_size;
 		outhdr->biWidth = m_pCodecCtx->width;
 		outhdr->biHeight = m_pCodecCtx->height;
 		outhdr->biCompression = m_streamInfo.mfccHandler;
-		memcpy(direct_format.get() + sizeof(BITMAPINFOHEADER), m_pCodecCtx->extradata, m_pCodecCtx->extradata_size);
+		memcpy(m_direct_format.data() + sizeof(BITMAPINFOHEADER), m_pCodecCtx->extradata, m_pCodecCtx->extradata_size);
 	}
 
 	if (m_pFormatCtx->iformat == av_find_input_format("avi")) {
@@ -688,17 +686,21 @@ void VDXAPIENTRY VDFFVideoSource::ApplyStreamMode(uint32 flags)
 bool VDXAPIENTRY VDFFVideoSource::QueryStreamMode(uint32 flags)
 {
 	if (flags == kStreamModeDirectCopy) {
-		if (direct_format_len == 0) return false;
+		if (m_direct_format.empty()) {
+			return false;
+		}
 		if (m_pSource->head_segment) {
 			VDFFVideoSource* head = m_pSource->head_segment->video_source;
-			if (direct_format_len != head->direct_format_len) {
+			if (m_direct_format.size() != head->m_direct_format.size()) {
 				return false;
 			}
-			if (memcmp(direct_format.get(), head->direct_format.get(), direct_format_len) != 0) {
+			if (memcmp(m_direct_format.data(), head->m_direct_format.data(), m_direct_format.size()) != 0) {
 				return false;
 			}
 		}
-		if (m_pSource->next_segment && !m_pSource->next_segment->video_source->QueryStreamMode(flags)) return false;
+		if (m_pSource->next_segment && !m_pSource->next_segment->video_source->QueryStreamMode(flags)) {
+			return false;
+		}
 		return true;
 	}
 	return false;
@@ -706,12 +708,12 @@ bool VDXAPIENTRY VDFFVideoSource::QueryStreamMode(uint32 flags)
 
 const void* VDFFVideoSource::GetDirectFormat()
 {
-	return m_copy_mode ? direct_format.get() : nullptr;
+	return m_copy_mode ? m_direct_format.data() : nullptr;
 }
 
 int VDFFVideoSource::GetDirectFormatLen()
 {
-	return m_copy_mode ? direct_format_len : 0;
+	return m_copy_mode ? (int)m_direct_format.size() : 0;
 }
 
 void VDFFVideoSource::setCopyMode(bool v)
