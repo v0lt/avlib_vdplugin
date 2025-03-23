@@ -2179,8 +2179,13 @@ bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
 					alloc_direct_buffer();
 				}
 				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
-				ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
-				if (ret == 0) {
+				while (ret >= 0) {
+					ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
+					if (ret == AVERROR(EAGAIN) || ret == AVERROR_EOF) {
+						break;
+					} else if (ret < 0) {
+						return false;
+					}
 					if (init) {
 						init = false;
 						set_start_time();
