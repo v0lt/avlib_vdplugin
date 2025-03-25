@@ -2211,20 +2211,16 @@ bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 void VDFFVideoSource::set_start_time()
 {
 	// this is used for audio sync
-	int64_t t1 = m_pFrame->pts;
-	if (t1 == AV_NOPTS_VALUE) {
-		t1 = m_pStream->start_time;
+	if (m_pFrame->pts != AV_NOPTS_VALUE) {
+		m_pSource->video_start_time = m_pFrame->pts;
 	}
-	if (t1 != AV_NOPTS_VALUE) {
-		m_pSource->video_start_time = t1;
+	else if (m_pStream->start_time != AV_NOPTS_VALUE) {
+		m_pSource->video_start_time = m_pStream->start_time;
 	}
 
 	// this is used for seeking etc
-	int64_t t2 = m_pFrame->pts;
-	if (t2 == AV_NOPTS_VALUE) {
-		t2 = m_pFrame->pkt_dts;
-	}
-	m_start_time = t2;
+	m_start_time = (m_pFrame->pts != AV_NOPTS_VALUE) ? m_pFrame->pts : m_pFrame->pkt_dts;
+
 	if (frame_fmt == AV_PIX_FMT_NONE) {
 		init_format();
 	}
@@ -2234,10 +2230,7 @@ int VDFFVideoSource::handle_frame_num(const int64_t pts, const int64_t dts)
 {
 	dead_range_start = -1;
 	dead_range_end = -1;
-	int64_t ts = pts;
-	if (ts == AV_NOPTS_VALUE) {
-		ts = dts;
-	}
+	int64_t ts = (pts != AV_NOPTS_VALUE) ? pts : dts;
 	int pos = next_frame;
 
 	if (avi_drop_index && pos != -1) {
