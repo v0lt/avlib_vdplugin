@@ -199,33 +199,33 @@ private:
 	//uint64 kPixFormat_XRGB64;
 
 public:
-	int  initStream(VDFFInputFile* pSource, int indexStream);
+	int  initStream(VDFFInputFile* pSource, const int indexStream);
 private:
 	int  init_duration(const AVRational fr);
 	void init_format();
-	void set_pixmap_layout(uint8_t* p);
-	int  handle_frame_num(int64_t pts, int64_t dts);
+	void set_pixmap_layout(const uint8_t* p);
+	int  handle_frame_num(const int64_t pts, const int64_t dts);
 	int  handle_frame();
 	bool check_frame_format();
 	void set_start_time();
-	bool read_frame(sint64 desired_frame, bool init = false);
+	bool read_frame(const sint64 desired_frame, bool init = false);
 	void alloc_direct_buffer();
-	void alloc_page(int pos);
-	BufferPage* remove_page(int play_pos, bool before = true, bool after = true);
+	void alloc_page(const int pos);
+	BufferPage* remove_page(const int play_pos, const bool before = true, const bool after = true);
 	void dealloc_page(BufferPage* p);
 	void free_buffers();
-	void open_page(BufferPage* p, int flag);
+	void open_page(BufferPage* p, const int flag);
 	void open_read(BufferPage* p) { open_page(p, 1); }
 	void open_write(BufferPage* p) { open_page(p, 2); }
-	void copy_page(int start, int end, BufferPage* p);
-	int64_t frame_to_pts_next(sint64 start);
-	void setCopyMode(bool v);
-	void setDecodeMode(bool v);
-	void setCacheMode(bool v);
+	void copy_page(const int start, const int end, BufferPage* p);
+	int64_t frame_to_pts_next(const sint64 start);
+	void setCopyMode(const bool v);
+	void setDecodeMode(const bool v);
+	void setCacheMode(const bool v);
 	bool is_intra();
 	bool allow_copy();
 	bool possible_delay();
-	int  calc_sparse_key(int64_t sample, int64_t& pos);
-	int  calc_seek(int jump, int64_t& pos);
-	int  calc_prefetch(int jump);
+	int  calc_sparse_key(const int64_t sample, int64_t& pos);
+	int  calc_seek(const int jump, int64_t& pos);
+	int  calc_prefetch(const int jump);
 };

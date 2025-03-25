@@ -9,6 +9,7 @@
 #include "VideoSource2.h"
 #include "export.h"
 #include <functional>
+#include <cassert>
 #include "Helper.h"
 
 extern "C" {
@@ -166,7 +167,7 @@ int VDFFVideoSource::init_duration(const AVRational fr)
 	return sample_count_error;
 }
 
-int VDFFVideoSource::initStream(VDFFInputFile* pSource, int streamIndex)
+int VDFFVideoSource::initStream(VDFFInputFile* pSource, const int streamIndex)
 {
 	m_pSource = pSource;
 	m_streamIndex = streamIndex;
@@ -718,7 +719,7 @@ int VDFFVideoSource::GetDirectFormatLen()
 	return m_copy_mode ? (int)m_direct_format.size() : 0;
 }
 
-void VDFFVideoSource::setCopyMode(bool v)
+void VDFFVideoSource::setCopyMode(const bool v)
 {
 	if (m_copy_mode == v) return;
 	m_copy_mode = v;
@@ -731,7 +732,7 @@ void VDFFVideoSource::setCopyMode(bool v)
 	av_packet_unref(copy_pkt);
 }
 
-void VDFFVideoSource::setDecodeMode(bool v)
+void VDFFVideoSource::setDecodeMode(const bool v)
 {
 	if (m_decode_mode == v) return;
 	m_decode_mode = v;
@@ -743,7 +744,7 @@ void VDFFVideoSource::setDecodeMode(bool v)
 	}
 }
 
-void VDFFVideoSource::setCacheMode(bool v)
+void VDFFVideoSource::setCacheMode(const bool v)
 {
 	m_small_cache_mode = !v;
 	if (!v) {
@@ -1740,7 +1741,7 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 	return true;
 }
 
-void VDFFVideoSource::set_pixmap_layout(uint8_t* p)
+void VDFFVideoSource::set_pixmap_layout(const uint8_t* p)
 {
 	using namespace nsVDXPixmap;
 
@@ -1788,7 +1789,7 @@ bool VDFFVideoSource::IsDecodable(int64_t sample_num64)
 	return true;
 }
 
-int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
+int64_t VDFFVideoSource::frame_to_pts_next(const sint64 start)
 {
 	if (trust_index) {
 		int next_key = -1;
@@ -1812,7 +1813,7 @@ int64_t VDFFVideoSource::frame_to_pts_next(sint64 start)
 }
 
 // return frame num (guessed)
-int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
+int VDFFVideoSource::calc_sparse_key(const int64_t sample, int64_t& pos)
 {
 	// somehow m_start_time is not included in the index timestamps
 	// works with 10 bit.mp4: sample*den/num = exactly key timestamp
@@ -1829,7 +1830,7 @@ int VDFFVideoSource::calc_sparse_key(int64_t sample, int64_t& pos)
 	return frame;
 }
 
-int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
+int VDFFVideoSource::calc_seek(const int jump, int64_t& pos)
 {
 	if (is_image_list) {
 		if (next_frame == -1 || jump > next_frame + fw_seek_threshold || jump < next_frame) {
@@ -1906,7 +1907,7 @@ int VDFFVideoSource::calc_seek(int jump, int64_t& pos)
 	return -1;
 }
 
-int VDFFVideoSource::calc_prefetch(int jump)
+int VDFFVideoSource::calc_prefetch(const int jump)
 {
 	if (keyframe_gap == 1) {
 		return -1;
@@ -2115,7 +2116,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	return false;
 }
 
-bool VDFFVideoSource::read_frame(sint64 desired_frame, bool init)
+bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 {
 	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 
@@ -2229,7 +2230,7 @@ void VDFFVideoSource::set_start_time()
 	}
 }
 
-int VDFFVideoSource::handle_frame_num(int64_t pts, int64_t dts)
+int VDFFVideoSource::handle_frame_num(const int64_t pts, const int64_t dts)
 {
 	dead_range_start = -1;
 	dead_range_end = -1;
@@ -2363,7 +2364,7 @@ void VDFFVideoSource::free_buffers()
 	last_seek_frame = -1;
 }
 
-VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, bool after)
+VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(const int pos, const bool before, const bool after)
 {
 	if (!used_frames) return 0;
 
@@ -2400,7 +2401,7 @@ VDFFVideoSource::BufferPage* VDFFVideoSource::remove_page(int pos, bool before, 
 	}
 }
 
-void VDFFVideoSource::alloc_page(int pos)
+void VDFFVideoSource::alloc_page(const int pos)
 {
 	BufferPage* r = nullptr;
 	int buffer_max = (int)buffer.size();
@@ -2435,7 +2436,7 @@ void VDFFVideoSource::alloc_page(int pos)
 	if (pos < first_frame) first_frame = pos;
 }
 
-void VDFFVideoSource::copy_page(int start, int end, BufferPage* p)
+void VDFFVideoSource::copy_page(const int start, const int end, BufferPage* p)
 {
 	for (int i = start; i <= end; i++) {
 		if (frame_array[i]) continue;
@@ -2468,7 +2469,7 @@ void VDFFVideoSource::dealloc_page(BufferPage* p)
 	p->access = 0;
 }
 
-void VDFFVideoSource::open_page(BufferPage* p, int flag)
+void VDFFVideoSource::open_page(BufferPage* p, const int flag)
 {
 	if (!mem) return;
 	if (p->map_base && (p->access & flag)) return;
