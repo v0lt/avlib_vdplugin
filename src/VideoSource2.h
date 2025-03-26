@@ -184,7 +184,6 @@ private:
 	bool flip_image         = false;
 	bool avi_drop_index     = false;
 
-	bool direct_buffer      = false;
 	bool is_image_list      = false;
 	bool m_copy_mode        = false;
 	bool m_decode_mode      = true;
@@ -209,7 +208,6 @@ private:
 	bool check_frame_format();
 	void set_start_time();
 	bool read_frame(const sint64 desired_frame, bool init = false);
-	void alloc_direct_buffer();
 	void alloc_page(const int pos);
 	BufferPage* remove_page(const int play_pos, const bool before = true, const bool after = true);
 	void dealloc_page(BufferPage* p);

@@ -648,12 +648,6 @@ void VDFFVideoSource::init_format()
 	if (frame_fmt == AV_PIX_FMT_NONE) {
 		frame_size = 0;
 	}
-	if (direct_buffer) {
-		// 6 px per 16 bytes, 128 byte aligned
-		int row = (frame_width + 47) / 48 * 128;
-		int frame_size2 = row * frame_height;
-		if (frame_size2 > frame_size) frame_size = frame_size2;
-	}
 	free_buffers();
 	for (size_t i = 0; i < buffer.size(); i++)  {
 		dealloc_page(&buffer[i]);
@@ -2155,9 +2149,6 @@ bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 			// end of stream, grab buffered images
 			pkt->stream_index = m_streamIndex;
 			while (1) {
-				if (direct_buffer) {
-					alloc_direct_buffer();
-				}
 				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
 				ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 				if (ret != 0) {
@@ -2176,9 +2167,6 @@ bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 		else {
 			int done_frames = 0;
 			if (pkt->stream_index == m_streamIndex) {
-				if (direct_buffer) {
-					alloc_direct_buffer();
-				}
 				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
 				while (ret >= 0) {
 					ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
@@ -2306,9 +2294,6 @@ int VDFFVideoSource::handle_frame()
 			}
 		}
 	}
-	else if (direct_buffer) {
-		frame_type[pos] = av_get_picture_type_char(m_pFrame->pict_type);
-	}
 
 	return pos;
 }
@@ -2319,16 +2304,6 @@ bool VDFFVideoSource::check_frame_format()
 	if (m_pFrame->width != frame_width) return false;
 	if (m_pFrame->height != frame_height) return false;
 	return true;
-}
-
-void VDFFVideoSource::alloc_direct_buffer()
-{
-	int pos = next_frame;
-	if (!frame_array[pos]) {
-		alloc_page(pos);
-	}
-	BufferPage* page = frame_array[pos];
-	open_write(page);
 }
 
 void VDFFVideoSource::free_buffers()
