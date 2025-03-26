@@ -2113,10 +2113,11 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 {
 	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
+	int ret = 0;
 
 	if (m_copy_mode && !m_decode_mode) {
 		while (1) {
-			int ret = av_read_frame(m_pFormatCtx, pkt.get());
+			ret = av_read_frame(m_pFormatCtx, pkt.get());
 			if (ret < 0) {
 				return false;
 			}
@@ -2141,15 +2142,14 @@ bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 		}
 	}
 
+	int done_frames = 0;
+
 	while (1) {
 		int ret = av_read_frame(m_pFormatCtx, pkt.get());
 		if (ret < 0) {
-			pkt->data = nullptr;
-			pkt->size = 0;
 			// end of stream, grab buffered images
-			pkt->stream_index = m_streamIndex;
-			while (1) {
-				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
+			ret = avcodec_send_packet(m_pCodecCtx, nullptr);
+			while (ret >= 0) {
 				ret = avcodec_receive_frame(m_pCodecCtx, m_pFrame);
 				if (ret != 0) {
 					return false;
@@ -2160,12 +2160,11 @@ bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
 				}
 				handle_frame();
 				av_frame_unref(m_pFrame);
-				return true;
+				done_frames++;
 			}
-
+			return (done_frames > 0);
 		}
 		else {
-			int done_frames = 0;
 			if (pkt->stream_index == m_streamIndex) {
 				ret = avcodec_send_packet(m_pCodecCtx, pkt.get());
 				while (ret >= 0) {
@@ -2248,7 +2247,8 @@ int VDFFVideoSource::handle_frame()
 {
 	decoded_count++;
 	int pos = handle_frame_num(m_pFrame->pts, m_pFrame->pkt_dts);
-	if (pos == -1) {
+	// ignore error (-1) and anything outside promised range
+	if (pos < 0 || pos >= m_sample_count) {
 		return -1;
 	}
 
@@ -2262,11 +2262,6 @@ int VDFFVideoSource::handle_frame()
 	}
 
 	next_frame = pos + 1;
-
-	// ignore anything outside promised range
-	if (pos < 0 || pos >= m_sample_count) {
-		return -1;
-	}
 
 	if (!frame_array[pos]) {
 		alloc_page(pos);
