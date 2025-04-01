@@ -18,6 +18,7 @@
 #define IDD_ENC_PRORES                  112
 #define IDD_ENC_VP8                     115
 #define IDD_ENC_VP9                     116
+#define IDD_ENC_AV1                     117
 #define IDD_ENC_X264                    120
 #define IDD_ENC_X265                    121
 #define IDD_ENC_X265LS                  122
