@@ -2209,8 +2209,9 @@ struct CodecVP8 : public CodecBase {
 		avctx->max_b_frames = -1;
 		avctx->bit_rate = 0x400000000000;
 
-		av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
-		av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
+		[[maybe_unused]] int ret = 0;
+		ret = av_opt_set_int(avctx->priv_data, "crf", codec_config.crf, 0);
+		ret = av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
 		if (codec_config.format == format_yuva420) {
 			av_opt_set_int(avctx->priv_data, "auto-alt-ref", 0, 0);
 		}
@@ -2339,8 +2340,9 @@ struct CodecVP9 : public CodecBase {
 		avctx->gop_size = -1;
 		avctx->max_b_frames = -1;
 
-		av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
-		av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
+		[[maybe_unused]] int ret = 0;
+		ret = av_opt_set_int(avctx->priv_data, "crf", codec_config.crf, 0);
+		ret = av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
 		avctx->qmin = codec_config.crf;
 		avctx->qmax = codec_config.crf;
 		return true;
