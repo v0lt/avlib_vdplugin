@@ -404,6 +404,8 @@ BEGIN
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
     LTEXT           "Quality (high-low)",-1,14,73,58,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
+    CONTROL         "<a HREF=""https://trac.ffmpeg.org/wiki/Encode/VP8"">VP8 Encoding Guide</a>",IDC_LINK,
+                    "SysLink",WS_TABSTOP,165,83,144,11
 END
 
 IDD_ENC_VP9 DIALOGEX 0, 0, 316, 119
@@ -424,6 +426,8 @@ BEGIN
     CONTROL         "8",IDC_ENC_8_BIT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,55,30,20,10
     CONTROL         "10",IDC_ENC_10_BIT,"Button",BS_AUTORADIOBUTTON,82,30,24,10
     CONTROL         "12",IDC_ENC_12_BIT,"Button",BS_AUTORADIOBUTTON,108,30,24,10
+    CONTROL         "<a HREF=""https://trac.ffmpeg.org/wiki/Encode/VP9"">VP9 Encoding Guide</a>",IDC_LINK,
+                    "SysLink",WS_TABSTOP,165,83,144,11
 END
 
 IDD_ENC_AV1 DIALOGEX 0, 0, 316, 119
