@@ -28,6 +28,19 @@ extern "C" {
 void init_av();
 extern HINSTANCE hInstance;
 
+void copy_first_plane_asis(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+{
+	const uint8_t* src = (uint8_t*)data + layout->data;
+	uint8_t* dst = frame->data[0];
+	const size_t linesize = std::min<size_t>(layout->pitch, frame->linesize[0]);
+
+	for (int y = 0; y < layout->h; y++) {
+		memcpy(dst, src, linesize);
+		src += layout->pitch;
+		dst += frame->linesize[0];
+	}
+}
+
 void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	if (frame->format == AV_PIX_FMT_RGB24) {
@@ -65,15 +78,6 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 }
 
-void copy_rgb32(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
-{
-	for (int y = 0; y < layout->h; y++) {
-		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
-		uint8* d = frame->data[0] + frame->linesize[0] * y;
-		memcpy(d, s, layout->w * 4);
-	}
-}
-
 bool planar_rgb16(int format) {
 	switch (format) {
 	case AV_PIX_FMT_GBRP16LE:
@@ -104,7 +108,9 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 			uint16* d = (uint16*)frame->data[0] + frame->linesize[0] * y / 2;
 			memcpy(d, s, layout->w * 8);
 		}
+		return;
 	}
+
 	if (planar_rgb16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
 			uint16* s = (uint16*)data + layout->data / 2 + layout->pitch * y / 2;
@@ -122,7 +128,9 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 				s += 4;
 			}
 		}
+		return;
 	}
+
 	if (planar_rgba16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
 			uint16* s = (uint16*)data + layout->data / 2 + layout->pitch * y / 2;
@@ -142,7 +150,10 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 				s += 4;
 			}
 		}
+		return;
 	}
+
+	assert(0);
 }
 
 void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, int bpp)
@@ -193,17 +204,6 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, i
 		}
 		break;
 	}
-	}
-}
-
-void copy_gray(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, int bpp)
-{
-	int w2 = layout->w;
-	int h2 = layout->h;
-	for (int y = 0; y < layout->h; y++) {
-		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
-		uint8* d = frame->data[0] + frame->linesize[0] * y;
-		memcpy(d, s, layout->w * bpp);
 	}
 }
 
@@ -905,7 +905,7 @@ struct CodecBase : public CodecClass {
 				copy_rgb24(frame, layout, icc->lpInput);
 				break;
 			case nsVDXPixmap::kPixFormat_XRGB8888:
-				copy_rgb32(frame, layout, icc->lpInput);
+				copy_first_plane_asis(frame, layout, icc->lpInput);
 				break;
 			case nsVDXPixmap::kPixFormat_XRGB64:
 				copy_rgb64(frame, layout, icc->lpInput);
@@ -927,10 +927,8 @@ struct CodecBase : public CodecClass {
 				copy_yuv(frame, layout, icc->lpInput, 2);
 				break;
 			case nsVDXPixmap::kPixFormat_Y8:
-				copy_gray(frame, layout, icc->lpInput, 1);
-				break;
 			case nsVDXPixmap::kPixFormat_Y16:
-				copy_gray(frame, layout, icc->lpInput, 2);
+				copy_first_plane_asis(frame, layout, icc->lpInput);
 				break;
 			}
 
