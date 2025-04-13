@@ -28,16 +28,19 @@ extern "C" {
 void init_av();
 extern HINSTANCE hInstance;
 
-void copy_first_plane_asis(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+void copy_plane(const int lines, uint8_t* dst, size_t dst_pitch, const uint8_t* src, size_t src_pitch)
 {
-	const uint8_t* src = (uint8_t*)data + layout->data;
-	uint8_t* dst = frame->data[0];
-	const size_t linesize = std::min<size_t>(layout->pitch, frame->linesize[0]);
+	if (dst_pitch == src_pitch) {
+		memcpy(dst, src, dst_pitch * lines);
+		return;
+	}
 
-	for (int y = 0; y < layout->h; y++) {
+	const size_t linesize = std::min(src_pitch, dst_pitch);
+
+	for (int y = 0; y < lines; ++y) {
 		memcpy(dst, src, linesize);
-		src += layout->pitch;
-		dst += frame->linesize[0];
+		src += src_pitch;
+		dst += dst_pitch;
 	}
 }
 
@@ -156,7 +159,7 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	assert(0);
 }
 
-void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, int bpp)
+void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	int w2 = layout->w;
 	int h2 = layout->h;
@@ -172,21 +175,9 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, i
 		break;
 	}
 
-	for (int y = 0; y < layout->h; y++) {
-		uint8* s = (uint8*)data + layout->data + layout->pitch * y;
-		uint8* d = frame->data[0] + frame->linesize[0] * y;
-		memcpy(d, s, layout->w * bpp);
-	}
-	for (int y = 0; y < h2; y++) {
-		uint8* s = (uint8*)data + layout->data2 + layout->pitch2 * y;
-		uint8* d = frame->data[1] + frame->linesize[1] * y;
-		memcpy(d, s, w2 * bpp);
-	}
-	for (int y = 0; y < h2; y++) {
-		uint8* s = (uint8*)data + layout->data3 + layout->pitch3 * y;
-		uint8* d = frame->data[2] + frame->linesize[2] * y;
-		memcpy(d, s, w2 * bpp);
-	}
+	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data,  layout->pitch);
+	copy_plane(h2,        frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
+	copy_plane(h2,        frame->data[2], frame->linesize[2], (uint8_t*)data + layout->data3, layout->pitch3);
 
 	switch (layout->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
@@ -197,11 +188,7 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data, i
 	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
 	{
 		const VDXPixmapLayoutAlpha* layout2 = (const VDXPixmapLayoutAlpha*)layout;
-		for (int y = 0; y < layout->h; y++) {
-			uint8* s = (uint8*)data + layout2->data4 + layout2->pitch4 * y;
-			uint8* d = frame->data[3] + frame->linesize[3] * y;
-			memcpy(d, s, layout->w * bpp);
-		}
+		copy_plane(layout->h, frame->data[3], frame->linesize[3], (uint8_t*)data + layout2->data4, layout2->pitch4);
 		break;
 	}
 	}
@@ -905,7 +892,9 @@ struct CodecBase : public CodecClass {
 				copy_rgb24(frame, layout, icc->lpInput);
 				break;
 			case nsVDXPixmap::kPixFormat_XRGB8888:
-				copy_first_plane_asis(frame, layout, icc->lpInput);
+			case nsVDXPixmap::kPixFormat_Y8:
+			case nsVDXPixmap::kPixFormat_Y16:
+				copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)icc->lpInput + layout->data, layout->pitch);
 				break;
 			case nsVDXPixmap::kPixFormat_XRGB64:
 				copy_rgb64(frame, layout, icc->lpInput);
@@ -916,20 +905,15 @@ struct CodecBase : public CodecClass {
 			case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
 			case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
 			case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
-				copy_yuv(frame, layout, icc->lpInput, 1);
-				break;
 			case nsVDXPixmap::kPixFormat_YUV420_Planar16:
 			case nsVDXPixmap::kPixFormat_YUV422_Planar16:
 			case nsVDXPixmap::kPixFormat_YUV444_Planar16:
 			case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
 			case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar16:
 			case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
-				copy_yuv(frame, layout, icc->lpInput, 2);
+				copy_yuv(frame, layout, icc->lpInput);
 				break;
-			case nsVDXPixmap::kPixFormat_Y8:
-			case nsVDXPixmap::kPixFormat_Y16:
-				copy_first_plane_asis(frame, layout, icc->lpInput);
-				break;
+
 			}
 
 			ret = avcodec_send_frame(avctx, frame);
