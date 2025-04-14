@@ -48,8 +48,8 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	if (frame->format == AV_PIX_FMT_RGB24) {
 		for (int y = 0; y < layout->h; y++) {
-			uint8* s = (uint8*)data + layout->data + layout->pitch * y;
-			uint8* d = frame->data[0] + frame->linesize[0] * y;
+			const uint8_t* s = (uint8_t*)data + layout->data + layout->pitch * y;
+			uint8_t* d = frame->data[0] + frame->linesize[0] * y;
 
 			for (int x = 0; x < layout->w; x++) {
 				d[0] = s[2];
@@ -63,18 +63,16 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 	if (frame->format == AV_PIX_FMT_GBRP) {
 		for (int y = 0; y < layout->h; y++) {
-			uint8* s = (uint8*)data + layout->data + layout->pitch * y;
+			const uint8_t* s = (uint8*)data + layout->data + layout->pitch * y;
 
-			uint8* g = frame->data[0] + frame->linesize[0] * y;
-			uint8* b = frame->data[1] + frame->linesize[1] * y;
-			uint8* r = frame->data[2] + frame->linesize[2] * y;
+			uint8_t* g = frame->data[0] + frame->linesize[0] * y;
+			uint8_t* b = frame->data[1] + frame->linesize[1] * y;
+			uint8_t* r = frame->data[2] + frame->linesize[2] * y;
 
 			for (int x = 0; x < layout->w; x++) {
-				b[0] = s[0];
-				g[0] = s[1];
-				r[0] = s[2];
-
-				r++; g++; b++;
+				b[x] = s[0];
+				g[x] = s[1];
+				r[x] = s[2];
 				s += 3;
 			}
 		}
@@ -112,7 +110,7 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 
 	if (planar_rgb16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
-			uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
+			const uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
 			uint16_t* g = (uint16_t*)(frame->data[0] + frame->linesize[0] * y);
 			uint16_t* b = (uint16_t*)(frame->data[1] + frame->linesize[1] * y);
@@ -130,7 +128,7 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 
 	if (planar_rgba16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
-			uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
+			const uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
 			uint16_t* g = (uint16_t*)(frame->data[0] + frame->linesize[0] * y);
 			uint16_t* b = (uint16_t*)(frame->data[1] + frame->linesize[1] * y);
