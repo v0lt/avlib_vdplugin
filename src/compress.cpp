@@ -531,7 +531,7 @@ struct CodecBase : public CodecClass {
 			if (avctx->codec_tag) {
 				outhdr->biCompression = avctx->codec_tag;
 			}
-			uint8* p = ((uint8*)outhdr) + sizeof(BITMAPINFOHEADER);
+			uint8_t* p = ((uint8_t*)outhdr) + sizeof(BITMAPINFOHEADER);
 			memset(p, 0, extra_size);
 			memcpy(p, avctx->extradata, avctx->extradata_size);
 		}

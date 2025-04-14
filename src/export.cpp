@@ -814,8 +814,8 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	case AV_CODEC_ID_PCM_U16LE:
 	case AV_CODEC_ID_PCM_U16BE:
 	{
-		const uint16* a = (const uint16*)pBuffer;
-		uint16* b = (uint16*)a_buf;
+		const uint16_t* a = (const uint16_t*)pBuffer;
+		uint16_t* b = (uint16_t*)a_buf;
 		for (uint32 i = 0; i < cbBuffer / 2; i++) {
 			b[i] = _byteswap_ushort(a[i]);
 		}
@@ -828,8 +828,8 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	case AV_CODEC_ID_PCM_U32LE:
 	case AV_CODEC_ID_PCM_U32BE:
 	{
-		const uint32* a = (const uint32*)pBuffer;
-		uint32* b = (uint32*)a_buf;
+		const uint32_t* a = (const uint32_t*)pBuffer;
+		uint32_t* b = (uint32_t*)a_buf;
 		for (uint32 i = 0; i < cbBuffer / 4; i++) {
 			b[i] = _byteswap_ulong(a[i]);
 		}
@@ -840,8 +840,8 @@ void* FFOutputFile::bswap_pcm(uint32 index, const void* pBuffer, uint32 cbBuffer
 	case AV_CODEC_ID_PCM_S64LE:
 	case AV_CODEC_ID_PCM_S64BE:
 	{
-		const uint64* a = (const uint64*)pBuffer;
-		uint64* b = (uint64*)a_buf;
+		const uint64_t* a = (const uint64_t*)pBuffer;
+		uint64_t* b = (uint64_t*)a_buf;
 		for (uint32 i = 0; i < cbBuffer / 8; i++) {
 			b[i] = _byteswap_uint64(a[i]);
 		}
@@ -1131,9 +1131,9 @@ void FFOutputFile::Write(uint32 index, const void* pBuffer, uint32 cbBuffer, Pac
 	AVPacket* pkt = av_packet_alloc();
 	// pkt->data points to pBuffer or a_buf
 	if (s.bswap_pcm) {
-		pkt->data = (uint8*)bswap_pcm(index, pBuffer, cbBuffer);
+		pkt->data = (uint8_t*)bswap_pcm(index, pBuffer, cbBuffer);
 	} else {
-		pkt->data = (uint8*)pBuffer;
+		pkt->data = (uint8_t*)pBuffer;
 	}
 	pkt->size = cbBuffer;
 

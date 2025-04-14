@@ -301,11 +301,11 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	frame->nb_samples = 0;
 
 	frame_size = avctx->frame_size;
-	sample_buf = (uint8**)malloc(avctx->ch_layout.nb_channels * sizeof(void*));
+	sample_buf = (uint8_t**)malloc(avctx->ch_layout.nb_channels * sizeof(void*));
 	av_samples_alloc(sample_buf, 0, avctx->ch_layout.nb_channels, frame_size, avctx->sample_fmt, 0);
 
 	av_samples_get_buffer_size(&src_linesize, avctx->ch_layout.nb_channels, 1, in_fmt, 1);
-	in_buf = (uint8*)malloc(src_linesize * frame_size);
+	in_buf = (uint8_t*)malloc(src_linesize * frame_size);
 }
 
 void VDFFAudio::GetStreamInfo(VDXStreamInfo& si) const

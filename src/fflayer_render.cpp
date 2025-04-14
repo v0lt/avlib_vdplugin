@@ -1,18 +1,18 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "fflayer.h"
 
-void row_copy8(uint8* dst, const uint8* src, int w)
+void row_copy8(uint8_t* dst, const uint8_t* src, int w)
 {
 	memcpy(dst, src, w * 4);
 }
 
-void row_blend8(uint8* d, const uint8* s, int w)
+void row_blend8(uint8_t* d, const uint8_t* s, int w)
 {
 	for (int x = 0; x < w; x++) {
 		int a = s[3];
@@ -29,7 +29,7 @@ void row_blend8(uint8* d, const uint8* s, int w)
 	}
 }
 
-void row_blend8_pm(uint8* d, const uint8* s, int w)
+void row_blend8_pm(uint8_t* d, const uint8_t* s, int w)
 {
 	for (int x = 0; x < w; x++) {
 		int ra = (255 - s[3]) * 257;

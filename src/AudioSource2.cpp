@@ -229,7 +229,7 @@ void VDFFAudioSource::SetTargetFormat(const VDXWAVEFORMATEX* target)
 {
 	const uint64_t in_layout = GetChannelLayout(m_pCodecCtx);
 
-	uint64 layout = in_layout;
+	uint64_t layout = in_layout;
 	AVSampleFormat fmt;
 	switch (m_pCodecCtx->sample_fmt) {
 	case AV_SAMPLE_FMT_U8:
