@@ -106,28 +106,22 @@ bool planar_rgba16(int format) {
 void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	if (frame->format == AV_PIX_FMT_BGRA64) {
-		for (int y = 0; y < layout->h; y++) {
-			uint16* s = (uint16*)data + layout->data + layout->pitch * y / 2;
-			uint16* d = (uint16*)frame->data[0] + frame->linesize[0] * y / 2;
-			memcpy(d, s, layout->w * 8);
-		}
+		copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
 		return;
 	}
 
 	if (planar_rgb16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
-			uint16* s = (uint16*)data + layout->data / 2 + layout->pitch * y / 2;
+			uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
-			uint16* g = (uint16*)frame->data[0] + frame->linesize[0] * y / 2;
-			uint16* b = (uint16*)frame->data[1] + frame->linesize[1] * y / 2;
-			uint16* r = (uint16*)frame->data[2] + frame->linesize[2] * y / 2;
+			uint16_t* g = (uint16_t*)(frame->data[0] + frame->linesize[0] * y);
+			uint16_t* b = (uint16_t*)(frame->data[1] + frame->linesize[1] * y);
+			uint16_t* r = (uint16_t*)(frame->data[2] + frame->linesize[2] * y);
 
 			for (int x = 0; x < layout->w; x++) {
-				b[0] = s[0];
-				g[0] = s[1];
-				r[0] = s[2];
-
-				r++; g++; b++;
+				b[x] = s[0];
+				g[x] = s[1];
+				r[x] = s[2];
 				s += 4;
 			}
 		}
@@ -136,20 +130,18 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 
 	if (planar_rgba16(frame->format)) {
 		for (int y = 0; y < layout->h; y++) {
-			uint16* s = (uint16*)data + layout->data / 2 + layout->pitch * y / 2;
+			uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
-			uint16* g = (uint16*)frame->data[0] + frame->linesize[0] * y / 2;
-			uint16* b = (uint16*)frame->data[1] + frame->linesize[1] * y / 2;
-			uint16* r = (uint16*)frame->data[2] + frame->linesize[2] * y / 2;
-			uint16* a = (uint16*)frame->data[3] + frame->linesize[3] * y / 2;
+			uint16_t* g = (uint16_t*)(frame->data[0] + frame->linesize[0] * y);
+			uint16_t* b = (uint16_t*)(frame->data[1] + frame->linesize[1] * y);
+			uint16_t* r = (uint16_t*)(frame->data[2] + frame->linesize[2] * y);
+			uint16_t* a = (uint16_t*)(frame->data[3] + frame->linesize[3] * y);
 
 			for (int x = 0; x < layout->w; x++) {
-				b[0] = s[0];
-				g[0] = s[1];
-				r[0] = s[2];
-				a[0] = s[3];
-
-				r++; g++; b++; a++;
+				b[x] = s[0];
+				g[x] = s[1];
+				r[x] = s[2];
+				a[x] = s[3];
 				s += 4;
 			}
 		}
