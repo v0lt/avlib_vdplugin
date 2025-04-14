@@ -499,7 +499,7 @@ public:
 
 class VDXFilterActivation {
 public:
-	const VDXFilterDefinition *filter;		// 
+	const VDXFilterDefinition *filter;	//
 	void *filter_data;
 	VDXFBitmap&	dst;
 	VDXFBitmap&	src;
@@ -561,7 +561,7 @@ public:
 
 #define CPUF_SUPPORTS_SSE3			(0x00000100L) //  PIV+, K8 Venice
 #define CPUF_SUPPORTS_SSSE3			(0x00000200L) //  Core 2
-#define CPUF_SUPPORTS_SSE41			(0x00000400L) //  Penryn, Wolfdale, Yorkfield 
+#define CPUF_SUPPORTS_SSE41			(0x00000400L) //  Penryn, Wolfdale, Yorkfield
 #define CPUF_SUPPORTS_AVX			(0x00000800L) //  Sandy Bridge, Bulldozer
 #define CPUF_SUPPORTS_SSE42			(0x00001000L) //  Nehalem
 
@@ -697,13 +697,13 @@ struct VDXScriptObject {
 class VDXScriptValue {
 public:
 	enum { T_VOID, T_INT, T_PINT, T_STR, T_ARRAY, T_OBJECT, T_FNAME, T_FUNCTION, T_VARLV, T_LONG, T_DOUBLE } type;
-	VDXScriptObject *thisPtr;
+	VDXScriptObject *thisPtr = nullptr;
 	union {
 		int i;
 		char **s;
 		sint64 l;
 		double d;
-	} u;
+	} u = {};
 
 	VDXScriptValue()					{ type = T_VOID; }
 	VDXScriptValue(int i)				{ type = T_INT;			u.i = i; }

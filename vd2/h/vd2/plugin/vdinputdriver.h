@@ -338,7 +338,7 @@ public:
 
 	virtual int		VDXAPIENTRY DetectBySignature(const void *pHeader, sint32 nHeaderSize, const void *pFooter, sint32 nFooterSize, sint64 nFileSize) = 0;
 	virtual bool	VDXAPIENTRY CreateInputFile(uint32 flags, IVDXInputFile **ppFile) = 0;
-	
+
 	// V8
 	// Signature2 return value is different: enum DetectionConfidence
 	virtual int		VDXAPIENTRY DetectBySignature2(VDXMediaInfo& info, const void *pHeader, sint32 nHeaderSize, const void *pFooter, sint32 nFooterSize, sint64 nFileSize) {
@@ -347,7 +347,7 @@ public:
 		if (r==0) return kDC_Moderate;
 		return kDC_High;
 	}
-	
+
 	// V9
 	virtual int		VDXAPIENTRY DetectBySignature3(VDXMediaInfo& info, const void *pHeader, sint32 nHeaderSize, const void *pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName) {
 		return DetectBySignature2(info, pHeader, nHeaderSize, pFooter, nFooterSize, nFileSize);
@@ -400,7 +400,7 @@ struct VDXAVIStreamHeader {
 	uint16		wPriority;
 	uint16		wLanguage;
 	uint32		dwInitialFrames;
-	uint32		dwScale;	
+	uint32		dwScale;
 	uint32		dwRate;
 	uint32		dwStart;
 	uint32		dwLength;
@@ -446,7 +446,7 @@ struct VDXStreamInfo {
 	// all enum codes, meaning and default values match those of AVCodecParameters
 
 	// not used: set explicitly
-	//enum AVMediaType codec_type; 
+	//enum AVMediaType codec_type;
 
 	// not used: derived from bitmap (maybe needed for avi-incompatible formats)
 	//enum AVCodecID   codec_id;
@@ -558,7 +558,7 @@ public:
 		PacketInfo(){
 			flags = 0;
 			samples = 0;
-			pcm_samples = -1; 
+			pcm_samples = -1;
 			pts = VDX_NOPTS_VALUE;
 			dts = VDX_NOPTS_VALUE;
 		}
