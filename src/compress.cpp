@@ -63,7 +63,7 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 	if (frame->format == AV_PIX_FMT_GBRP) {
 		for (int y = 0; y < layout->h; y++) {
-			const uint8_t* s = (uint8*)data + layout->data + layout->pitch * y;
+			const uint8_t* s = (uint8_t*)data + layout->data + layout->pitch * y;
 
 			uint8_t* g = frame->data[0] + frame->linesize[0] * y;
 			uint8_t* b = frame->data[1] + frame->linesize[1] * y;

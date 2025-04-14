@@ -55,14 +55,14 @@ void adjust_codec_tag(const char* src_format, const AVOutputFormat* format, AVSt
 	}
 }
 
-uint32 export_avi_fcc(AVStream* src)
+uint32_t export_avi_fcc(AVStream* src)
 {
 	AVFormatContext* ctx = avformat_alloc_context();
 	AVStream* st = avformat_new_stream(ctx, nullptr);
 	avcodec_parameters_copy(st->codecpar, src->codecpar);
 	const AVOutputFormat* format = av_guess_format("avi", nullptr, nullptr);
 	adjust_codec_tag(0, format, st);
-	uint32 r = st->codecpar->codec_tag;
+	uint32_t r = st->codecpar->codec_tag;
 	// missing tag in type1 avi
 	if (!r) {
 		r = av_codec_get_tag(format->codec_tag, src->codecpar->codec_id);
