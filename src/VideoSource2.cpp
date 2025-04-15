@@ -490,13 +490,13 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, const int streamIndex)
 	uint64_t max_heap = 0x20000000;
 	if (mem_size + mem_other > max_heap) {
 		mem_size = (mem_size + 0xFFFF) & ~0xFFFF;
-		mem = CreateFileMapping(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
+		mem = CreateFileMappingW(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
 		if (!mem) {
 			if (buffer_reserve > pSource->cfg_frame_buffers) {
 				buffer_reserve = pSource->cfg_frame_buffers;
 				mem_size = uint64_t(frame_size) * buffer_reserve;
 				mem_size = (mem_size + 0xFFFF) & ~0xFFFF;
-				mem = CreateFileMapping(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
+				mem = CreateFileMappingW(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
 			}
 		}
 		if (!mem) {
@@ -760,7 +760,7 @@ void VDFFVideoSource::setCacheMode(const bool v)
 			CloseHandle(mem);
 			int64_t mem_size = uint64_t(frame_size) * buffer_reserve;
 			mem_size = (mem_size + 0xFFFF) & ~0xFFFF;
-			mem = CreateFileMapping(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
+			mem = CreateFileMappingW(INVALID_HANDLE_VALUE, 0, PAGE_READWRITE, mem_size >> 32, (DWORD)mem_size, 0);
 
 		}
 		else {
