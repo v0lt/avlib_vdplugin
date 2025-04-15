@@ -7,6 +7,8 @@
 
 #include "fflayer.h"
 
+typedef void(*BlendFunc)(uint8_t* dst, const uint8_t* src, int w);
+
 void row_copy8(uint8_t* dst, const uint8_t* src, int w)
 {
 	memcpy(dst, src, w * 4);
@@ -78,13 +80,22 @@ void LogoFilter::render_xrgb8()
 	if (w <= 0 || h <= 0) return;
 
 	int blendMode = param.blendMode;
-	if (layerInfo.alpha_type == 0) blendMode = LogoParam::blend_replace;
+	if (layerInfo.alpha_type == 0) {
+		blendMode = LogoParam::blend_replace;
+	}
+
+	BlendFunc blendFunc = nullptr;
+
+	switch (blendMode) {
+	case LogoParam::blend_replace:  blendFunc = row_copy8;     break;
+	case LogoParam::blend_alpha:    blendFunc = row_blend8;    break;
+	case LogoParam::blend_alpha_pm: blendFunc = row_blend8_pm; break;
+	default: return;
+	}
 
 	for (int y = 0; y < h; y++) {
-		unsigned char* d = (unsigned char*)dst.data + (y + y1) * dst.pitch + x1 * 4;
-		unsigned char* s = (unsigned char*)layer.data + (y + y2) * layer.pitch + x2 * 4;
-		if (blendMode == LogoParam::blend_replace) row_copy8(d, s, w);
-		if (blendMode == LogoParam::blend_alpha) row_blend8(d, s, w);
-		if (blendMode == LogoParam::blend_alpha_pm) row_blend8_pm(d, s, w);
+		uint8_t* d = (uint8_t*)dst.data + (y + y1) * dst.pitch + x1 * 4;
+		uint8_t* s = (uint8_t*)layer.data + (y + y2) * layer.pitch + x2 * 4;
+		blendFunc(d, s, w);
 	}
 }
