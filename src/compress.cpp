@@ -5,19 +5,17 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "vd2\plugin\vdplugin.h"
-#include <vd2/VDXFrame/VideoFilterDialog.h>
+#include <windows.h>
+#include <commctrl.h>
+#include <vfw.h>
+#include <shellapi.h>
 #include <memory>
 #include <functional>
 #include <cassert>
-#include <windows.h>
-#include <vfw.h>
-#include <shellapi.h>
-#include <commctrl.h>
-#include "vd2\plugin\vdinputdriver.h"
+#include <vd2/plugin/vdinputdriver.h>
+#include <vd2/VDXFrame/VideoFilterDialog.h>
 extern "C" {
 #include <libavcodec/avcodec.h>
-#include <libavformat/avformat.h>
 #include <libavutil/imgutils.h>
 #include <libavutil/opt.h>
 }
