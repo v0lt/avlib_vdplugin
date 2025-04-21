@@ -2537,8 +2537,6 @@ void ConfigAV1::change_format(int sel)
 
 extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
-	CodecClass* cs = (CodecClass*)dwDriverId;
-
 	CodecBase* codec = (CodecBase*)dwDriverId;
 
 	switch (uMsg) {
@@ -2646,8 +2644,6 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 
 extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
-	CodecClass* cs = (CodecClass*)dwDriverId;
-
 	CodecBase* codec = (CodecBase*)dwDriverId;
 
 	switch (uMsg) {
