@@ -9,8 +9,6 @@
 #include "export.h"
 #include <string>
 #include <cassert>
-#include <Ks.h>
-#include <KsMedia.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include "resource.h"
 #include <commctrl.h>

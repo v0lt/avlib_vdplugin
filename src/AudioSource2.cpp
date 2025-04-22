@@ -7,8 +7,6 @@
 
 #include "InputFile2.h"
 #include "AudioSource2.h"
-#include <Ks.h>
-#include <KsMedia.h>
 #include <memory>
 #include <functional>
 #include <cassert>
