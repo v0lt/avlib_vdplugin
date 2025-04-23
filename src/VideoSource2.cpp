@@ -1783,7 +1783,7 @@ bool VDFFVideoSource::IsDecodable(int64_t sample_num64)
 	return true;
 }
 
-int64_t VDFFVideoSource::frame_to_pts_next(const sint64 start)
+int64_t VDFFVideoSource::frame_to_pts_next(const int64_t start)
 {
 	if (trust_index) {
 		int next_key = -1;
@@ -2110,7 +2110,7 @@ bool VDFFVideoSource::Read(sint64 start, uint32 lCount, void* lpBuffer, uint32 c
 	return false;
 }
 
-bool VDFFVideoSource::read_frame(const sint64 desired_frame, bool init)
+bool VDFFVideoSource::read_frame(const int64_t desired_frame, bool init)
 {
 	std::unique_ptr<AVPacket, std::function<void(AVPacket*)>> pkt{ av_packet_alloc(), [](AVPacket* p) { av_packet_free(&p); } };
 	int ret = 0;

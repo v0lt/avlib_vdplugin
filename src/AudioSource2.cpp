@@ -102,7 +102,7 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	const AVRational tb = m_pStream->time_base;
 	// should normally reduce to integer if timebase is derived from sample_rate
-	av_reduce(&time_base.num, &time_base.den, int64(m_pCodecCtx->sample_rate) * tb.num, tb.den, INT_MAX);
+	av_reduce(&time_base.num, &time_base.den, (int64_t)m_pCodecCtx->sample_rate * tb.num, tb.den, INT_MAX);
 
 	if (time_base.den == 1) {
 		trust_sample_pos = true; // works for mp4
@@ -394,12 +394,12 @@ void VDFFAudioSource::init_start_time()
 	}
 }
 
-int64_t VDFFAudioSource::frame_to_pts(sint64 frame, AVStream* video)
+int64_t VDFFAudioSource::frame_to_pts(int64_t frame, AVStream* video)
 {
 	AVRational rate;
 	AVRational fr = video->r_frame_rate;
 	av_reduce(&rate.num, &rate.den, m_pCodecCtx->sample_rate * fr.den, fr.num, INT_MAX);
-	int64 start = frame * rate.num / rate.den;
+	int64_t start = frame * rate.num / rate.den;
 	int64_t pos = start * time_base.den / time_base.num - time_adjust;
 	return pos;
 }

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -63,8 +63,8 @@ public:
 	unsigned in_pos       = 0;
 	int src_linesize      = 0;
 	AVPacket* pkt         = nullptr;
-	sint64 total_in       = 0;
-	sint64 total_out      = 0;
+	int64_t total_in       = 0;
+	int64_t total_out      = 0;
 	int max_packet        = 0;
 
 	WAVEFORMATEXTENSIBLE* out_format = nullptr;

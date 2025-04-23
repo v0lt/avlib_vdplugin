@@ -207,7 +207,7 @@ private:
 	int  handle_frame();
 	bool check_frame_format();
 	void set_start_time();
-	bool read_frame(const sint64 desired_frame, bool init = false);
+	bool read_frame(const int64_t desired_frame, bool init = false);
 	void alloc_page(const int pos);
 	BufferPage* remove_page(const int play_pos, const bool before = true, const bool after = true);
 	void dealloc_page(BufferPage* p);
@@ -216,7 +216,7 @@ private:
 	void open_read(BufferPage* p) { open_page(p, 1); }
 	void open_write(BufferPage* p) { open_page(p, 2); }
 	void copy_page(const int start, const int end, BufferPage* p);
-	int64_t frame_to_pts_next(const sint64 start);
+	int64_t frame_to_pts_next(const int64_t start);
 	void setCopyMode(const bool v);
 	void setDecodeMode(const bool v);
 	void setCacheMode(const bool v);

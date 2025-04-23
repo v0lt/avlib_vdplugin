@@ -118,5 +118,5 @@ private:
 	void alloc_page(int i);
 	void reset_cache();
 	int reset_swr();
-	int64_t frame_to_pts(sint64 start, AVStream* video);
+	int64_t frame_to_pts(int64_t start, AVStream* video);
 };

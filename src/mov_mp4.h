@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,9 +14,9 @@
 #include <string>
 
 struct MovAtom {
-	__int64 sz;
-	unsigned long t;
-	__int64 pos;
+	int64_t sz;
+	uint32_t t;
+	int64_t pos;
 	int hsize;
 };
 
@@ -25,8 +25,8 @@ struct MovParser {
 	int buf_size;
 
 	const char* p;
-	__int64 offset;
-	__int64 fileSize;
+	int64_t offset;
+	int64_t fileSize;
 	HANDLE hfile;
 
 	MovParser(const void* _buf, int _buf_size, int64_t _fileSize)
@@ -74,7 +74,7 @@ struct MovParser {
 		buf.reset(new char[size + extra]);
 		memset(buf.get() + size, 0, extra);
 		if (hfile) {
-			unsigned long w;
+			DWORD w;
 			ReadFile(hfile, buf.get(), size, &w, 0);
 		}
 		else {
@@ -84,7 +84,7 @@ struct MovParser {
 	}
 
 	void skip(MovAtom& a) {
-		__int64 d = a.pos + a.sz - offset;
+		int64_t d = a.pos + a.sz - offset;
 		offset += d;
 		if (hfile) {
 			LARGE_INTEGER distance;
@@ -96,8 +96,8 @@ struct MovParser {
 		}
 	}
 
-	unsigned long read4();
-	__int64 read8();
+	uint32_t read4();
+	int64_t read8();
 	bool read(MovAtom& a);
 };
 
