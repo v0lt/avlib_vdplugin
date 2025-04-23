@@ -51,6 +51,7 @@
       <Filter>Utils</Filter>
     </ClInclude>
     <ClInclude Include="Helper.h" />
+    <ClInclude Include="iobuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">

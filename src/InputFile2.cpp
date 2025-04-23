@@ -16,6 +16,7 @@
 #include <aviriff.h>
 #include "resource.h"
 #include "Helper.h"
+#include "iobuffer.h"
 #include "Utils/StringUtil.h"
 
 typedef struct AVCodecTag {

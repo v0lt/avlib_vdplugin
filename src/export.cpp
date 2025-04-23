@@ -19,6 +19,7 @@
 #include "resource.h"
 #include <vfw.h>
 #include "Helper.h"
+#include "iobuffer.h"
 #include "Utils/StringUtil.h"
 
 extern HINSTANCE hInstance;

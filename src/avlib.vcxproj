@@ -178,6 +178,7 @@
     <ClInclude Include="gopro.h" />
     <ClInclude Include="Helper.h" />
     <ClInclude Include="InputFile2.h" />
+    <ClInclude Include="iobuffer.h" />
     <ClInclude Include="mov_mp4.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h" />

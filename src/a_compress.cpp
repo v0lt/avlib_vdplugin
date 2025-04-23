@@ -13,6 +13,7 @@
 #include "resource.h"
 #include <commctrl.h>
 #include "Helper.h"
+#include "iobuffer.h"
 
 void init_av();
 extern HINSTANCE hInstance;
