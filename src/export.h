@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -20,19 +20,14 @@ struct IOBuffer {
 	int64_t  size = 0;
 	int64_t  pos  = 0;
 
-	~IOBuffer() {
-		av_free(data);
-	}
-
-	void copy(const void* data, int size) {
-		alloc(size);
+	IOBuffer(const void* data, const int size) {
+		this->data = (uint8_t*)av_malloc(size + AVPROBE_PADDING_SIZE);
+		this->size = size;
 		memcpy(this->data, data, size);
 	}
 
-	void alloc(int n) {
-		data = (uint8_t*)av_malloc(n + AVPROBE_PADDING_SIZE);
-		memset(data, 0, n + AVPROBE_PADDING_SIZE);
-		size = n;
+	~IOBuffer() {
+		av_free(data);
 	}
 
 	static int Read(void* obj, uint8_t* buf, int buf_size) {

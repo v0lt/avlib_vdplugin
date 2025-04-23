@@ -953,9 +953,8 @@ void FFOutputFile::import_wav(AVStream* st, const void* pFormat, int cbFormat)
 	wav.resize(p + 8);
 	memcpy(&wav[p], dwHeader, 8);
 
-	IOBuffer buf;
-	buf.copy(&wav[0], (int)wav.size());
-	AVIOContext* avio_ctx = avio_alloc_context(nullptr, 0, 0, &buf, &IOBuffer::Read, nullptr, nullptr);
+	IOBuffer buffer(&wav[0], (int)wav.size());
+	AVIOContext* avio_ctx = avio_alloc_context(nullptr, 0, 0, &buffer, &IOBuffer::Read, nullptr, nullptr);
 
 	AVFormatContext* fmt_ctx = avformat_alloc_context();
 	fmt_ctx->pb = avio_ctx;

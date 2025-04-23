@@ -318,11 +318,13 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 {
 	init_av();
 
-	IOBuffer buf;
-	buf.copy(pHeader, nHeaderSize);
-	AVProbeData pd = { 0 };
-	pd.buf = buf.data;
-	pd.buf_size = (int)buf.size;
+	IOBuffer buffer(pHeader, nHeaderSize);
+	AVProbeData pd = {
+		.filename  = nullptr,
+		.buf       = buffer.data,
+		.buf_size  = (int)buffer.size,
+		.mime_type = nullptr
+	};
 
 	int score = 0;
 	const AVInputFormat* fmt = av_probe_input_format3(&pd, true, &score);
