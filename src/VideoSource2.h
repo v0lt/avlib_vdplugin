@@ -42,55 +42,55 @@ public:
 	void* VDXAPIENTRY AsInterface(uint32_t iid) override;
 
 	//Stream Interface
-	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo&);
-	void VDXAPIENTRY GetStreamSourceInfoV3(VDXStreamSourceInfoV3&);
-	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead);
+	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo&) override;
+	void VDXAPIENTRY GetStreamSourceInfoV3(VDXStreamSourceInfoV3&) override;
+	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead) override;
 
-	void VDXAPIENTRY ApplyStreamMode(uint32 flags);
-	bool VDXAPIENTRY QueryStreamMode(uint32 flags);
-	const void* VDXAPIENTRY GetDirectFormat();
-	int         VDXAPIENTRY GetDirectFormatLen();
+	void VDXAPIENTRY ApplyStreamMode(uint32 flags) override;
+	bool VDXAPIENTRY QueryStreamMode(uint32 flags) override;
+	const void* VDXAPIENTRY GetDirectFormat() override;
+	int         VDXAPIENTRY GetDirectFormatLen() override;
 
-	ErrorMode VDXAPIENTRY GetDecodeErrorMode();
-	void VDXAPIENTRY SetDecodeErrorMode(ErrorMode mode);
-	bool VDXAPIENTRY IsDecodeErrorModeSupported(ErrorMode mode);
+	ErrorMode VDXAPIENTRY GetDecodeErrorMode() override;
+	void VDXAPIENTRY SetDecodeErrorMode(ErrorMode mode) override;
+	bool VDXAPIENTRY IsDecodeErrorModeSupported(ErrorMode mode) override;
 
-	bool VDXAPIENTRY IsVBR() { return false; }
-	sint64 VDXAPIENTRY TimeToPositionVBR(int64_t us) { return 0; }
-	sint64 VDXAPIENTRY PositionToTimeVBR(int64_t samples) { return 0; }
+	bool VDXAPIENTRY IsVBR() override { return false; }
+	sint64 VDXAPIENTRY TimeToPositionVBR(int64_t us) override { return 0; }
+	sint64 VDXAPIENTRY PositionToTimeVBR(int64_t samples) override { return 0; }
 
-	void VDXAPIENTRY GetVideoSourceInfo(VDXVideoSourceInfo& info);
+	void VDXAPIENTRY GetVideoSourceInfo(VDXVideoSourceInfo& info) override;
 
-	bool VDXAPIENTRY CreateVideoDecoderModel(IVDXVideoDecoderModel** ppModel);
-	bool VDXAPIENTRY CreateVideoDecoder(IVDXVideoDecoder** ppDecoder);
+	bool VDXAPIENTRY CreateVideoDecoderModel(IVDXVideoDecoderModel** ppModel) override;
+	bool VDXAPIENTRY CreateVideoDecoder(IVDXVideoDecoder** ppDecoder) override;
 
-	void        VDXAPIENTRY GetSampleInfo(int64_t sample_num, VDXVideoFrameInfo& frameInfo);
+	void        VDXAPIENTRY GetSampleInfo(int64_t sample_num, VDXVideoFrameInfo& frameInfo) override;
 
-	bool        VDXAPIENTRY IsKey(int64_t lSample);
-	int64_t     VDXAPIENTRY GetFrameNumberForSample(int64_t sample_num);
-	int64_t     VDXAPIENTRY GetSampleNumberForFrame(int64_t display_num);
-	int64_t     VDXAPIENTRY GetRealFrame(int64_t display_num);
+	bool        VDXAPIENTRY IsKey(int64_t lSample) override;
+	int64_t     VDXAPIENTRY GetFrameNumberForSample(int64_t sample_num) override;
+	int64_t     VDXAPIENTRY GetSampleNumberForFrame(int64_t display_num) override;
+	int64_t     VDXAPIENTRY GetRealFrame(int64_t display_num) override;
 
-	int64_t     VDXAPIENTRY GetSampleBytePosition(int64_t sample_num);
+	int64_t     VDXAPIENTRY GetSampleBytePosition(int64_t sample_num) override;
 
 	//Model Interface
-	void    VDXAPIENTRY Reset();
-	void    VDXAPIENTRY SetDesiredFrame(int64_t frame_num);
-	int64_t VDXAPIENTRY GetNextRequiredSample(bool& is_preroll);
-	int     VDXAPIENTRY GetRequiredCount();
+	void    VDXAPIENTRY Reset() override;
+	void    VDXAPIENTRY SetDesiredFrame(int64_t frame_num) override;
+	int64_t VDXAPIENTRY GetNextRequiredSample(bool& is_preroll) override;
+	int     VDXAPIENTRY GetRequiredCount() override;
 
 	//Decoder Interface
-	const void* VDXAPIENTRY DecodeFrame(const void* inputBuffer, uint32_t data_len, bool is_preroll, int64_t streamFrame, int64_t targetFrame);
-	uint32_t    VDXAPIENTRY GetDecodePadding();
-	bool        VDXAPIENTRY IsFrameBufferValid();
-	const VDXPixmap& VDXAPIENTRY GetFrameBuffer();
-	const FilterModPixmapInfo& VDXAPIENTRY GetFrameBufferInfo();
-	bool        VDXAPIENTRY SetTargetFormat(int format, bool useDIBAlignment);
+	const void* VDXAPIENTRY DecodeFrame(const void* inputBuffer, uint32_t data_len, bool is_preroll, int64_t streamFrame, int64_t targetFrame) override;
+	uint32_t    VDXAPIENTRY GetDecodePadding() override;
+	bool        VDXAPIENTRY IsFrameBufferValid() override;
+	const VDXPixmap& VDXAPIENTRY GetFrameBuffer() override;
+	const FilterModPixmapInfo& VDXAPIENTRY GetFrameBufferInfo() override;
+	bool        VDXAPIENTRY SetTargetFormat(int format, bool useDIBAlignment) override;
 	bool        SetTargetFormat(nsVDXPixmap::VDXPixmapFormat format, bool useDIBAlignment, VDFFVideoSource* head);
-	bool        VDXAPIENTRY SetDecompressedFormat(const VDXBITMAPINFOHEADER* pbih);
+	bool        VDXAPIENTRY SetDecompressedFormat(const VDXBITMAPINFOHEADER* pbih) override;
 
-	const void* VDXAPIENTRY GetFrameBufferBase();
-	bool        VDXAPIENTRY IsDecodable(int64_t sample_num);
+	const void* VDXAPIENTRY GetFrameBufferBase() override;
+	bool        VDXAPIENTRY IsDecodable(int64_t sample_num) override;
 
 private:
 	//Internal

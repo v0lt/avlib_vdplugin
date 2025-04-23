@@ -136,14 +136,17 @@ public:
 
 	FFOutputFile(const VDXInputDriverContext& pContext);
 	~FFOutputFile();
-	void VDXAPIENTRY Init(const wchar_t* path, const char* format);
-	const char* GetFormatName() { return format_name.c_str(); }
-	uint32 VDXAPIENTRY CreateStream(int type);
-	void VDXAPIENTRY SetVideo(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat);
-	void VDXAPIENTRY SetAudio(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat);
-	void VDXAPIENTRY Write(uint32 index, const void* pBuffer, uint32 cbBuffer, PacketInfo& info);
-	void Finalize();
-	bool Begin();
+
+	// IVDXOutputFile
+	void VDXAPIENTRY Init(const wchar_t* path, const char* format) override;
+	uint32 VDXAPIENTRY CreateStream(int type) override;
+	void VDXAPIENTRY SetVideo(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat) override;
+	void VDXAPIENTRY SetAudio(uint32 index, const VDXStreamInfo& si, const void* pFormat, int cbFormat) override;
+	void VDXAPIENTRY Write(uint32 index, const void* pBuffer, uint32 cbBuffer, PacketInfo& info) override;
+	void Finalize() override;
+	const char* GetFormatName() override { return format_name.c_str(); }
+	bool Begin() override;
+
 	void av_error(int err);
 	void adjust_codec_tag(AVStream* st);
 	void import_bmp(AVStream* st, const void* pFormat, int cbFormat);
@@ -162,15 +165,15 @@ public:
 	{
 	}
 
-	virtual bool  VDXAPIENTRY GetStreamControl(const wchar_t* path, const char* format, VDXStreamControl& sc);
+	virtual bool VDXAPIENTRY GetStreamControl(const wchar_t* path, const char* format, VDXStreamControl& sc) override;
 
-	virtual bool	VDXAPIENTRY CreateOutputFile(IVDXOutputFile** ppFile) {
+	virtual bool VDXAPIENTRY CreateOutputFile(IVDXOutputFile** ppFile) override {
 		*ppFile = new FFOutputFile(mpContext);
 		return true;
 	}
 
-	virtual bool	VDXAPIENTRY EnumFormats(int i, wchar_t* filter, wchar_t* ext, char* name);
-	virtual uint32	VDXAPIENTRY GetFormatCaps(int i);
+	virtual bool   VDXAPIENTRY EnumFormats(int i, wchar_t* filter, wchar_t* ext, char* name) override;
+	virtual uint32 VDXAPIENTRY GetFormatCaps(int i) override;
 };
 
 extern VDXPluginInfo ff_output_info;

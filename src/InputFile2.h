@@ -42,10 +42,10 @@ public:
 	VDFFInputFileDriver(const VDXInputDriverContext& context);
 	~VDFFInputFileDriver();
 
-	int		VDXAPIENTRY DetectBySignature(const void* pHeader, int32_t nHeaderSize, const void* pFooter, int32_t nFooterSize, int64_t nFileSize);
-	int		VDXAPIENTRY DetectBySignature2(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, const void* pFooter, int32_t nFooterSize, int64_t nFileSize);
-	int		VDXAPIENTRY DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName);
-	bool	VDXAPIENTRY CreateInputFile(uint32_t flags, IVDXInputFile** ppFile);
+	int		VDXAPIENTRY DetectBySignature(const void* pHeader, int32_t nHeaderSize, const void* pFooter, int32_t nFooterSize, int64_t nFileSize) override;;
+	int		VDXAPIENTRY DetectBySignature2(VDXMediaInfo& info, const void* pHeader, int32_t nHeaderSize, const void* pFooter, int32_t nFooterSize, int64_t nFileSize) override;;
+	int		VDXAPIENTRY DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName) override;;
+	bool	VDXAPIENTRY CreateInputFile(uint32_t flags, IVDXInputFile** ppFile) override;;
 
 protected:
 	const VDXInputDriverContext& mContext;
@@ -84,7 +84,7 @@ public:
 		return true;
 	}
 
-	uint32_t VDXAPIENTRY Write(void* buf, uint32_t buflen) {
+	uint32_t VDXAPIENTRY Write(void* buf, uint32_t buflen) override {
 		if (buflen < sizeof(Data) || !buf) {
 			return sizeof(Data);
 		}
@@ -116,15 +116,15 @@ public:
 	VDFFInputFile*   next_segment = nullptr;
 	VDFFInputFile*   head_segment = nullptr;
 
-	int VDXAPIENTRY AddRef() {
+	int VDXAPIENTRY AddRef() override {
 		return vdxunknown<IVDXInputFile>::AddRef();
 	}
 
-	int VDXAPIENTRY Release() {
+	int VDXAPIENTRY Release() override {
 		return vdxunknown<IVDXInputFile>::Release();
 	}
 
-	void* VDXAPIENTRY AsInterface(uint32_t iid)
+	void* VDXAPIENTRY AsInterface(uint32_t iid) override
 	{
 		if (iid == IFilterModFileTool::kIID) {
 			return static_cast<IFilterModFileTool*>(this);
@@ -136,20 +136,20 @@ public:
 	VDFFInputFile(const VDXInputDriverContext& context);
 	~VDFFInputFile();
 
-	void VDXAPIENTRY Init(const wchar_t* szFile, IVDXInputOptions* opts);
-	bool VDXAPIENTRY Append(const wchar_t* szFile);
-	bool VDXAPIENTRY Append2(const wchar_t* szFile, int flags, IVDXInputOptions* opts);
+	void VDXAPIENTRY Init(const wchar_t* szFile, IVDXInputOptions* opts) override;
+	bool VDXAPIENTRY Append(const wchar_t* szFile) override;
+	bool VDXAPIENTRY Append2(const wchar_t* szFile, int flags, IVDXInputOptions* opts) override;
 
-	bool VDXAPIENTRY PromptForOptions(VDXHWND, IVDXInputOptions** r);
-	bool VDXAPIENTRY CreateOptions(const void* buf, uint32_t len, IVDXInputOptions** r);
-	void VDXAPIENTRY DisplayInfo(VDXHWND hwndParent);
+	bool VDXAPIENTRY PromptForOptions(VDXHWND, IVDXInputOptions** r) override;
+	bool VDXAPIENTRY CreateOptions(const void* buf, uint32_t len, IVDXInputOptions** r) override;
+	void VDXAPIENTRY DisplayInfo(VDXHWND hwndParent) override;
 
-	bool VDXAPIENTRY GetVideoSource(int index, IVDXVideoSource**);
-	bool VDXAPIENTRY GetAudioSource(int index, IVDXAudioSource**);
-	bool VDXAPIENTRY GetExportMenuInfo(int id, char* name, int name_size, bool* enabled);
-	bool VDXAPIENTRY GetExportCommandName(int id, char* name, int name_size);
-	bool VDXAPIENTRY ExecuteExport(int id, VDXHWND parent, IProjectState* state);
-	int VDXAPIENTRY GetFileFlags();
+	bool VDXAPIENTRY GetVideoSource(int index, IVDXVideoSource**) override;
+	bool VDXAPIENTRY GetAudioSource(int index, IVDXAudioSource**) override;
+	bool VDXAPIENTRY GetExportMenuInfo(int id, char* name, int name_size, bool* enabled) override;
+	bool VDXAPIENTRY GetExportCommandName(int id, char* name, int name_size) override;
+	bool VDXAPIENTRY ExecuteExport(int id, VDXHWND parent, IProjectState* state) override;
+	int VDXAPIENTRY GetFileFlags() override;
 
 public:
 	AVFormatContext* getContext(void) { return m_pFormatCtx; }

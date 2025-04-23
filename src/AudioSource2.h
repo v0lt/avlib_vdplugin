@@ -34,22 +34,22 @@ public:
 	int VDXAPIENTRY Release() override;
 	void* VDXAPIENTRY AsInterface(uint32_t iid) override;
 
-	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo& srcInfo) { srcInfo = m_streamInfo; }
-	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead);
+	void VDXAPIENTRY GetStreamSourceInfo(VDXStreamSourceInfo& srcInfo) override { srcInfo = m_streamInfo; }
+	bool VDXAPIENTRY Read(int64_t lStart, uint32_t lCount, void* lpBuffer, uint32_t cbBuffer, uint32_t* lBytesRead, uint32_t* lSamplesRead) override;
 
-	const void* VDXAPIENTRY GetDirectFormat() { return &mRawFormat; }
-	int  VDXAPIENTRY GetDirectFormatLen() { return sizeof(WAVEFORMATEXTENSIBLE); }
-	void VDXAPIENTRY SetTargetFormat(const VDXWAVEFORMATEX* format);
+	const void* VDXAPIENTRY GetDirectFormat() override { return &mRawFormat; }
+	int  VDXAPIENTRY GetDirectFormatLen() override { return sizeof(WAVEFORMATEXTENSIBLE); }
+	void VDXAPIENTRY SetTargetFormat(const VDXWAVEFORMATEX* format) override;
 
-	ErrorMode VDXAPIENTRY GetDecodeErrorMode() { return IVDXStreamSource::kErrorModeReportAll; }
-	void VDXAPIENTRY SetDecodeErrorMode(ErrorMode mode) {}
-	bool VDXAPIENTRY IsDecodeErrorModeSupported(ErrorMode mode) { return mode == IVDXStreamSource::kErrorModeReportAll; }
+	ErrorMode VDXAPIENTRY GetDecodeErrorMode() override { return IVDXStreamSource::kErrorModeReportAll; }
+	void VDXAPIENTRY SetDecodeErrorMode(ErrorMode mode) override {}
+	bool VDXAPIENTRY IsDecodeErrorModeSupported(ErrorMode mode) override { return mode == IVDXStreamSource::kErrorModeReportAll; }
 
-	bool VDXAPIENTRY IsVBR() { return false; }
-	int64_t VDXAPIENTRY TimeToPositionVBR(int64_t us) { return 0; }
-	int64_t VDXAPIENTRY PositionToTimeVBR(int64_t samples) { return 0; }
+	bool VDXAPIENTRY IsVBR() override { return false; }
+	int64_t VDXAPIENTRY TimeToPositionVBR(int64_t us) override { return 0; }
+	int64_t VDXAPIENTRY PositionToTimeVBR(int64_t samples) override { return 0; }
 
-	void VDXAPIENTRY GetAudioSourceInfo(VDXAudioSourceInfo& info) { info.mFlags = 0; }
+	void VDXAPIENTRY GetAudioSourceInfo(VDXAudioSourceInfo& info) override { info.mFlags = 0; }
 
 private:
 	const VDXInputDriverContext& mContext;

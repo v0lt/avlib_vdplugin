@@ -21,7 +21,7 @@ class VDFFInputFileInfoDialog : public VDXVideoFilterDialog {
 public:
 	bool Show(VDXHWND parent, VDFFInputFile* pInput);
 
-	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 
 private:
 	VDFFInputFile* source = nullptr;
