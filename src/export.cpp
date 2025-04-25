@@ -10,9 +10,10 @@
 #include "VideoSource2.h"
 #include "AudioSource2.h"
 #include "export.h"
-#include "a_compress.h"
+#include "AudioEncoder/AudioEnc.h"
 #include <algorithm>
-#include <string>
+#include <memory>
+#include <functional>
 #include <windows.h>
 #include <commdlg.h>
 #include <commctrl.h>

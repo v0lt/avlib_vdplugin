@@ -12,6 +12,9 @@
 #include <vd2/VDXFrame/Unknown.h>
 #include <string>
 #include <vector>
+extern "C" {
+#include <libavformat/avformat.h>
+}
 
 uint32 export_avi_fcc(AVStream* src);
 

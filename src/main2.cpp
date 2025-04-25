@@ -12,7 +12,7 @@
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include "InputFile2.h"
 #include "export.h"
-#include "a_compress.h"
+#include "AudioEncoder/AudioEnc.h"
 #include "resource.h"
 #include "Helper.h"
 

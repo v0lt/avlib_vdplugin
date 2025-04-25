@@ -10,12 +10,14 @@
     <Filter Include="Utils">
       <UniqueIdentifier>{299c7184-682a-4885-a83a-3bea8398d2a9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="AudioEncodec">
+      <UniqueIdentifier>{e967b251-d549-4625-917a-c083f9f90ad8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fflayer.h">
       <Filter>videoFilter</Filter>
     </ClInclude>
-    <ClInclude Include="a_compress.h" />
     <ClInclude Include="AudioSource2.h" />
     <ClInclude Include="compress.h" />
     <ClInclude Include="export.h" />
@@ -52,6 +54,27 @@
     </ClInclude>
     <ClInclude Include="Helper.h" />
     <ClInclude Include="iobuffer.h" />
+    <ClInclude Include="AudioEncoder\AudioEnc.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_aac.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_alac.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_flac.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_mp3.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_opus.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
+    <ClInclude Include="AudioEncoder\AudioEnc_vorbis.h">
+      <Filter>AudioEncodec</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -63,7 +86,6 @@
     <ClCompile Include="vfmain.cpp">
       <Filter>videoFilter</Filter>
     </ClCompile>
-    <ClCompile Include="a_compress.cpp" />
     <ClCompile Include="AudioSource2.cpp" />
     <ClCompile Include="compress.cpp" />
     <ClCompile Include="export.cpp" />
@@ -87,6 +109,27 @@
       <Filter>Utils</Filter>
     </ClCompile>
     <ClCompile Include="Helper.cpp" />
+    <ClCompile Include="AudioEncoder\AudioEnc.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_aac.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_alac.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_flac.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_mp3.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_opus.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="AudioEncoder\AudioEnc_vorbis.cpp">
+      <Filter>AudioEncodec</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />
