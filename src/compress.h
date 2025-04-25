@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef compress_header
-#define compress_header
+#pragma once
 
 struct CodecClass {
 	int class_id;
@@ -14,5 +13,3 @@ struct CodecClass {
 	CodecClass() { class_id = 0; }
 	virtual ~CodecClass() {}
 };
-
-#endif

@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef a_compress_header
-#define a_compress_header
+#pragma once
 
 #include <windows.h>
 #include <mmreg.h>
@@ -135,5 +134,3 @@ extern VDXPluginInfo ff_flacenc_info;
 extern VDXPluginInfo ff_alacenc_info;
 extern VDXPluginInfo ff_vorbisenc_info;
 extern VDXPluginInfo ff_opusenc_info;
-
-#endif

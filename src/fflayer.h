@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef fflayer_header
-#define fflayer_header
+#pragma once
 
 #include <vd2/VDXFrame/VideoFilter.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
@@ -107,5 +106,3 @@ public:
 
 const UINT WM_EDIT_CHANGED = WM_USER + 666;
 LRESULT CALLBACK EditWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam);
-
-#endif

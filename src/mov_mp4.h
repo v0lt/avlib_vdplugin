@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef mov_mp4_header
-#define mov_mp4_header
+#pragma once
 
 #include "windows.h"
 #include "inttypes.h"
@@ -43,5 +42,3 @@ struct MovParser {
 	int64_t read8();
 	bool read(MovAtom& a);
 };
-
-#endif

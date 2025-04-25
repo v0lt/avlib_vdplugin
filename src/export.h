@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef export_header
-#define export_header
+#pragma once
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
@@ -86,5 +85,3 @@ public:
 };
 
 extern VDXPluginInfo ff_output_info;
-
-#endif

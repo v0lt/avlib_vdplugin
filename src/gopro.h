@@ -5,8 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef gopro_header
-#define gopro_header
+#pragma once
 
 #include "mov_mp4.h"
 #include <string>
@@ -26,5 +25,3 @@ struct GoproInfo {
 	void get_camera_type();
 	void get_settings(unsigned int* sett, int n);
 };
-
-#endif
