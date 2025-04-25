@@ -13,13 +13,15 @@
     <Filter Include="AudioEncodec">
       <UniqueIdentifier>{e967b251-d549-4625-917a-c083f9f90ad8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="VideoEncoder">
+      <UniqueIdentifier>{ba0b0ab8-55b7-45c2-a892-6262d2b81df4}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fflayer.h">
       <Filter>videoFilter</Filter>
     </ClInclude>
     <ClInclude Include="AudioSource2.h" />
-    <ClInclude Include="compress.h" />
     <ClInclude Include="export.h" />
     <ClInclude Include="FileInfo2.h" />
     <ClInclude Include="gopro.h" />
@@ -75,6 +77,36 @@
     <ClInclude Include="AudioEncoder\AudioEnc_vorbis.h">
       <Filter>AudioEncodec</Filter>
     </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_AV1.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_FFV1.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_H264.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_H265.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_HuffyuvFF.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_ProRes.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_VP8.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_VP9.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_XXX.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -87,7 +119,6 @@
       <Filter>videoFilter</Filter>
     </ClCompile>
     <ClCompile Include="AudioSource2.cpp" />
-    <ClCompile Include="compress.cpp" />
     <ClCompile Include="export.cpp" />
     <ClCompile Include="FileInfo2.cpp" />
     <ClCompile Include="gopro.cpp" />
@@ -129,6 +160,12 @@
     </ClCompile>
     <ClCompile Include="AudioEncoder\AudioEnc_vorbis.cpp">
       <Filter>AudioEncodec</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoCompress.cpp">
+      <Filter>VideoEncoder</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -177,7 +177,6 @@
     <ClInclude Include="AudioEncoder\AudioEnc_opus.h" />
     <ClInclude Include="AudioEncoder\AudioEnc_vorbis.h" />
     <ClInclude Include="AudioSource2.h" />
-    <ClInclude Include="compress.h" />
     <ClInclude Include="export.h" />
     <ClInclude Include="fflayer.h" />
     <ClInclude Include="FileInfo2.h" />
@@ -193,6 +192,15 @@
     <ClInclude Include="..\vd2\h\vd2\VDXFrame\Unknown.h" />
     <ClInclude Include="Utils\StringUtil.h" />
     <ClInclude Include="Version.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_AV1.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_FFV1.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_H264.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_H265.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_HuffyuvFF.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_ProRes.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_VP8.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_VP9.h" />
     <ClInclude Include="VideoSource2.h" />
   </ItemGroup>
   <ItemGroup>
@@ -207,7 +215,6 @@
     <ClCompile Include="AudioEncoder\AudioEnc_opus.cpp" />
     <ClCompile Include="AudioEncoder\AudioEnc_vorbis.cpp" />
     <ClCompile Include="AudioSource2.cpp" />
-    <ClCompile Include="compress.cpp" />
     <ClCompile Include="export.cpp" />
     <ClCompile Include="fflayer.cpp" />
     <ClCompile Include="fflayer_render.cpp" />
@@ -219,6 +226,8 @@
     <ClCompile Include="mov_mp4.cpp" />
     <ClCompile Include="Utils\StringUtil.cpp" />
     <ClCompile Include="vfmain.cpp" />
+    <ClCompile Include="VideoEncoder\VideoCompress.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc.cpp" />
     <ClCompile Include="VideoSource2.cpp" />
     <ClCompile Include="nut.cpp" />
   </ItemGroup>
