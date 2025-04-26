@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -28,7 +28,7 @@ enum {
 };
 
 struct CodecProres : public CodecBase {
-	enum { tag = MKTAG('a', 'p', 'c', 'h') };
+	enum { id_tag = MKTAG('a', 'p', 'c', 'h') };
 	struct Config : public CodecBase::Config {
 		int profile;
 		int qscale; // 2-31
@@ -46,7 +46,7 @@ struct CodecProres : public CodecBase {
 	CodecProres() {
 		config = &codec_config;
 		codec_name = "prores_ks";
-		codec_tag = tag;
+		codec_tag = MKTAG('a', 'p', 'c', 'h');
 	}
 
 	int config_size() { return sizeof(Config); }
@@ -63,7 +63,7 @@ struct CodecProres : public CodecBase {
 	}
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = codec_tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy_s(info.szName, L"prores_ks");
 		wcscpy_s(info.szDescription, L"FFmpeg / Apple ProRes (iCodec Pro)");

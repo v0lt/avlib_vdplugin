@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -59,7 +59,6 @@ struct CodecBase : public CodecClass {
 	AVColorRange color_range = AVCOL_RANGE_UNSPECIFIED;
 	AVColorSpace colorspace = AVCOL_SPC_UNSPECIFIED;
 
-	AVCodecID codec_id = AV_CODEC_ID_NONE;
 	const char* codec_name = nullptr;
 	uint32_t codec_tag = 0;
 	const AVCodec* codec = nullptr;

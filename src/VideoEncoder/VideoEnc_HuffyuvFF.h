@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -16,7 +16,7 @@ public:
 };
 
 struct CodecHUFF : public CodecBase {
-	enum { tag = MKTAG('F', 'F', 'V', 'H') };
+	enum { id_tag = MKTAG('F', 'F', 'V', 'H') };
 	struct Config : public CodecBase::Config {
 		int prediction = 0;
 
@@ -25,15 +25,15 @@ struct CodecHUFF : public CodecBase {
 
 	CodecHUFF() {
 		config = &codec_config;
-		codec_id = AV_CODEC_ID_FFVHUFF;
-		codec_tag = tag;
+		codec_name = "ffvhuff";
+		codec_tag = MKTAG('F', 'F', 'V', 'H');
 	}
 
 	int config_size() { return sizeof(Config); }
 	void reset_config() { codec_config.clear(); }
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = codec_tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy_s(info.szName, L"FFVHUFF");
 		wcscpy_s(info.szDescription, L"FFmpeg / Huffyuv lossless codec");

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -39,7 +39,7 @@ const char* x265_tune_names[] = {
 };
 
 struct CodecH265 : public CodecBase {
-	enum { id_tag = MKTAG('h', 'e', 'v', '1') };
+	enum { id_tag = MKTAG('H', 'E', 'V', 'C') };
 	struct Config : public CodecBase::Config {
 		int preset;
 		int crf; // 0-51
@@ -114,7 +114,7 @@ struct CodecH265 : public CodecBase {
 };
 
 struct CodecH265LS : public CodecH265 {
-	enum { id_tag = MKTAG('h', 'e', 'v', '0') };
+	enum { id_tag = MKTAG('H', '2', '6', '5') }; // Here we use another one because 'HEVC' is already used in CodecH265
 	void reset_config() { codec_config.clear(); codec_config.crf = 0; }
 
 	bool init_ctx(VDXPixmapLayout* layout)

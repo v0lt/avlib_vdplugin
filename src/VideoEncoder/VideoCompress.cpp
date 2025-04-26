@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -45,13 +45,13 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		CodecBase* new_codec = nullptr;
 		switch (icopen->fccHandler) {
 		case 0:
-		case CodecFFV1::tag:      new_codec = new CodecFFV1;   break;
-		case CodecHUFF::tag:      new_codec = new CodecHUFF;   break;
-		case CodecProres::tag:    new_codec = new CodecProres; break;
-		case CodecVP8::tag:       new_codec = new CodecVP8;    break;
-		case CodecVP9::tag:       new_codec = new CodecVP9;    break;
-		case CodecAV1::tag:       new_codec = new CodecAV1;    break;
-		case CodecH264::tag:      new_codec = new CodecH264;   break;
+		case CodecFFV1::id_tag:   new_codec = new CodecFFV1;   break;
+		case CodecHUFF::id_tag:   new_codec = new CodecHUFF;   break;
+		case CodecProres::id_tag: new_codec = new CodecProres; break;
+		case CodecVP8::id_tag:    new_codec = new CodecVP8;    break;
+		case CodecVP9::id_tag:    new_codec = new CodecVP9;    break;
+		case CodecAV1::id_tag:    new_codec = new CodecAV1;    break;
+		case CodecH264::id_tag:   new_codec = new CodecH264;   break;
 		case CodecH265::id_tag:   new_codec = new CodecH265;   break;
 		case CodecH265LS::id_tag: new_codec = new CodecH265LS; break;
 		}
@@ -136,15 +136,15 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 
 	switch (uMsg) {
 	case VDICM_ENUMFORMATS:
-		if (lParam1 == 0) return CodecFFV1::tag;
-		if (lParam1 == CodecFFV1::tag) return CodecHUFF::tag;
-		if (lParam1 == CodecHUFF::tag) return CodecProres::tag;
-		if (lParam1 == CodecProres::tag) return CodecVP8::tag;
-		if (lParam1 == CodecVP8::tag) return CodecVP9::tag;
-		if (lParam1 == CodecVP9::tag) return CodecAV1::tag;
-		if (lParam1 == CodecAV1::tag) return CodecH264::tag;
-		if (lParam1 == CodecH264::tag) return CodecH265::id_tag;
-		if (lParam1 == CodecH265::id_tag) return CodecH265LS::id_tag;
+		if (lParam1 == 0) return CodecFFV1::id_tag;
+		if (lParam1 == CodecFFV1::id_tag)   return CodecHUFF::id_tag;
+		if (lParam1 == CodecHUFF::id_tag)   return CodecProres::id_tag;
+		if (lParam1 == CodecProres::id_tag) return CodecVP8::id_tag;
+		if (lParam1 == CodecVP8::id_tag)    return CodecVP9::id_tag;
+		if (lParam1 == CodecVP9::id_tag)    return CodecAV1::id_tag;
+		if (lParam1 == CodecAV1::id_tag)    return CodecH264::id_tag;
+		if (lParam1 == CodecH264::id_tag)   return CodecH265::id_tag;
+		if (lParam1 == CodecH265::id_tag)   return CodecH265LS::id_tag;
 		return 0;
 
 	case VDICM_GETHANDLER:

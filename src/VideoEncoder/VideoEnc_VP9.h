@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -18,7 +18,7 @@ public:
 };
 
 struct CodecVP9 : public CodecBase {
-	enum { tag = MKTAG('V', 'P', '9', '0') };
+	enum { id_tag = MKTAG('V', 'P', '9', '0') };
 	struct Config : public CodecBase::Config {
 		int crf; // 0-63
 
@@ -34,7 +34,7 @@ struct CodecVP9 : public CodecBase {
 	CodecVP9() {
 		config = &codec_config;
 		codec_name = "libvpx-vp9";
-		codec_tag = tag;
+		codec_tag  = MKTAG('V', 'P', '9', '0');
 	}
 
 	int config_size() { return sizeof(Config); }
@@ -56,7 +56,7 @@ struct CodecVP9 : public CodecBase {
 	}
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = codec_tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"vp9");
 		wcscpy_s(info.szDescription, L"FFmpeg / VP9");

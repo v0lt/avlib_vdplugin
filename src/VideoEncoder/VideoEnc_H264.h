@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -40,7 +40,7 @@ const char* x264_tune_names[] = {
 };
 
 struct CodecH264 : public CodecBase {
-	enum { tag = MKTAG('H', '2', '6', '4') };
+	enum { id_tag = MKTAG('H', '2', '6', '4') };
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
@@ -63,14 +63,14 @@ struct CodecH264 : public CodecBase {
 	CodecH264() {
 		config = &codec_config;
 		codec_name = "libx264";
-		codec_tag = tag;
+		codec_tag = MKTAG('H', '2', '6', '4');
 	}
 
 	int config_size() { return sizeof(Config); }
 	void reset_config() { codec_config.clear(); }
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = codec_tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"x264");
 		wcscpy_s(info.szDescription, L"FFmpeg / x264");

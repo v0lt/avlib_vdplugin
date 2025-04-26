@@ -177,13 +177,9 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 }
 
-bool CodecBase::init() {
-	if (codec_id != AV_CODEC_ID_NONE) {
-		codec = avcodec_find_encoder(codec_id);
-	}
-	else {
-		codec = avcodec_find_encoder_by_name(codec_name);
-	}
+bool CodecBase::init()
+{
+	codec = avcodec_find_encoder_by_name(codec_name);
 	return codec != 0;
 }
 

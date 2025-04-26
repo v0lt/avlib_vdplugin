@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -34,7 +34,7 @@ const char* stv_av1_preset_names[] = {
 };
 
 struct CodecAV1 : public CodecBase {
-	enum { tag = MKTAG('a', 'v', '0', '1') };
+	enum { id_tag = MKTAG('A', 'V', '0', '1') };
 	struct Config : public CodecBase::Config {
 		int preset;
 		int crf; // 0-63
@@ -60,7 +60,7 @@ struct CodecAV1 : public CodecBase {
 	void reset_config() { codec_config.clear(); }
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"av1");
 		wcscpy_s(info.szDescription, L"FFmpeg / SVT-AV1");

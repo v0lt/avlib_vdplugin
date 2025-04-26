@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -22,7 +22,7 @@ public:
 };
 
 struct CodecFFV1 : public CodecBase {
-	enum { tag = MKTAG('F', 'F', 'V', '1') };
+	enum { id_tag = MKTAG('F', 'F', 'V', '1') };
 	struct Config : public CodecBase::Config {
 		int level;
 		int slice;
@@ -46,8 +46,8 @@ struct CodecFFV1 : public CodecBase {
 
 	CodecFFV1() {
 		config = &codec_config;
-		codec_id = AV_CODEC_ID_FFV1;
-		codec_tag = tag;
+		codec_name = "ffv1";
+		codec_tag = MKTAG('F', 'F', 'V', '1');
 	}
 
 	int config_size() { return sizeof(Config); }
@@ -127,7 +127,7 @@ struct CodecFFV1 : public CodecBase {
 	}
 
 	void getinfo(ICINFO& info) {
-		info.fccHandler = codec_tag;
+		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"FFV1");
 		wcscpy_s(info.szDescription, L"FFmpeg / FFV1 lossless codec");
