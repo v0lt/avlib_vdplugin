@@ -73,7 +73,7 @@ struct CodecH264 : public CodecBase {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"x264");
-		wcscpy_s(info.szDescription, L"FFmpeg / x264");
+		wcscpy_s(info.szDescription, L"FFmpeg / H.264 (x264)");
 	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
