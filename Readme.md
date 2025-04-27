@@ -10,8 +10,7 @@ Copy FFMpeg DLLs to 'VirtualDub2' folder.
 * swscale-8.dll 
 
 FFMpeg 7.1.1 x64 binaries used:
-* https://www.gyan.dev/ffmpeg/builds/packages/ffmpeg-7.1.1-full_build-shared.7z
-* https://github.com/GyanD/codexffmpeg/releases/download/7.1.1/ffmpeg-7.1.1-full_build-shared.7z
+* https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip
 
 FFMpeg 7.1.1 win32 binaries used:
 * https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/ffmpeg-n7.1-latest-win32-gpl-shared-7.1.zip

@@ -25,20 +25,20 @@ IF %COUNT% EQU 5 (
   GOTO :MakeArchive
 )
 
-SET FFMPEG_7Z=ffmpeg-7.1.1-full_build-shared.7z
+SET FFMPEG_ZIP=ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip
 
-IF NOT EXIST _bin\ffmpeg\%FFMPEG_7Z% (
-  ECHO Downloading "%FFMPEG_7Z%"...
+IF NOT EXIST _bin\ffmpeg\%FFMPEG_ZIP% (
+  ECHO Downloading "%FFMPEG_ZIP%"...
   MKDIR _bin\ffmpeg
-  curl -o "_bin\ffmpeg\%FFMPEG_7Z%" --insecure "https://www.gyan.dev/ffmpeg/builds/packages/%FFMPEG_7Z%"
+  curl -o "_bin\ffmpeg\%FFMPEG_ZIP%" --insecure -L "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/%FFMPEG_ZIP%"
 )
 
-IF NOT EXIST _bin\ffmpeg\%FFMPEG_7Z% (
-  ECHO Failed to download %FFMPEG_7Z%.
+IF NOT EXIST _bin\ffmpeg\%FFMPEG_ZIP% (
+  ECHO Failed to download %FFMPEG_ZIP%.
   GOTO :END
 )
 
-"%SEVENZIP%" e "_bin\ffmpeg\%FFMPEG_7Z%" -o"_bin\ffmpeg\" %FFMPEG_DLLS% -r -aos
+"%SEVENZIP%" e "_bin\ffmpeg\%FFMPEG_ZIP%" -o"_bin\ffmpeg\" %FFMPEG_DLLS% -r -aos
 
 REM -------------------------------------
 
