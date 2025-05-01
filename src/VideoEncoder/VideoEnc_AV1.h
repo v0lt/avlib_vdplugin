@@ -35,12 +35,13 @@ const char* stv_av1_preset_names[] = {
 
 struct CodecAV1 : public CodecBase {
 	enum { id_tag = MKTAG('A', 'V', '0', '1') };
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int crf; // 0-63
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv420;
 			bits = 8;
@@ -56,7 +57,7 @@ struct CodecAV1 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;

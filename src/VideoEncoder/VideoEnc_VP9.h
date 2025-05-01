@@ -19,11 +19,12 @@ public:
 
 struct CodecVP9 : public CodecBase {
 	enum { id_tag = MKTAG('V', 'P', '9', '0') };
+
 	struct Config : public CodecBase::Config {
 		int crf; // 0-63
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv420;
 			bits = 8;
@@ -38,7 +39,7 @@ struct CodecVP9 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
 		switch (src->format) {

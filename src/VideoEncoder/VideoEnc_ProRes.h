@@ -29,12 +29,13 @@ enum {
 
 struct CodecProres : public CodecBase {
 	enum { id_tag = MKTAG('a', 'p', 'c', 'h') };
+
 	struct Config : public CodecBase::Config {
 		int profile;
 		int qscale; // 2-31
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv422;
 			bits = 10;
@@ -50,7 +51,7 @@ struct CodecProres : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
 		switch (src->format) {

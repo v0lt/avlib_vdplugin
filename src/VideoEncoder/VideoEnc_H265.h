@@ -40,14 +40,15 @@ const char* x265_tune_names[] = {
 
 struct CodecH265 : public CodecBase {
 	enum { id_tag = MKTAG('H', 'E', 'V', 'C') };
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int crf; // 0-51
 		int tune;
 		int flags; // reserved
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv420;
 			bits = 8;
@@ -65,7 +66,7 @@ struct CodecH265 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 
 	void getinfo(ICINFO& info) {
@@ -115,7 +116,7 @@ struct CodecH265 : public CodecBase {
 struct CodecH265LS : public CodecH265 {
 	enum { id_tag = MKTAG('H', '2', '6', '5') }; // Here we use another one because 'HEVC' is already used in CodecH265
 	void reset_config() {
-		codec_config.set_default();
+		codec_config.reset();
 		codec_config.crf = 0;
 	}
 

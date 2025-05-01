@@ -41,14 +41,15 @@ const char* x264_tune_names[] = {
 
 struct CodecH264 : public CodecBase {
 	enum { id_tag = MKTAG('H', '2', '6', '4') };
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
 		int crf; // 0-51
 		int flags; // reserved
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv420;
 			bits = 8;
@@ -66,7 +67,7 @@ struct CodecH264 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;

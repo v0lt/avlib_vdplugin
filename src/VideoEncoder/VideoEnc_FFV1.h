@@ -23,6 +23,7 @@ public:
 
 struct CodecFFV1 : public CodecBase {
 	enum { id_tag = MKTAG('F', 'F', 'V', '1') };
+
 	struct Config : public CodecBase::Config {
 		int level;
 		int slice;
@@ -30,8 +31,8 @@ struct CodecFFV1 : public CodecBase {
 		int context;
 		int slicecrc;
 
-		Config() { set_default(); }
-		void set_default() {
+		Config() { reset(); }
+		void reset() {
 			version = 1;
 			format = format_yuv422;
 			bits = 10;
@@ -50,7 +51,7 @@ struct CodecFFV1 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.set_default(); }
+	void reset_config() { codec_config.reset(); }
 
 	virtual bool test_av_format(AVPixelFormat format) {
 		switch (format) {
