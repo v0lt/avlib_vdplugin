@@ -101,13 +101,6 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_opus::reset_config()
-{
-	codec_config.version = 2;
-	codec_config.bitrate_per_channel = 64;
-	codec_config.quality = 10;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_Opus"
 
 void VDFFAudio_opus::load_config()

@@ -102,14 +102,6 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_mp3::reset_config()
-{
-	codec_config.version = 2;
-	codec_config.bitrate = 320;
-	codec_config.quality = 0;
-	codec_config.jointstereo = true;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_MP3"
 
 void VDFFAudio_mp3::load_config()

@@ -13,10 +13,19 @@ class VDFFAudio_mp3 final : public VDFFAudio
 {
 public:
 	struct Config :public VDFFAudio::Config {
-		int bitrate;
-		int quality;
+		int bitrate; // 8...320
+		int quality; // 0...9
 		bool constant_rate;
 		bool jointstereo;
+
+		Config() { reset(); }
+		void reset() {
+			version = 2;
+			bitrate = 320;
+			quality = 0;
+			constant_rate = true;
+			jointstereo = true;
+		}
 	} codec_config;
 
 	VDFFAudio_mp3(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
@@ -24,7 +33,7 @@ public:
 		reset_config();
 		load_config();
 	}
-	virtual void reset_config() override;
+	virtual void reset_config() override { codec_config.reset(); }
 	virtual void load_config() override;
 	virtual void save_config() override;
 

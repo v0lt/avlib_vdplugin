@@ -87,14 +87,6 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_vorbis::reset_config()
-{
-	codec_config.version = 2;
-	codec_config.bitrate_per_channel = 160;
-	codec_config.quality = 3;
-	codec_config.constant_rate = false;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_Vorbis"
 
 void VDFFAudio_vorbis::load_config()

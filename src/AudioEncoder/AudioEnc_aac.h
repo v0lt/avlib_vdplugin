@@ -12,8 +12,14 @@
 class VDFFAudio_aac final : public VDFFAudio
 {
 public:
-	struct Config :public VDFFAudio::Config {
-		int bitrate_per_channel;
+	struct Config : public VDFFAudio::Config {
+		int bitrate_per_channel; // 32...288
+
+		Config() { reset(); }
+		void reset() {
+			version = 3;
+			bitrate_per_channel = 128;
+		}
 	} codec_config;
 
 	VDFFAudio_aac(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
@@ -22,7 +28,7 @@ public:
 		load_config();
 	}
 
-	virtual void reset_config() override;
+	virtual void reset_config() override { codec_config.reset(); }
 	virtual void load_config() override;
 	virtual void save_config() override;
 

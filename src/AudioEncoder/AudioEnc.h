@@ -36,7 +36,7 @@ public:
 	enum { flag_constant_rate = 1 };
 
 	struct Config {
-		int version = 0;
+		int version;
 	}*config = nullptr;
 
 	const AVCodec* codec  = nullptr;

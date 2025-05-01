@@ -59,12 +59,6 @@ INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_alac::reset_config()
-{
-	codec_config.version = 2;
-	codec_config.compression_level = 2;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_ALAC"
 
 void VDFFAudio_alac::load_config()

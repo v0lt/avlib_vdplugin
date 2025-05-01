@@ -12,8 +12,14 @@
 class VDFFAudio_alac final : public VDFFAudio
 {
 public:
-	struct Config :public VDFFAudio::Config {
-		int compression_level;
+	struct Config : public VDFFAudio::Config {
+		int compression_level; // 0..2
+
+		Config() { reset(); }
+		void reset() {
+			version = 2;
+			compression_level = 2;
+		}
 	} codec_config;
 
 	VDFFAudio_alac(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
@@ -22,7 +28,7 @@ public:
 		load_config();
 	}
 
-	virtual void reset_config() override;
+	virtual void reset_config() override { codec_config.reset(); }
 	virtual void load_config() override;
 	virtual void save_config() override;
 

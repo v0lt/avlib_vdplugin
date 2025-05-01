@@ -62,12 +62,6 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_flac::reset_config()
-{
-	codec_config.version = 2;
-	codec_config.compression_level = 5;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_FLAC"
 
 void VDFFAudio_flac::load_config()

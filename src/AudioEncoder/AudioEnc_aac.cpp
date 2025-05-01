@@ -61,12 +61,6 @@ INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //-----------------------------------------------------------------------------------
 
-void VDFFAudio_aac::reset_config()
-{
-	codec_config.version = 3;
-	codec_config.bitrate_per_channel = 128;
-}
-
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_AAC"
 
 void VDFFAudio_aac::load_config()
