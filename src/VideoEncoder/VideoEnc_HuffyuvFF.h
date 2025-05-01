@@ -20,7 +20,7 @@ struct CodecHUFF : public CodecBase {
 	struct Config : public CodecBase::Config {
 		int prediction = 0;
 
-		void clear() { 
+		void reset() {
 			version = 1;
 			format = format_rgb;
 			bits = 8;
@@ -29,13 +29,21 @@ struct CodecHUFF : public CodecBase {
 	} codec_config;
 
 	CodecHUFF() {
-		config = &codec_config;
 		codec_name = "ffvhuff";
 		codec_tag = MKTAG('F', 'F', 'V', 'H');
+		config = &codec_config;
+		load_config();
 	}
 
-	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	int config_size() override { return sizeof(Config); }
+	void reset_config() override { codec_config.reset(); }
+
+	virtual void load_config() override {
+
+	}
+	virtual void save_config() override {
+
+	}
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;

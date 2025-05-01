@@ -45,13 +45,21 @@ struct CodecFFV1 : public CodecBase {
 	} codec_config;
 
 	CodecFFV1() {
-		config = &codec_config;
 		codec_name = "ffv1";
 		codec_tag = MKTAG('F', 'F', 'V', '1');
+		config = &codec_config;
+		load_config();
 	}
 
-	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.reset(); }
+	int config_size() override { return sizeof(Config); }
+	void reset_config() override { codec_config.reset(); }
+
+	virtual void load_config() override {
+
+	}
+	virtual void save_config() override {
+
+	}
 
 	virtual bool test_av_format(AVPixelFormat format) {
 		switch (format) {

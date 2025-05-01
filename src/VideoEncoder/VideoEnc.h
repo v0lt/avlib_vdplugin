@@ -71,6 +71,8 @@ struct CodecBase : public CodecClass {
 	virtual int config_size() { return sizeof(Config); }
 
 	virtual void reset_config() = 0;
+	virtual void load_config() = 0;
+	virtual void save_config() = 0;
 
 	virtual bool load_config(void* data, size_t size);
 

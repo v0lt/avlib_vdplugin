@@ -60,14 +60,21 @@ struct CodecH265 : public CodecBase {
 	} codec_config;
 
 	CodecH265() {
-		config = &codec_config;
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
+		config = &codec_config;
+		load_config();
 	}
 
-	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.reset(); }
+	int config_size() override { return sizeof(Config); }
+	void reset_config() override { codec_config.reset(); }
 
+	virtual void load_config() override {
+
+	}
+	virtual void save_config() override {
+
+	}
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;

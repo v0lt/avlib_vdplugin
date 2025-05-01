@@ -405,6 +405,7 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
+			codec->save_config();
 			EndDialog(mhdlg, TRUE);
 			return TRUE;
 

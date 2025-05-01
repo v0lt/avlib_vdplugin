@@ -37,8 +37,8 @@ struct CodecAV1 : public CodecBase {
 	enum { id_tag = MKTAG('A', 'V', '0', '1') };
 
 	struct Config : public CodecBase::Config {
-		int preset;
-		int crf; // 0-63
+		int preset; // 0-13
+		int crf;    // 0-63
 
 		Config() { reset(); }
 		void reset() {
@@ -51,13 +51,21 @@ struct CodecAV1 : public CodecBase {
 	} codec_config;
 
 	CodecAV1() {
-		config = &codec_config;
 		codec_name = "libsvtav1";
 		codec_tag = MKTAG('A', 'V', '0', '1');
+		config = &codec_config;
+		load_config();
 	}
 
-	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.reset(); }
+	int config_size() override { return sizeof(Config); }
+	void reset_config() override { codec_config.reset(); }
+
+	virtual void load_config() override {
+
+	}
+	virtual void save_config() override {
+
+	}
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
