@@ -166,6 +166,30 @@
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="registry.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_AV1.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_FFV1.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_H264.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_H265.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_HuffyuvFF.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_ProRes.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_VP8.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_VP9.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />

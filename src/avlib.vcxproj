@@ -230,6 +230,14 @@
     <ClCompile Include="vfmain.cpp" />
     <ClCompile Include="VideoEncoder\VideoCompress.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_AV1.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_FFV1.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_H264.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_H265.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_HuffyuvFF.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_ProRes.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_VP8.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_VP9.cpp" />
     <ClCompile Include="VideoSource2.cpp" />
     <ClCompile Include="nut.cpp" />
   </ItemGroup>

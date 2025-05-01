@@ -9,12 +9,6 @@
 
 #include "VideoEnc.h"
 
-class ConfigHUFF : public ConfigBase {
-public:
-	ConfigHUFF() { dialog_id = IDD_ENC_FFVHUFF; idc_message = IDC_ENC_MESSAGE; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-};
-
 struct CodecHUFF : public CodecBase {
 	enum { id_tag = MKTAG('F', 'F', 'V', 'H') };
 	struct Config : public CodecBase::Config {
@@ -38,12 +32,8 @@ struct CodecHUFF : public CodecBase {
 	int config_size() override { return sizeof(Config); }
 	void reset_config() override { codec_config.reset(); }
 
-	virtual void load_config() override {
-
-	}
-	virtual void save_config() override {
-
-	}
+	virtual void load_config() override;
+	virtual void save_config() override;
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
@@ -76,54 +66,7 @@ struct CodecHUFF : public CodecBase {
 		return 0;
 	}
 
-	bool init_ctx(VDXPixmapLayout* layout)
-	{
-		int pred = codec_config.prediction;
-		if (pred == 2 && config->format == format_rgb && config->bits == 8) {
-			pred = 0;
-		}
-		av_opt_set_int(avctx->priv_data, "pred", pred, 0);
-		return true;
-	}
+	bool init_ctx(VDXPixmapLayout* layout);
 
-	LRESULT configure(HWND parent)
-	{
-		ConfigHUFF dlg;
-		dlg.Show(parent, this);
-		return ICERR_OK;
-	}
+	LRESULT configure(HWND parent);
 };
-
-INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
-{
-	switch (msg) {
-	case WM_INITDIALOG:
-	{
-		const char* pred_names[] = {
-			"left",
-			"plane",
-			"median",
-		};
-
-		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_RESETCONTENT, 0, 0);
-		for (const auto& pred_name : pred_names) {
-			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_name);
-		}
-		CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
-		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
-		break;
-	}
-
-	case WM_COMMAND:
-		switch (LOWORD(wParam)) {
-		case IDC_PREDICTION:
-			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
-				config->prediction = (int)SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_GETCURSEL, 0, 0);
-				return TRUE;
-			}
-			break;
-		}
-	}
-	return ConfigBase::DlgProc(msg, wParam, lParam);
-}
