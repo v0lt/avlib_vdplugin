@@ -62,10 +62,11 @@ void VDFFAudio::cleanup()
 void VDFFAudio::SetConfig(void* data, size_t size)
 {
 	size_t rsize = GetConfigSize();
-	if (size != rsize) return;
+	if (size != rsize) {
+		return;
+	}
 	int src_version = *(int*)data;
 	if (src_version != config->version) {
-		reset_config();
 		return;
 	}
 	memcpy(config, data, rsize);

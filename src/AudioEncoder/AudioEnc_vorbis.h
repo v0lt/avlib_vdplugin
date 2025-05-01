@@ -28,7 +28,6 @@ public:
 
 	VDFFAudio_vorbis(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
-		reset_config();
 		load_config();
 	}
 

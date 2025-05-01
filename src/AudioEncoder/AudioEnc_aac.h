@@ -24,7 +24,6 @@ public:
 
 	VDFFAudio_aac(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
-		reset_config();
 		load_config();
 	}
 

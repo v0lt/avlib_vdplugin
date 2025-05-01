@@ -30,7 +30,6 @@ public:
 
 	VDFFAudio_mp3(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
-		reset_config();
 		load_config();
 	}
 	virtual void reset_config() override { codec_config.reset(); }
