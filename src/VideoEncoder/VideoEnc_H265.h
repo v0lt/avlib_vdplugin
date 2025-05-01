@@ -47,7 +47,6 @@ struct CodecH265 : public CodecBase {
 		int flags; // reserved
 
 		Config() { set_default(); }
-		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
 			version = 1;
 			format = format_yuv420;
@@ -66,7 +65,7 @@ struct CodecH265 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	void reset_config() { codec_config.set_default(); }
 
 
 	void getinfo(ICINFO& info) {
@@ -115,7 +114,10 @@ struct CodecH265 : public CodecBase {
 
 struct CodecH265LS : public CodecH265 {
 	enum { id_tag = MKTAG('H', '2', '6', '5') }; // Here we use another one because 'HEVC' is already used in CodecH265
-	void reset_config() { codec_config.clear(); codec_config.crf = 0; }
+	void reset_config() {
+		codec_config.set_default();
+		codec_config.crf = 0;
+	}
 
 	bool init_ctx(VDXPixmapLayout* layout)
 	{

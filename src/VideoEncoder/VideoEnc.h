@@ -44,14 +44,7 @@ struct CodecBase : public CodecClass {
 		int version;
 		int format;
 		int bits;
-
-		Config() { clear(); }
-		void clear() {
-			version = 0;
-			format = format_rgb;
-			bits = 8;
-		}
-	}*config = nullptr;;
+	}*config = nullptr;
 
 	AVRational time_base = {};
 	int keyint = 1;
@@ -77,7 +70,7 @@ struct CodecBase : public CodecClass {
 
 	virtual int config_size() { return sizeof(Config); }
 
-	virtual void reset_config() { config->clear(); }
+	virtual void reset_config() = 0;
 
 	virtual bool load_config(void* data, size_t size);
 

@@ -30,17 +30,16 @@ struct CodecFFV1 : public CodecBase {
 		int context;
 		int slicecrc;
 
-		Config() { init(); }
-		void clear() { CodecBase::Config::clear(); init(); }
-		void init() {
+		Config() { set_default(); }
+		void set_default() {
 			version = 1;
+			format = format_yuv422;
+			bits = 10;
 			level = 3;
 			slice = 0;
 			coder = 1;
 			context = 0;
 			slicecrc = 1;
-			format = format_yuv422;
-			bits = 10;
 		}
 	} codec_config;
 
@@ -51,7 +50,7 @@ struct CodecFFV1 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	void reset_config() { codec_config.set_default(); }
 
 	virtual bool test_av_format(AVPixelFormat format) {
 		switch (format) {

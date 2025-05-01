@@ -20,7 +20,12 @@ struct CodecHUFF : public CodecBase {
 	struct Config : public CodecBase::Config {
 		int prediction = 0;
 
-		void clear() { CodecBase::Config::clear(); prediction = 0; }
+		void clear() { 
+			version = 1;
+			format = format_rgb;
+			bits = 8;
+			prediction = 0;
+		}
 	} codec_config;
 
 	CodecHUFF() {

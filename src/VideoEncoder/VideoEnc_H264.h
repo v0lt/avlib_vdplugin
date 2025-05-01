@@ -48,7 +48,6 @@ struct CodecH264 : public CodecBase {
 		int flags; // reserved
 
 		Config() { set_default(); }
-		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
 			version = 1;
 			format = format_yuv420;
@@ -67,7 +66,7 @@ struct CodecH264 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	void reset_config() { codec_config.set_default(); }
 
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;

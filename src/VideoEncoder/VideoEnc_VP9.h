@@ -23,11 +23,11 @@ struct CodecVP9 : public CodecBase {
 		int crf; // 0-63
 
 		Config() { set_default(); }
-		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
-			crf = 15;
+			version = 1;
 			format = format_yuv420;
 			bits = 8;
+			crf = 15;
 		}
 	} codec_config;
 
@@ -38,7 +38,7 @@ struct CodecVP9 : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	void reset_config() { codec_config.set_default(); }
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
 		switch (src->format) {

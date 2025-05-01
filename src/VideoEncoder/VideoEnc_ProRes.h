@@ -34,12 +34,12 @@ struct CodecProres : public CodecBase {
 		int qscale; // 2-31
 
 		Config() { set_default(); }
-		void clear() { CodecBase::Config::clear(); set_default(); }
 		void set_default() {
-			profile = PRORES_PROFILE_HQ;
-			qscale = 4;
+			version = 1;
 			format = format_yuv422;
 			bits = 10;
+			profile = PRORES_PROFILE_HQ;
+			qscale = 4;
 		}
 	} codec_config;
 
@@ -50,7 +50,7 @@ struct CodecProres : public CodecBase {
 	}
 
 	int config_size() { return sizeof(Config); }
-	void reset_config() { codec_config.clear(); }
+	void reset_config() { codec_config.set_default(); }
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {
 		switch (src->format) {
