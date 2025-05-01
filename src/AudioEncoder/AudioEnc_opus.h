@@ -14,17 +14,24 @@ class VDFFAudio_opus final : public VDFFAudio
 public:
 	enum { flag_limited_rate = 4 };
 	struct Config :public VDFFAudio::Config {
+		int bitrate_per_channel;
+		int quality;
+		int8_t bitrate_mode; // 0 - CBR, 1 - VBR, 2 - Constrained VBR
 	} codec_config;
 
 	VDFFAudio_opus(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
 		reset_config();
+		load_config();
 	}
+	virtual void reset_config() override;
+	virtual void load_config() override;
+	virtual void save_config() override;
+
 	virtual const char* GetElementaryFormat() { return "ogg"; }
 	virtual void CreateCodec();
 	virtual void InitContext();
 	virtual size_t GetConfigSize() { return sizeof(Config); }
-	virtual void reset_config();
 	virtual bool HasConfig() { return true; }
 	virtual void ShowConfig(VDXHWND parent);
 };

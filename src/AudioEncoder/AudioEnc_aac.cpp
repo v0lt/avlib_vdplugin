@@ -9,6 +9,7 @@
 #include <commctrl.h>
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 class AConfigAAC : public AConfigBase
 {
@@ -25,16 +26,16 @@ void AConfigAAC::init_quality()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 32);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 288);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
 void AConfigAAC::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
-	codec_config->bitrate = x & ~15;
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	codec_config->bitrate_per_channel = x & ~15;
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
@@ -62,10 +63,29 @@ INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_aac::reset_config()
 {
-	codec_config.clear();
-	codec_config.version = 2;
-	codec_config.flags = VDFFAudio::flag_constant_rate;
-	codec_config.bitrate = 128;
+	codec_config.version = 3;
+	codec_config.bitrate_per_channel = 128;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_AAC"
+
+void VDFFAudio_aac::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("bitrate_per_channel", codec_config.bitrate_per_channel, 32, 288);
+		codec_config.bitrate_per_channel &= ~15;
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_aac::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("bitrate_per_channel", codec_config.bitrate_per_channel);
+		reg.CloseKey();
+	}
 }
 
 void VDFFAudio_aac::CreateCodec()
@@ -75,10 +95,7 @@ void VDFFAudio_aac::CreateCodec()
 
 void VDFFAudio_aac::InitContext()
 {
-	VDFFAudio::InitContext();
-	if (config->flags & flag_constant_rate) {
-		avctx->bit_rate = config->bitrate * 1000 * avctx->ch_layout.nb_channels;
-	}
+	avctx->bit_rate = codec_config.bitrate_per_channel * 1000 * avctx->ch_layout.nb_channels;
 }
 
 void VDFFAudio_aac::ShowConfig(VDXHWND parent)

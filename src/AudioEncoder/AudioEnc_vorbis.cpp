@@ -9,6 +9,7 @@
 #include <commctrl.h>
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 class AConfigVorbis : public AConfigBase
 {
@@ -23,14 +24,14 @@ public:
 
 void AConfigVorbis::init_quality()
 {
-	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
+	if (codec_config->constant_rate) {
 		//! WTF is valid bitrate range? neither ffmpeg nor xiph tell anything but it will fail with error otherwise
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 240);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate);
-		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
-		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate");
+		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate per channel");
 	}
 	else {
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, -1);
@@ -44,9 +45,9 @@ void AConfigVorbis::init_quality()
 void AConfigVorbis::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
-		codec_config->bitrate = x;
-		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	if (codec_config->constant_rate) {
+		codec_config->bitrate_per_channel = x;
+		auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 	}
 	else {
@@ -62,7 +63,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_vorbis::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
+		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->constant_rate ? BST_CHECKED : BST_UNCHECKED);
 		break;
 	}
 
@@ -76,10 +77,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_CBR:
-			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
-				codec_config->flags |= VDFFAudio::flag_constant_rate;
-			}
+			codec_config->constant_rate = IsDlgButtonChecked(mhdlg, IDC_ENC_CBR) ? true : false;
 			init_quality();
 			break;
 		}
@@ -91,11 +89,34 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_vorbis::reset_config()
 {
-	codec_config.clear();
 	codec_config.version = 2;
-	codec_config.flags = 0;
-	codec_config.bitrate = 160;
+	codec_config.bitrate_per_channel = 160;
 	codec_config.quality = 3;
+	codec_config.constant_rate = false;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_Vorbis"
+
+void VDFFAudio_vorbis::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("bitrate_per_channel", codec_config.bitrate_per_channel, 32, 240);
+		reg.ReadInt("quality", codec_config.quality, -1, 10);
+		reg.ReadBool("constant_rate", codec_config.constant_rate);
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_vorbis::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("bitrate_per_channel", codec_config.bitrate_per_channel);
+		reg.WriteInt("quality", codec_config.quality);
+		reg.WriteBool("constant_rate", codec_config.constant_rate);
+		reg.CloseKey();
+	}
 }
 
 int VDFFAudio_vorbis::SuggestFileFormat(const char* name)
@@ -114,14 +135,14 @@ void VDFFAudio_vorbis::CreateCodec()
 
 void VDFFAudio_vorbis::InitContext()
 {
-	if (config->flags & flag_constant_rate) {
-		avctx->bit_rate = config->bitrate * 1000 * avctx->ch_layout.nb_channels;
+	if (codec_config.constant_rate) {
+		avctx->bit_rate = codec_config.bitrate_per_channel * 1000 * avctx->ch_layout.nb_channels;
 		avctx->rc_min_rate = avctx->bit_rate;
 		avctx->rc_max_rate = avctx->bit_rate;
 	}
 	else {
 		avctx->flags |= AV_CODEC_FLAG_QSCALE;
-		avctx->global_quality = FF_QP2LAMBDA * config->quality;
+		avctx->global_quality = FF_QP2LAMBDA * codec_config.quality;
 		avctx->bit_rate = 0;
 		avctx->rc_min_rate = 0;
 		avctx->rc_max_rate = 0;

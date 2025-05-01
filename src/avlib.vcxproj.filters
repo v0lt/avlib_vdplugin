@@ -104,9 +104,7 @@
     <ClInclude Include="VideoEncoder\VideoEnc_VP9.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
-    <ClInclude Include="VideoEncoder\VideoEnc_XXX.h">
-      <Filter>VideoEncoder</Filter>
-    </ClInclude>
+    <ClInclude Include="registry.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -167,6 +165,7 @@
     <ClCompile Include="VideoEncoder\VideoCompress.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
+    <ClCompile Include="registry.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />

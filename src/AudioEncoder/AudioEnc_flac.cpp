@@ -12,6 +12,7 @@ extern "C" {
 }
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 class AConfigFlac : public AConfigBase
 {
@@ -28,15 +29,15 @@ void AConfigFlac::init_quality()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 12);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->compression_level);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, false);
 }
 
 void AConfigFlac::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
+	codec_config->compression_level = x;
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, false);
 }
 
 INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -46,7 +47,6 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_flac::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->flags & VDFFAudio_flac::flag_jointstereo);
 		break;
 	}
 
@@ -56,16 +56,6 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		return FALSE;
-
-	case WM_COMMAND:
-		switch (LOWORD(wParam)) {
-		case IDC_ENC_JOINT_STEREO:
-			codec_config->flags &= ~VDFFAudio_flac::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO)) {
-				codec_config->flags |= VDFFAudio_flac::flag_jointstereo;
-			}
-			break;
-		}
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);
 }
@@ -74,11 +64,28 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_flac::reset_config()
 {
-	codec_config.clear();
-	codec_config.version = 1;
-	codec_config.flags = flag_jointstereo;
-	codec_config.bitrate = 0;
-	codec_config.quality = 5;
+	codec_config.version = 2;
+	codec_config.compression_level = 5;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_FLAC"
+
+void VDFFAudio_flac::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("compression_level", codec_config.compression_level, 0, 12);
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_flac::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("compression_level", codec_config.compression_level);
+		reg.CloseKey();
+	}
 }
 
 void VDFFAudio_flac::CreateCodec()
@@ -88,8 +95,7 @@ void VDFFAudio_flac::CreateCodec()
 
 void VDFFAudio_flac::InitContext()
 {
-	avctx->compression_level = codec_config.quality;
-	av_opt_set_int(avctx->priv_data, "ch_mode", (codec_config.flags & flag_jointstereo) ? -1 : 0, 0);
+	avctx->compression_level = codec_config.compression_level;
 }
 
 void VDFFAudio_flac::ShowConfig(VDXHWND parent)

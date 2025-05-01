@@ -72,17 +72,6 @@ void VDFFAudio::SetConfig(void* data, size_t size)
 	return;
 }
 
-void VDFFAudio::InitContext()
-{
-	if (config->flags & flag_constant_rate) {
-		avctx->bit_rate = config->bitrate * 1000;
-	}
-	else {
-		avctx->flags |= AV_CODEC_FLAG_QSCALE;
-		avctx->global_quality = FF_QP2LAMBDA * config->quality;
-	}
-}
-
 void VDFFAudio::export_wav()
 {
 	wav_compatible = false;
@@ -464,6 +453,7 @@ INT_PTR AConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDOK:
+			codec->save_config();
 			EndDialog(mhdlg, TRUE);
 			return TRUE;
 

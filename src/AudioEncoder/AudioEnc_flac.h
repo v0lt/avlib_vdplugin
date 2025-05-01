@@ -12,19 +12,24 @@
 class VDFFAudio_flac final : public VDFFAudio
 {
 public:
-	enum { flag_jointstereo = 2 };
 	struct Config :public VDFFAudio::Config {
+		int compression_level;
 	} codec_config;
 
 	VDFFAudio_flac(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
 		reset_config();
+		load_config();
 	}
+
+	virtual void reset_config() override;
+	virtual void load_config() override;
+	virtual void save_config() override;
+
 	virtual const char* GetElementaryFormat() { return "flac"; }
 	virtual void CreateCodec();
 	virtual void InitContext();
 	virtual size_t GetConfigSize() { return sizeof(Config); }
-	virtual void reset_config();
 	virtual bool HasConfig() { return true; }
 	virtual void ShowConfig(VDXHWND parent);
 };

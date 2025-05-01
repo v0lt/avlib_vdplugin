@@ -9,6 +9,7 @@
 #include <commctrl.h>
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 class AConfigAlac : public AConfigBase
 {
@@ -25,15 +26,15 @@ void AConfigAlac::init_quality()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 2);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->compression_level);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, false);
 }
 
 void AConfigAlac::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, false);
+	codec_config->compression_level = x;
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, false);
 }
 
 INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -60,10 +61,28 @@ INT_PTR AConfigAlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_alac::reset_config()
 {
-	codec_config.clear();
-	codec_config.version = 1;
-	codec_config.bitrate = 0;
-	codec_config.quality = 2;
+	codec_config.version = 2;
+	codec_config.compression_level = 2;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_ALAC"
+
+void VDFFAudio_alac::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("compression_level", codec_config.compression_level, 0, 2);
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_alac::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("compression_level", codec_config.compression_level);
+		reg.CloseKey();
+	}
 }
 
 void VDFFAudio_alac::CreateCodec()
@@ -73,7 +92,7 @@ void VDFFAudio_alac::CreateCodec()
 
 void VDFFAudio_alac::InitContext()
 {
-	avctx->compression_level = codec_config.quality;
+	avctx->compression_level = codec_config.compression_level;
 }
 
 void VDFFAudio_alac::ShowConfig(VDXHWND parent)

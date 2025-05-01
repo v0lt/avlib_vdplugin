@@ -36,20 +36,7 @@ public:
 	enum { flag_constant_rate = 1 };
 
 	struct Config {
-		int version;
-		int quality;
-		int bitrate;
-		int flags;
-
-		Config() {
-			clear();
-		}
-		void clear() {
-			version = 0;
-			quality = 0;
-			bitrate = 0;
-			flags = 0;
-		}
+		int version = 0;
 	}*config = nullptr;
 
 	const AVCodec* codec  = nullptr;
@@ -63,8 +50,8 @@ public:
 	unsigned in_pos       = 0;
 	int src_linesize      = 0;
 	AVPacket* pkt         = nullptr;
-	int64_t total_in       = 0;
-	int64_t total_out      = 0;
+	int64_t total_in      = 0;
+	int64_t total_out     = 0;
 	int max_packet        = 0;
 
 	WAVEFORMATEXTENSIBLE* out_format = nullptr;
@@ -78,8 +65,10 @@ public:
 	void export_wav();
 
 	virtual void CreateCodec() = 0;
-	virtual void InitContext();
-	virtual void reset_config() { config->clear(); }
+	virtual void InitContext() = 0;
+	virtual void reset_config() = 0;
+	virtual void load_config() = 0;
+	virtual void save_config() = 0;
 
 	virtual bool HasAbout() { return false; }
 	virtual bool HasConfig() { return false; }

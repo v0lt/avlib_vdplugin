@@ -12,6 +12,7 @@ extern "C" {
 }
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 class AConfigOpus : public AConfigBase
 {
@@ -20,7 +21,7 @@ public:
 
 	AConfigOpus() { dialog_id = IDD_ENC_OPUS; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void init_flags();
+	void init_rate();
 	void init_quality();
 	void change_quality();
 	void change_bitrate();
@@ -30,8 +31,8 @@ void AConfigOpus::init_quality()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 6);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 256);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate);
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
@@ -50,15 +51,15 @@ void AConfigOpus::change_quality()
 void AConfigOpus::change_bitrate()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
-	codec_config->bitrate = x;
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate);
+	codec_config->bitrate_per_channel = x;
+	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 }
 
-void AConfigOpus::init_flags()
+void AConfigOpus::init_rate()
 {
-	CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
-	CheckDlgButton(mhdlg, IDC_ENC_ABR, codec_config->flags & VDFFAudio_opus::flag_limited_rate);
+	CheckDlgButton(mhdlg, IDC_ENC_CBR, (codec_config->bitrate_mode == 0) ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_ABR, (codec_config->bitrate_mode == 2) ? BST_CHECKED : BST_UNCHECKED);
 }
 
 INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -68,7 +69,7 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_opus::Config*)codec->config;
 		init_quality();
-		init_flags();
+		init_rate();
 		break;
 	}
 
@@ -86,20 +87,12 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_CBR:
-			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
-				codec_config->flags |= VDFFAudio::flag_constant_rate;
-			}
-			init_flags();
+			codec_config->bitrate_mode = IsDlgButtonChecked(mhdlg, IDC_ENC_CBR) ? 0 : 1;
+			init_rate();
 			break;
 		case IDC_ENC_ABR:
-			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			codec_config->flags &= ~VDFFAudio_opus::flag_limited_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_ABR)) {
-				codec_config->flags |= VDFFAudio_opus::flag_limited_rate;
-			}
-			init_flags();
+			codec_config->bitrate_mode = IsDlgButtonChecked(mhdlg, IDC_ENC_ABR) ? 2 : 1;
+			init_rate();
 			break;
 		}
 	}
@@ -110,10 +103,33 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_opus::reset_config()
 {
-	codec_config.clear();
-	codec_config.version = 1;
-	codec_config.bitrate = 64;
+	codec_config.version = 2;
+	codec_config.bitrate_per_channel = 64;
 	codec_config.quality = 10;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_Opus"
+
+void VDFFAudio_opus::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("bitrate_per_channel", codec_config.bitrate_per_channel, 6, 256);
+		reg.ReadInt("quality", codec_config.quality, 0, 10);
+		reg.ReadInt8("bitrate_mode", codec_config.bitrate_mode, 0, 2);
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_opus::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("bitrate_per_channel", codec_config.bitrate_per_channel);
+		reg.WriteInt("quality", codec_config.quality);
+		reg.WriteInt8("bitrate_mode", codec_config.bitrate_mode);
+		reg.CloseKey();
+	}
 }
 
 void VDFFAudio_opus::CreateCodec()
@@ -123,18 +139,9 @@ void VDFFAudio_opus::CreateCodec()
 
 void VDFFAudio_opus::InitContext()
 {
-	avctx->bit_rate = config->bitrate * 1000 * avctx->ch_layout.nb_channels;
-	avctx->compression_level = config->quality;
-
-	if (config->flags & flag_constant_rate) {
-		av_opt_set_int(avctx->priv_data, "vbr", 0, 0);
-	}
-	else if (config->flags & flag_limited_rate) {
-		av_opt_set_int(avctx->priv_data, "vbr", 2, 0);
-	}
-	else {
-		av_opt_set_int(avctx->priv_data, "vbr", 1, 0);
-	}
+	avctx->bit_rate = codec_config.bitrate_per_channel * 1000 * avctx->ch_layout.nb_channels;
+	avctx->compression_level = codec_config.quality;
+	av_opt_set_int(avctx->priv_data, "vbr", codec_config.bitrate_mode, 0);
 }
 
 void VDFFAudio_opus::ShowConfig(VDXHWND parent)

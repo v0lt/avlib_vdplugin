@@ -185,6 +185,7 @@
     <ClInclude Include="InputFile2.h" />
     <ClInclude Include="iobuffer.h" />
     <ClInclude Include="mov_mp4.h" />
+    <ClInclude Include="registry.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h" />
     <ClInclude Include="..\vd2\h\vd2\plugin\vdplugin.h" />
@@ -224,6 +225,7 @@
     <ClCompile Include="InputFile2.cpp" />
     <ClCompile Include="main2.cpp" />
     <ClCompile Include="mov_mp4.cpp" />
+    <ClCompile Include="registry.cpp" />
     <ClCompile Include="Utils\StringUtil.cpp" />
     <ClCompile Include="vfmain.cpp" />
     <ClCompile Include="VideoEncoder\VideoCompress.cpp" />

@@ -13,17 +13,23 @@ class VDFFAudio_aac final : public VDFFAudio
 {
 public:
 	struct Config :public VDFFAudio::Config {
+		int bitrate_per_channel;
 	} codec_config;
 
 	VDFFAudio_aac(const VDXInputDriverContext& pContext) :VDFFAudio(pContext) {
 		config = &codec_config;
 		reset_config();
+		load_config();
 	}
+
+	virtual void reset_config() override;
+	virtual void load_config() override;
+	virtual void save_config() override;
+
 	virtual const char* GetElementaryFormat() { return "aac"; }
 	virtual void CreateCodec();
 	virtual void InitContext();
 	virtual size_t GetConfigSize() { return sizeof(Config); }
-	virtual void reset_config();
 	virtual bool HasConfig() { return true; }
 	virtual void ShowConfig(VDXHWND parent);
 };

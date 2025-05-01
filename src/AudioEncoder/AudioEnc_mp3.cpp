@@ -12,6 +12,7 @@ extern "C" {
 }
 #include "../Helper.h"
 #include "../resource.h"
+#include "../registry.h"
 
 int mp3_bitrate[] = { 8, 16, 24, 32, 40, 48, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
 
@@ -28,7 +29,7 @@ public:
 
 void AConfigMp3::init_quality()
 {
-	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
+	if (codec_config->constant_rate) {
 		size_t x = 0;
 		for (; x < std::size(mp3_bitrate); x++) {
 			if (mp3_bitrate[x] == codec_config->bitrate) {
@@ -55,7 +56,7 @@ void AConfigMp3::init_quality()
 void AConfigMp3::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-	if (codec_config->flags & VDFFAudio::flag_constant_rate) {
+	if (codec_config->constant_rate) {
 		codec_config->bitrate = mp3_bitrate[x];
 		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
@@ -73,8 +74,8 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		codec_config = (VDFFAudio_mp3::Config*)codec->config;
 		init_quality();
-		CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->flags & VDFFAudio_mp3::flag_jointstereo);
-		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->flags & VDFFAudio::flag_constant_rate);
+		CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->jointstereo ? BST_CHECKED : BST_UNCHECKED);
+		CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->constant_rate ? BST_CHECKED : BST_UNCHECKED);
 		break;
 	}
 
@@ -88,16 +89,10 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_JOINT_STEREO:
-			codec_config->flags &= ~VDFFAudio_mp3::flag_jointstereo;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO)) {
-				codec_config->flags |= VDFFAudio_mp3::flag_jointstereo;
-			}
+			codec_config->jointstereo = IsDlgButtonChecked(mhdlg, IDC_ENC_JOINT_STEREO) ? true : false;
 			break;
 		case IDC_ENC_CBR:
-			codec_config->flags &= ~VDFFAudio::flag_constant_rate;
-			if (IsDlgButtonChecked(mhdlg, IDC_ENC_CBR)) {
-				codec_config->flags |= VDFFAudio::flag_constant_rate;
-			}
+			codec_config->constant_rate = IsDlgButtonChecked(mhdlg, IDC_ENC_CBR) ? true : false;
 			init_quality();
 			break;
 		}
@@ -109,8 +104,36 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void VDFFAudio_mp3::reset_config()
 {
-	codec_config.clear();
+	codec_config.version = 2;
 	codec_config.bitrate = 320;
+	codec_config.quality = 0;
+	codec_config.jointstereo = true;
+}
+
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\AudioEnc_MP3"
+
+void VDFFAudio_mp3::load_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("bitrate", codec_config.bitrate, 32, 320);
+		reg.ReadInt("quality", codec_config.quality, 0, 10);
+		reg.ReadBool("constant_rate", codec_config.constant_rate);
+		reg.ReadBool("jointstereo", codec_config.jointstereo);
+		reg.CloseKey();
+	}
+}
+
+void VDFFAudio_mp3::save_config()
+{
+	RegistryPrefs reg(REG_KEY_APP);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("bitrate", codec_config.bitrate);
+		reg.WriteInt("quality", codec_config.quality);
+		reg.WriteBool("constant_rate", codec_config.constant_rate);
+		reg.WriteBool("jointstereo", codec_config.jointstereo);
+		reg.CloseKey();
+	}
 }
 
 void VDFFAudio_mp3::CreateCodec()
@@ -120,13 +143,15 @@ void VDFFAudio_mp3::CreateCodec()
 
 void VDFFAudio_mp3::InitContext()
 {
-	VDFFAudio::InitContext();
-	av_opt_set_int(avctx->priv_data, "joint_stereo", codec_config.flags & flag_jointstereo, 0);
-
-	// this estimate is fake, but leaving bit_rate=0 is worse
-	if (!(codec_config.flags & VDFFAudio::flag_constant_rate)) {
-		avctx->bit_rate = avctx->sample_rate * 4;
+	if (codec_config.constant_rate) {
+		avctx->bit_rate = codec_config.bitrate * 1000;
 	}
+	else {
+		avctx->flags |= AV_CODEC_FLAG_QSCALE;
+		avctx->global_quality = FF_QP2LAMBDA * codec_config.quality;
+		avctx->bit_rate = avctx->sample_rate * 4; // this estimate is fake, but leaving bit_rate=0 is worse
+	}
+	av_opt_set_int(avctx->priv_data, "joint_stereo", codec_config.jointstereo ? 1 : 0, 0);
 }
 
 void VDFFAudio_mp3::ShowConfig(VDXHWND parent)
