@@ -9,6 +9,15 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const char* prores_profile_names[] = {
+	"proxy",
+	"LT",
+	"standard",
+	"high quality",
+	"4444",
+	"4444XQ",
+};
+
 //
 // ConfigProres
 //
@@ -87,17 +96,8 @@ void ConfigProres::init_profile()
 
 	}
 	else {
-		const char* profile_names[] = {
-			"proxy",
-			"lt",
-			"standard",
-			"high quality",
-			"4444",
-			"4444XQ",
-		};
-
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (const auto& profile_name : profile_names) {
+		for (const auto& profile_name : prores_profile_names) {
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
@@ -149,7 +149,13 @@ void CodecProres::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		std::string str;
+		size_t n;
+		n = reg.CheckString("profile", prores_profile_names, std::size(prores_profile_names));
+		if (n != -1) {
+			codec_config.profile = (int)n;
+		}
+		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
 		reg.CloseKey();
 	}
 }
@@ -158,7 +164,8 @@ void CodecProres::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteString("profile", prores_profile_names[codec_config.profile]);
+		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();
 	}
 }
