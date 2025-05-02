@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "VideoEnc_HuffyuvFF.h"
+#include "VideoEnc_FFVHuff.h"
 #include "../resource.h"
 #include "../registry.h"
 
@@ -60,7 +60,7 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 // CodecHUFF
 //
 
-#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_HUFF"
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_FFVHuff"
 
 void CodecHUFF::load_config()
 {

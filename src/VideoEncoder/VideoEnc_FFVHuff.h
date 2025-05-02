@@ -39,7 +39,7 @@ struct CodecHUFF : public CodecBase {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy_s(info.szName, L"FFVHUFF");
-		wcscpy_s(info.szDescription, L"FFmpeg / HuffyuvFF lossless codec");
+		wcscpy_s(info.szDescription, L"FFmpeg / FFVHuff lossless codec");
 	}
 
 	virtual int compress_input_info(VDXPixmapLayout* src) {

@@ -92,7 +92,7 @@
     <ClInclude Include="VideoEncoder\VideoEnc_H265.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
-    <ClInclude Include="VideoEncoder\VideoEnc_HuffyuvFF.h">
+    <ClInclude Include="VideoEncoder\VideoEnc_FFVHuff.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="VideoEncoder\VideoEnc_ProRes.h">
@@ -178,7 +178,7 @@
     <ClCompile Include="VideoEncoder\VideoEnc_H265.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
-    <ClCompile Include="VideoEncoder\VideoEnc_HuffyuvFF.cpp">
+    <ClCompile Include="VideoEncoder\VideoEnc_FFVHuff.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_ProRes.cpp">

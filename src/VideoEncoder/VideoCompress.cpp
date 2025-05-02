@@ -12,14 +12,14 @@ extern "C" {
 #include "../Helper.h"
 #include "../resource.h"
 
-#include "VideoEnc_AV1.h"
 #include "VideoEnc_FFV1.h"
-#include "VideoEnc_H264.h"
-#include "VideoEnc_H265.h"
-#include "VideoEnc_HuffyuvFF.h"
+#include "VideoEnc_FFVHuff.h"
 #include "VideoEnc_ProRes.h"
 #include "VideoEnc_VP8.h"
 #include "VideoEnc_VP9.h"
+#include "VideoEnc_AV1.h"
+#include "VideoEnc_H264.h"
+#include "VideoEnc_H265.h"
 
 void init_av();
 
