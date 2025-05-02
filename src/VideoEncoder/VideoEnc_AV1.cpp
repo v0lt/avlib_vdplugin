@@ -107,7 +107,8 @@ void CodecAV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		reg.ReadInt("preset", codec_config.preset, 0, 13);
+		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();
 	}
 }
@@ -116,7 +117,8 @@ void CodecAV1::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteInt("preset", codec_config.preset);
+		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}
 }

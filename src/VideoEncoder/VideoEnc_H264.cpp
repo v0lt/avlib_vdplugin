@@ -6,6 +6,7 @@
  */
 
 #include "VideoEnc_H264.h"
+#include "../Helper.h"
 #include "../resource.h"
 #include "../registry.h"
 
@@ -140,7 +141,17 @@ void CodecH264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		std::string str;
+		size_t n;
+		n = reg.CheckString("preset", x264_preset_names, std::size(x264_preset_names));
+		if (n != -1) {
+			codec_config.preset = (int)n;
+		}
+		n = reg.CheckString("tune", x264_tune_names, std::size(x264_tune_names));
+		if (n != -1) {
+			codec_config.tune = (int)n;
+		}
+		reg.ReadInt("crf", codec_config.crf, 0, 51);
 		reg.CloseKey();
 	}
 }
@@ -149,7 +160,9 @@ void CodecH264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteString("preset", x264_preset_names[codec_config.preset]);
+		reg.WriteString("tune", x264_preset_names[codec_config.tune]);
+		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}
 }

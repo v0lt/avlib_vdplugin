@@ -6,6 +6,7 @@
 
 #include <windows.h>
 #include <stdint.h>
+#include "Utils/StringUtil.h"
 #include "registry.h"
 
 #include <cassert>
@@ -42,7 +43,7 @@ void RegistryPrefs::CloseKey()
 	}
 }
 
-void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, const int value_max)
+bool RegistryPrefs::ReadInt(LPCSTR valueName, int& value)
 {
 	assert(m_key);
 	DWORD dwValue;
@@ -50,25 +51,25 @@ void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, c
 	ULONG nBytes = sizeof(DWORD);
 	LSTATUS lRes = ::RegQueryValueExA(m_key, valueName, nullptr, &dwType, reinterpret_cast<LPBYTE>(&dwValue), &nBytes);
 	if (lRes == ERROR_SUCCESS && dwType == REG_DWORD) {
-		const int testValue = (int)dwValue;
-		if (testValue >= value_min && testValue <= value_max) {
-			value = testValue;
-		}
+		value = (int)dwValue;
+		return true;
+	}
+	return false;
+}
+
+void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, const int value_max)
+{
+	int testValue;
+	if (ReadInt(valueName, testValue) && testValue >= value_min && testValue <= value_max) {
+		value = testValue;
 	}
 }
 
 void RegistryPrefs::ReadInt8(LPCSTR valueName, int8_t& value, const int8_t value_min, const int8_t value_max)
 {
-	assert(m_key);
-	DWORD dwValue;
-	DWORD dwType;
-	ULONG nBytes = sizeof(DWORD);
-	LSTATUS lRes = ::RegQueryValueExA(m_key, valueName, nullptr, &dwType, reinterpret_cast<LPBYTE>(&dwValue), &nBytes);
-	if (lRes == ERROR_SUCCESS && dwType == REG_DWORD && dwValue <= UINT8_MAX) {
-		const int8_t testValue = (int8_t)dwValue;
-		if (testValue >= value_min && testValue <= value_max) {
-			value = testValue;
-		}
+	int testValue;
+	if (ReadInt(valueName, testValue) && testValue >= value_min && testValue <= value_max) {
+		value = (int8_t)testValue;
 	}
 }
 
@@ -84,6 +85,35 @@ void RegistryPrefs::ReadBool(LPCSTR valueName, bool& value)
 			value = !!dwValue;
 		}
 	}
+}
+
+bool RegistryPrefs::ReadString(LPCSTR valueName, std::string& value)
+{
+	DWORD dwType;
+	ULONG nBytes = sizeof(DWORD);
+	LSTATUS lRes = ::RegQueryValueExA(m_key, valueName, nullptr, &dwType, nullptr, &nBytes);
+	if (lRes == ERROR_SUCCESS && dwType == REG_SZ) {
+		value.assign(nBytes, 0);
+		lRes = ::RegQueryValueExA(m_key, valueName, nullptr, &dwType, reinterpret_cast<LPBYTE>(value.data()), &nBytes);
+		if (lRes == ERROR_SUCCESS && dwType == REG_SZ) {
+			str_truncate_after_null(value);
+			return true;
+		}
+	}
+	return false;
+}
+
+size_t RegistryPrefs::CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count)
+{
+	std::string str;
+	if (ReadString(valueName, str)) {
+		for (size_t i = 0; i < var_count; i++) {
+			if (str.compare(vars[i]) == 0) {
+				return i;
+			}
+		}
+	}
+	return (size_t)-1;
 }
 
 void RegistryPrefs::WriteInt(LPCSTR valueName, const int value)
@@ -105,4 +135,9 @@ void RegistryPrefs::WriteBool(LPCSTR valueName, const bool value)
 	assert(m_key);
 	DWORD dwValue = (value == false) ? 0 : 1;
 	LSTATUS lRes = ::RegSetValueExA(m_key, valueName, 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwValue), sizeof(DWORD));
+}
+
+void RegistryPrefs::WriteString(LPCSTR valueName, std::string_view value)
+{
+	LSTATUS lRes = ::RegSetValueExA(m_key, valueName, 0, REG_SZ, reinterpret_cast<const BYTE*>(value.data()), (DWORD)(value.size() + 1) * sizeof(wchar_t));
 }

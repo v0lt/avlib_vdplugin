@@ -18,19 +18,17 @@ struct CodecH265 : public CodecBase {
 
 	struct Config : public CodecBase::Config {
 		int preset;
-		int crf; // 0-51
 		int tune;
-		int flags; // reserved
+		int crf; // 0-51
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format = format_yuv420;
 			bits = 8;
 			preset = 4;
 			tune = 0;
 			crf = 28;
-			flags = 0;
 		}
 	} codec_config;
 

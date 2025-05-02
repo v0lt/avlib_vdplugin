@@ -146,7 +146,17 @@ void CodecH265::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		std::string str;
+		size_t n;
+		n = reg.CheckString("preset", x265_preset_names, std::size(x265_preset_names));
+		if (n != -1) {
+			codec_config.preset = (int)n;
+		}
+		n = reg.CheckString("tune", x265_tune_names, std::size(x265_tune_names));
+		if (n != -1) {
+			codec_config.tune = (int)n;
+		}
+		reg.ReadInt("crf", codec_config.crf, 0, 51);
 		reg.CloseKey();
 	}
 }
@@ -155,7 +165,9 @@ void CodecH265::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
+		reg.WriteString("tune", x265_preset_names[codec_config.tune]);
+		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}
 }
@@ -170,7 +182,7 @@ bool CodecH265::init_ctx(VDXPixmapLayout* layout)
 	if (codec_config.tune) {
 		ret = av_opt_set(avctx->priv_data, "tune", x265_tune_names[codec_config.tune], 0);
 	}
-	ret = av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
+	ret = av_opt_set_double(avctx->priv_data, "crf", (double)codec_config.crf, 0);
 	return true;
 }
 

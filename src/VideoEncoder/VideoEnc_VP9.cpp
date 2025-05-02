@@ -97,7 +97,7 @@ void CodecVP9::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();
 	}
 }
@@ -106,7 +106,7 @@ void CodecVP9::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}
 }
