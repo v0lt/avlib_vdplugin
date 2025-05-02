@@ -70,36 +70,35 @@ public:
 	virtual void load_config() = 0;
 	virtual void save_config() = 0;
 
-	virtual bool HasAbout() { return false; }
-	virtual bool HasConfig() { return false; }
-	virtual void ShowAbout(VDXHWND parent) {}
-	virtual void ShowConfig(VDXHWND parent) {}
-	virtual size_t GetConfigSize() { return sizeof(Config); }
-	virtual void* GetConfig() { return config; }
-	virtual void SetConfig(void* data, size_t size);
+	virtual bool HasAbout() override { return false; }
+	virtual void ShowAbout(VDXHWND parent) override {}
+	virtual size_t GetConfigSize() override { return sizeof(Config); }
+	virtual void* GetConfig() override { return config; }
+	virtual void SetConfig(void* data, size_t size) override;
 
-	virtual void SetInputFormat(VDXWAVEFORMATEX* format);
-	virtual void Shutdown() {}
+	virtual void SetInputFormat(VDXWAVEFORMATEX* format) override;
+	virtual void Shutdown() override {}
+
 	void select_fmt(AVSampleFormat* list);
 
-	virtual bool IsEnded() const { return false; }
+	virtual bool IsEnded() const override { return false; }
 
-	virtual unsigned GetInputLevel() const;
-	virtual unsigned GetInputSpace() const;
-	virtual unsigned GetOutputLevel() const;
-	virtual const VDXWAVEFORMATEX* GetOutputFormat() const { return (VDXWAVEFORMATEX*)out_format; }
-	virtual unsigned GetOutputFormatSize() const { return out_format_size; }
-	virtual void     GetStreamInfo(VDXStreamInfo& si) const;
+	virtual unsigned GetInputLevel() const override;
+	virtual unsigned GetInputSpace() const override;
+	virtual unsigned GetOutputLevel() const override;
+	virtual const VDXWAVEFORMATEX* GetOutputFormat() const override { return (VDXWAVEFORMATEX*)out_format; }
+	virtual unsigned GetOutputFormatSize() const override { return out_format_size; }
+	virtual void     GetStreamInfo(VDXStreamInfo& si) const override;
 
-	virtual void Restart() {}
-	virtual bool Convert(bool flush, bool requireOutput);
+	virtual void Restart() override {}
+	virtual bool Convert(bool flush, bool requireOutput) override;
 
-	virtual void* LockInputBuffer(unsigned& bytes);
-	virtual void  UnlockInputBuffer(unsigned bytes);
-	virtual const void* LockOutputBuffer(unsigned& bytes);
-	virtual void  UnlockOutputBuffer(unsigned bytes);
-	virtual unsigned    CopyOutput(void* dst, unsigned bytes, sint64& duration);
-	virtual int SuggestFileFormat(const char* name);
+	virtual void* LockInputBuffer(unsigned& bytes) override;
+	virtual void  UnlockInputBuffer(unsigned bytes) override;
+	virtual const void* LockOutputBuffer(unsigned& bytes) override;
+	virtual void  UnlockOutputBuffer(unsigned bytes) override;
+	virtual unsigned    CopyOutput(void* dst, unsigned bytes, sint64& duration) override;
+	virtual int SuggestFileFormat(const char* name) override;
 };
 
 class AConfigBase : public VDXVideoFilterDialog
@@ -114,7 +113,7 @@ public:
 
 	void Show(HWND parent, VDFFAudio* codec);
 
-	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 extern VDXPluginInfo ff_aacenc_info;

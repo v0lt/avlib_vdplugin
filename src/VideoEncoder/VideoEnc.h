@@ -122,7 +122,7 @@ public:
 
 	void Show(HWND parent, CodecBase* codec);
 
-	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	virtual void init_format();
 	virtual void change_format(int sel);
 	virtual void change_bits() {}
