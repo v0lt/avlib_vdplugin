@@ -334,7 +334,7 @@ BEGIN
     CONTROL         "10",IDC_ENC_10_BIT,"Button",BS_AUTORADIOBUTTON,108,34,24,10
     CONTROL         "12",IDC_ENC_12_BIT,"Button",BS_AUTORADIOBUTTON,55,53,24,10
     CONTROL         "14",IDC_ENC_14_BIT,"Button",BS_AUTORADIOBUTTON,82,53,24,10
-    CONTROL         "16",IDC_ENC_16_BIT,"Button",BS_AUTORADIOBUTTON,109,53,24,10
+    CONTROL         "16",IDC_ENC_16_BIT,"Button",BS_AUTORADIOBUTTON,108,53,24,10
     LTEXT           "Slices:",IDC_STATIC,7,75,25,10
     COMBOBOX        IDC_ENC_SLICES,33,73,46,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "Slice CRC",IDC_ENC_SLICECRC,"Button",BS_AUTOCHECKBOX | WS_TABSTOP,90,75,46,10
@@ -365,8 +365,8 @@ BEGIN
     CONTROL         "12",IDC_ENC_12_BIT,"Button",BS_AUTORADIOBUTTON,55,53,24,10
     CONTROL         "14",IDC_ENC_14_BIT,"Button",BS_AUTORADIOBUTTON,82,53,24,10
     CONTROL         "16",IDC_ENC_16_BIT,"Button",BS_AUTORADIOBUTTON,109,53,24,10
+    LTEXT           "Prediction method",IDC_STATIC,7,92,64,8
     COMBOBOX        IDC_PREDICTION,71,90,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
-    LTEXT           "Prediction method",IDC_STATIC,7,92,58,8
     CTEXT           "(!) Bit depth adjusted",IDC_ENC_MESSAGE,157,84,152,8
 END
 
@@ -385,7 +385,7 @@ BEGIN
     COMBOBOX        IDC_ENC_PROFILE,35,38,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Profile",IDC_STATIC,7,40,21,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
 END
 
@@ -402,7 +402,7 @@ BEGIN
     COMBOBOX        IDC_ENC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Bit depth: 8",-1,7,25,49,10
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",-1,14,73,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
     CONTROL         "<a HREF=""https://trac.ffmpeg.org/wiki/Encode/VP8"">VP8 Encoding Guide</a>",IDC_LINK,
                     "SysLink",WS_TABSTOP,165,83,144,11
@@ -420,7 +420,7 @@ BEGIN
     CTEXT           "encoder label",IDC_ENCODER_LABEL,160,64,140,8
     COMBOBOX        IDC_ENC_COLORSPACE,7,7,135,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
     LTEXT           "Bit depth:",IDC_STATIC,7,31,35,10
     CONTROL         "8",IDC_ENC_8_BIT,"Button",BS_AUTORADIOBUTTON | WS_GROUP,55,30,20,10
@@ -447,7 +447,7 @@ BEGIN
     COMBOBOX        IDC_ENC_PROFILE,35,48,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Preset",IDC_STATIC,7,51,21,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,89,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,103,25,11
     CONTROL         "<a HREF=""https://trac.ffmpeg.org/wiki/Encode/AV1"">AV1 Video Encoding Guide</a>",IDC_LINK,
                     "SysLink",WS_TABSTOP,165,83,144,11
@@ -470,7 +470,7 @@ BEGIN
     COMBOBOX        IDC_ENC_PROFILE,35,48,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Profile",IDC_STATIC,7,51,21,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,89,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,103,25,11
     COMBOBOX        IDC_ENC_TUNE,35,67,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Tune",IDC_STATIC,7,70,17,8
@@ -496,7 +496,7 @@ BEGIN
     COMBOBOX        IDC_ENC_PROFILE,35,48,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Profile",IDC_STATIC,7,51,21,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,89,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,58,8
+    LTEXT           "Quality (high-low)",IDC_STATIC,14,103,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,103,25,11
     COMBOBOX        IDC_ENC_TUNE,35,67,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Tune",IDC_STATIC,7,70,17,8
