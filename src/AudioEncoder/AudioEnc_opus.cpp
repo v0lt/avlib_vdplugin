@@ -109,7 +109,7 @@ void VDFFAudio_opus::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("bitrate_per_channel", codec_config.bitrate_per_channel, 6, 256);
 		reg.ReadInt("quality", codec_config.quality, 0, 10);
-		reg.ReadInt8("bitrate_mode", codec_config.bitrate_mode, 0, 2);
+		reg.ReadInt("bitrate_mode", codec_config.bitrate_mode, 0, 2);
 		reg.CloseKey();
 	}
 }
@@ -120,7 +120,7 @@ void VDFFAudio_opus::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		reg.WriteInt("bitrate_per_channel", codec_config.bitrate_per_channel);
 		reg.WriteInt("quality", codec_config.quality);
-		reg.WriteInt8("bitrate_mode", codec_config.bitrate_mode);
+		reg.WriteInt("bitrate_mode", codec_config.bitrate_mode);
 		reg.CloseKey();
 	}
 }

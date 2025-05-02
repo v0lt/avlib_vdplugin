@@ -16,7 +16,7 @@ public:
 	struct Config : public VDFFAudio::Config {
 		int bitrate_per_channel; // 6...256
 		int quality;             // 0...10
-		int8_t bitrate_mode;     // 0 - CBR, 1 - VBR, 2 - Constrained VBR
+		int bitrate_mode;        // 0 - CBR, 1 - VBR, 2 - Constrained VBR
 
 		Config() { reset(); }
 		void reset() {
