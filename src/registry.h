@@ -22,14 +22,12 @@ public:
 
 	bool ReadInt(LPCSTR valueName, int& value);
 	void ReadInt(LPCSTR valueName, int& value, const int value_min, const int value_max);
-	void ReadInt8(LPCSTR valueName, int8_t& value, const int8_t value_min, const int8_t value_max);
 	void ReadBool(LPCSTR valueName, bool& value);
 
 	bool ReadString(LPCSTR valueName, std::string& value);
 	size_t CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count);
 
 	void WriteInt(LPCSTR valueName, const int value);
-	void WriteInt8(LPCSTR valueName, const int8_t value);
 	void WriteBool(LPCSTR valueName, const bool value);
 
 	void WriteString(LPCSTR valueName, std::string_view value);

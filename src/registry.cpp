@@ -65,14 +65,6 @@ void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, c
 	}
 }
 
-void RegistryPrefs::ReadInt8(LPCSTR valueName, int8_t& value, const int8_t value_min, const int8_t value_max)
-{
-	int testValue;
-	if (ReadInt(valueName, testValue) && testValue >= value_min && testValue <= value_max) {
-		value = (int8_t)testValue;
-	}
-}
-
 void RegistryPrefs::ReadBool(LPCSTR valueName, bool& value)
 {
 	assert(m_key);
@@ -117,13 +109,6 @@ size_t RegistryPrefs::CheckString(LPCSTR valueName, LPCSTR* vars, const size_t v
 }
 
 void RegistryPrefs::WriteInt(LPCSTR valueName, const int value)
-{
-	assert(m_key);
-	DWORD dwValue = (DWORD)value;
-	LSTATUS lRes = ::RegSetValueExA(m_key, valueName, 0, REG_DWORD, reinterpret_cast<const BYTE*>(&dwValue), sizeof(DWORD));
-}
-
-void RegistryPrefs::WriteInt8(LPCSTR valueName, const int8_t value)
 {
 	assert(m_key);
 	DWORD dwValue = (DWORD)value;
