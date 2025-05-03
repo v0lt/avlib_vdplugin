@@ -9,6 +9,12 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const char* ffvhuff_pred_names[] = {
+	"left",
+	"plane",
+	"median",
+};
+
 //
 // ConfigHUFF
 //
@@ -27,14 +33,8 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		const char* pred_names[] = {
-			"left",
-			"plane",
-			"median",
-		};
-
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_RESETCONTENT, 0, 0);
-		for (const auto& pred_name : pred_names) {
+		for (const auto& pred_name : ffvhuff_pred_names) {
 			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_name);
 		}
 		CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
@@ -66,7 +66,10 @@ void CodecHUFF::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		size_t n = reg.CheckString("pred", ffvhuff_pred_names, std::size(ffvhuff_pred_names));
+		if (n != -1) {
+			codec_config.prediction = (int)n;
+		}
 		reg.CloseKey();
 	}
 }
@@ -75,7 +78,7 @@ void CodecHUFF::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteString("pred", ffvhuff_pred_names[codec_config.prediction]);
 		reg.CloseKey();
 	}
 }
