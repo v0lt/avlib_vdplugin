@@ -143,7 +143,7 @@ void VDFFAudio_mp3::InitContext()
 		avctx->global_quality = FF_QP2LAMBDA * codec_config.quality;
 		avctx->bit_rate = avctx->sample_rate * 4; // this estimate is fake, but leaving bit_rate=0 is worse
 	}
-	av_opt_set_int(avctx->priv_data, "joint_stereo", codec_config.jointstereo ? 1 : 0, 0);
+	av_opt_set_int(avctx->priv_data, "joint_stereo", codec_config.jointstereo, 0);
 }
 
 void VDFFAudio_mp3::ShowConfig(VDXHWND parent)
