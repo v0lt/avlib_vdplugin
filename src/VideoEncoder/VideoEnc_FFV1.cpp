@@ -10,7 +10,7 @@
 #include "../resource.h"
 #include "../registry.h"
 
-int ffv1_slice_tab[] = { 0, 4, 6, 9, 12, 16, 24, 30, 36, 42 };
+const int ffv1_slice_tab[] = { 0, 4, 6, 9, 12, 16, 24, 30, 36, 42 };
 
 //
 // ConfigFFV1

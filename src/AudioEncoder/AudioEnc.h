@@ -79,7 +79,7 @@ public:
 	virtual void SetInputFormat(VDXWAVEFORMATEX* format) override;
 	virtual void Shutdown() override {}
 
-	void select_fmt(AVSampleFormat* list);
+	void select_fmt(const AVSampleFormat* list);
 
 	virtual bool IsEnded() const override { return false; }
 

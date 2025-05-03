@@ -142,7 +142,7 @@ cleanup:
 	}
 }
 
-void VDFFAudio::select_fmt(AVSampleFormat* list)
+void VDFFAudio::select_fmt(const AVSampleFormat* list)
 {
 	int best_pos = -1;
 
@@ -223,7 +223,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	}
 
 	if (in_fmt == AV_SAMPLE_FMT_FLT) {
-		AVSampleFormat list[] = {
+		const AVSampleFormat list[] = {
 			AV_SAMPLE_FMT_FLT,
 			AV_SAMPLE_FMT_FLTP,
 			AV_SAMPLE_FMT_S32,
@@ -235,7 +235,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 		select_fmt(list);
 	}
 	if (in_fmt == AV_SAMPLE_FMT_S16) {
-		AVSampleFormat list[] = {
+		const AVSampleFormat list[] = {
 			AV_SAMPLE_FMT_S16,
 			AV_SAMPLE_FMT_S16P,
 			AV_SAMPLE_FMT_FLT,

@@ -325,7 +325,7 @@ void ConfigBase::adjust_bits()
 	int format = codec->config->format;
 	int bits = codec->config->bits;
 	if (!codec->test_bits(format, bits)) {
-		int option[] = {
+		const int option[] = {
 			codec->test_bits(format,8) ? 8 : 0,
 			codec->test_bits(format,9) ? 9 : 0,
 			codec->test_bits(format,10) ? 10 : 0,
