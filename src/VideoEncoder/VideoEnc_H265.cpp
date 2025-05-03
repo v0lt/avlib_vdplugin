@@ -146,7 +146,6 @@ void CodecH265::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		std::string str;
 		size_t n;
 		n = reg.CheckString("preset", x265_preset_names, std::size(x265_preset_names));
 		if (n != -1) {

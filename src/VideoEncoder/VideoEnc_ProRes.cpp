@@ -149,9 +149,7 @@ void CodecProres::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		std::string str;
-		size_t n;
-		n = reg.CheckString("profile", prores_profile_names, std::size(prores_profile_names));
+		size_t n = reg.CheckString("profile", prores_profile_names, std::size(prores_profile_names));
 		if (n != -1) {
 			codec_config.profile = (int)n;
 		}
