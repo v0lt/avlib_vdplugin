@@ -14,7 +14,7 @@ extern "C" {
 #include "../resource.h"
 #include "../registry.h"
 
-int mp3_bitrate[] = { 8, 16, 24, 32, 40, 48, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
+const int mp3_bitrates[] = { 8, 16, 24, 32, 40, 48, 64, 80, 96, 112, 128, 160, 192, 224, 256, 320 };
 
 class AConfigMp3 : public AConfigBase
 {
@@ -31,14 +31,14 @@ void AConfigMp3::init_quality()
 {
 	if (codec_config->constant_rate) {
 		size_t x = 0;
-		for (; x < std::size(mp3_bitrate); x++) {
-			if (mp3_bitrate[x] == codec_config->bitrate) {
+		for (; x < std::size(mp3_bitrates); x++) {
+			if (mp3_bitrates[x] == codec_config->bitrate) {
 				break;
 			}
 		}
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, std::size(mp3_bitrate) - 1);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, std::size(mp3_bitrates) - 1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, x);
 		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
@@ -57,7 +57,7 @@ void AConfigMp3::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
 	if (codec_config->constant_rate) {
-		codec_config->bitrate = mp3_bitrate[x];
+		codec_config->bitrate = mp3_bitrates[x];
 		auto str = std::format(L"{} kbit/s", codec_config->bitrate);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 	}
@@ -108,7 +108,7 @@ void VDFFAudio_mp3::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("bitrate", codec_config.bitrate, 32, 320);
+		reg.ReadInt("bitrate", codec_config.bitrate, mp3_bitrates, std::size(mp3_bitrates));
 		reg.ReadInt("quality", codec_config.quality, 0, 10);
 		reg.ReadBool("constant_rate", codec_config.constant_rate);
 		reg.ReadBool("jointstereo", codec_config.jointstereo);

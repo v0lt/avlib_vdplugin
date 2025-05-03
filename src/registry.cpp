@@ -65,6 +65,19 @@ void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, c
 	}
 }
 
+void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int* const vars, const size_t var_count)
+{
+	int testValue;
+	if (ReadInt(valueName, testValue)) {
+		for (size_t i = 0; i < var_count; i++) {
+			if (testValue == vars[i]) {
+				value = testValue;
+				return;
+			}
+		}
+	}
+}
+
 void RegistryPrefs::ReadBool(LPCSTR valueName, bool& value)
 {
 	assert(m_key);

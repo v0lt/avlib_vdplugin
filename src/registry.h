@@ -22,6 +22,7 @@ public:
 
 	bool ReadInt(LPCSTR valueName, int& value);
 	void ReadInt(LPCSTR valueName, int& value, const int value_min, const int value_max);
+	void ReadInt(LPCSTR valueName, int& value, const int* const vars, const size_t var_count);
 	void ReadBool(LPCSTR valueName, bool& value);
 
 	bool ReadString(LPCSTR valueName, std::string& value);
