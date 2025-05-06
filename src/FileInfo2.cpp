@@ -83,8 +83,8 @@ void VDFFInputFileInfoDialog::load_segment()
 	HWND next = GetDlgItem(mhdlg, IDC_SEGMENT_NEXT);
 	bool bprev = segment_pos > 0;
 	bool bnext = segment_pos < segment_count - 1;
-	EnableWindow(prev, true);
-	EnableWindow(next, true);
+	EnableWindow(prev, TRUE);
+	EnableWindow(next, TRUE);
 	if (GetFocus() == prev && !bprev) {
 		SetFocus(next);
 	}

@@ -172,7 +172,7 @@ void ProgressDialog::Show(HWND parent)
 
 void ProgressDialog::Close()
 {
-	EnableWindow(parent, true);
+	EnableWindow(parent, TRUE);
 	DestroyWindow(mhdlg);
 }
 
@@ -181,7 +181,7 @@ INT_PTR ProgressDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		EnableWindow(parent, false);
+		EnableWindow(parent, FALSE);
 		dwLastTime = GetTickCount();
 		init_bytes(0);
 		SendMessageW(GetDlgItem(mhdlg, IDC_EXPORT_PROGRESS), PBM_SETRANGE, 0, MAKELPARAM(0, 16384));

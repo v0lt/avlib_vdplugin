@@ -66,7 +66,7 @@ void ConfigVP8::init_format()
 		sel = 1;
 	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
-	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), false); //! need to pass side_data
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), FALSE); //! need to pass side_data
 }
 
 void ConfigVP8::change_format(int sel)
@@ -110,7 +110,7 @@ bool CodecVP8::init_ctx(VDXPixmapLayout* layout)
 	ret = av_opt_set_int(avctx->priv_data, "crf", codec_config.crf, 0);
 	ret = av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
 	if (codec_config.format == format_yuva420) {
-		av_opt_set_int(avctx->priv_data, "auto-alt-ref", 0, 0);
+		ret = av_opt_set_int(avctx->priv_data, "auto-alt-ref", 0, 0);
 	}
 	avctx->qmin = codec_config.crf;
 	avctx->qmax = codec_config.crf;
