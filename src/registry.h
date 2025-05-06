@@ -5,6 +5,7 @@
  */
 
 #include <string>
+#include <span>
 
 class RegistryPrefs
 {
@@ -22,10 +23,12 @@ public:
 
 	bool ReadInt(LPCSTR valueName, int& value);
 	void ReadInt(LPCSTR valueName, int& value, const int value_min, const int value_max);
+	void ReadInt(LPCSTR valueName, int& value, const std::span<const int> vars);
 	void ReadInt(LPCSTR valueName, int& value, const int* const vars, const size_t var_count);
 	void ReadBool(LPCSTR valueName, bool& value);
 
 	bool ReadString(LPCSTR valueName, std::string& value);
+	size_t CheckString(LPCSTR valueName, const std::span<LPCSTR> vars);
 	size_t CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count);
 
 	void WriteInt(LPCSTR valueName, const int value);

@@ -65,17 +65,22 @@ void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int value_min, c
 	}
 }
 
-void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int* const vars, const size_t var_count)
+void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const std::span<const int> vars)
 {
 	int testValue;
 	if (ReadInt(valueName, testValue)) {
-		for (size_t i = 0; i < var_count; i++) {
-			if (testValue == vars[i]) {
+		for (const auto var : vars) {
+			if (testValue == var) {
 				value = testValue;
 				return;
 			}
 		}
 	}
+}
+
+void RegistryPrefs::ReadInt(LPCSTR valueName, int& value, const int* const vars, const size_t var_count)
+{
+	ReadInt(valueName, value, std::span(vars, var_count));
 }
 
 void RegistryPrefs::ReadBool(LPCSTR valueName, bool& value)
@@ -108,17 +113,22 @@ bool RegistryPrefs::ReadString(LPCSTR valueName, std::string& value)
 	return false;
 }
 
-size_t RegistryPrefs::CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count)
+size_t RegistryPrefs::CheckString(LPCSTR valueName, const std::span<LPCSTR> vars)
 {
 	std::string str;
 	if (ReadString(valueName, str)) {
-		for (size_t i = 0; i < var_count; i++) {
+		for (size_t i = 0; i < vars.size(); i++) {
 			if (str.compare(vars[i]) == 0) {
 				return i;
 			}
 		}
 	}
 	return (size_t)-1;
+}
+
+size_t RegistryPrefs::CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count)
+{
+	return CheckString(valueName, std::span(vars, var_count));
 }
 
 void RegistryPrefs::WriteInt(LPCSTR valueName, const int value)
