@@ -18,9 +18,9 @@ struct CodecVP8 : public CodecBase {
 		Config() { reset(); }
 		void reset() {
 			version = 1;
-			format = format_yuv420;
-			bits = 8;
-			crf = 10;
+			format  = format_yuv420;
+			bits    = 8; // only 8 bit
+			crf     = 10;
 		}
 	} codec_config;
 

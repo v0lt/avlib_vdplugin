@@ -66,7 +66,9 @@ void CodecHUFF::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		size_t n = reg.CheckString("pred", ffvhuff_pred_names, std::size(ffvhuff_pred_names));
+		reg.ReadInt("format", codec_config.format, 1, 9);
+		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
+		size_t n = reg.CheckString("pred", ffvhuff_pred_names);
 		if (n != -1) {
 			codec_config.prediction = (int)n;
 		}
@@ -78,6 +80,8 @@ void CodecHUFF::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
 		reg.WriteString("pred", ffvhuff_pred_names[codec_config.prediction]);
 		reg.CloseKey();
 	}

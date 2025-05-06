@@ -9,6 +9,11 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int vp8_formats[] = {
+	CodecBase::format_yuv420,
+	CodecBase::format_yuva420,
+};
+
 //
 // ConfigVP8
 //
@@ -66,11 +71,9 @@ void ConfigVP8::init_format()
 
 void ConfigVP8::change_format(int sel)
 {
-	int format = CodecBase::format_yuv420;
-	if (sel == 1) {
-		format = CodecBase::format_yuva420;
+	if (sel >= 0 && sel < std::size(vp8_formats)) {
+		codec->config->format = vp8_formats[sel];
 	}
-	codec->config->format = format;
 }
 
 //

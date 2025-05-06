@@ -13,21 +13,21 @@ struct CodecFFV1 : public CodecBase {
 	enum { id_tag = MKTAG('F', 'F', 'V', '1') };
 
 	struct Config : public CodecBase::Config {
-		int level;
-		int slice;
-		int coder;
-		int context;
-		int slicecrc;
+		int level;    // 0, 1, 3
+		int slice;    // 0-42
+		int coder;    // 0-1
+		int context;  // 0-1
+		int slicecrc; // 0-1
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
-			format = format_yuv422;
-			bits = 10;
-			level = 3;
-			slice = 0;
-			coder = 1;
-			context = 0;
+			version  = 1;
+			format   = format_yuv422;
+			bits     = 10;
+			level    = 3;
+			slice    = 0;
+			coder    = 1;
+			context  = 0;
 			slicecrc = 1;
 		}
 	} codec_config;

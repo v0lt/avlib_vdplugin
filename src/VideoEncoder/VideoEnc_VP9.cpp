@@ -9,6 +9,15 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int vp9_formats[] = {
+	CodecBase::format_rgb,
+	CodecBase::format_yuv420,
+	CodecBase::format_yuv422,
+	CodecBase::format_yuv444,
+};
+
+const int vp9_bitdepths[] = { 8, 10, 12 };
+
 //
 // ConfigVP9
 //
@@ -73,18 +82,10 @@ void ConfigVP9::init_format()
 
 void ConfigVP9::change_format(int sel)
 {
-	int format = CodecBase::format_rgb;
-	if (sel == 1) {
-		format = CodecBase::format_yuv420;
+	if (sel >= 0 && sel < std::size(vp9_formats)) {
+		codec->config->format = vp9_formats[sel];
+		init_bits();
 	}
-	else if (sel == 2) {
-		format = CodecBase::format_yuv422;
-	}
-	else if (sel == 3) {
-		format = CodecBase::format_yuv444;
-	}
-	codec->config->format = format;
-	init_bits();
 }
 
 //
@@ -97,6 +98,8 @@ void CodecVP9::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("format", codec_config.format, vp9_formats);
+		reg.ReadInt("bitdepth", codec_config.bits, vp9_bitdepths);
 		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();
 	}
@@ -106,6 +109,8 @@ void CodecVP9::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
 		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}

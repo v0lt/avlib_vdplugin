@@ -21,6 +21,8 @@ extern "C" {
 
 #include <memory>
 
+const int all_bitdepths[] = { 8, 9, 10, 12, 14, 16 };
+
 struct CodecClass {
 	int class_id;
 
@@ -43,8 +45,8 @@ struct CodecBase : public CodecClass {
 
 	struct Config {
 		int version;
-		int format;
-		int bits;
+		int format; // 1-9
+		int bits;   // 8,9,10,12,14,16
 	}*config = nullptr;
 
 	AVRational time_base = {};

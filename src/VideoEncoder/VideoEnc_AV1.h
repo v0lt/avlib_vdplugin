@@ -18,10 +18,10 @@ struct CodecAV1 : public CodecBase {
 		Config() { reset(); }
 		void reset() {
 			version = 1;
-			format = format_yuv420;
-			bits = 8;
-			preset = 5;
-			crf = 35;
+			format  = format_yuv420;
+			bits    = 8;
+			preset  = 5;
+			crf     = 35;
 		}
 	} codec_config;
 

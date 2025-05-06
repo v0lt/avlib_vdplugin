@@ -28,10 +28,10 @@ struct CodecProres : public CodecBase {
 		Config() { reset(); }
 		void reset() {
 			version = 1;
-			format = format_yuv422;
-			bits = 10;
+			format  = format_yuv422;
+			bits    = 10; // only 10 bit
 			profile = PRORES_PROFILE_HQ;
-			qscale = 4;
+			qscale  = 4;
 		}
 	} codec_config;
 

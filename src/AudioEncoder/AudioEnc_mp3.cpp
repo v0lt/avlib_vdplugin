@@ -108,7 +108,7 @@ void VDFFAudio_mp3::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("bitrate", codec_config.bitrate, mp3_bitrates, std::size(mp3_bitrates));
+		reg.ReadInt("bitrate", codec_config.bitrate, mp3_bitrates);
 		reg.ReadInt("quality", codec_config.quality, 0, 10);
 		reg.ReadBool("constant_rate", codec_config.constant_rate);
 		reg.ReadBool("jointstereo", codec_config.jointstereo);

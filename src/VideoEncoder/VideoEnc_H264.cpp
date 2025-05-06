@@ -10,6 +10,14 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int x264_formats[] = {
+	CodecBase::format_yuv420,
+	CodecBase::format_yuv422,
+	CodecBase::format_yuv444,
+};
+
+const int x264_bitdepths[] = { 8, 10 };
+
 const char* x264_preset_names[] = {
 	"ultrafast",
 	"superfast",
@@ -120,15 +128,10 @@ void ConfigH264::init_format()
 
 void ConfigH264::change_format(int sel)
 {
-	int format = CodecBase::format_yuv420;
-	if (sel == 1) {
-		format = CodecBase::format_yuv422;
+	if (sel >= 0 && sel < std::size(x264_formats)) {
+		codec->config->format = x264_formats[sel];
+		init_bits();
 	}
-	else if (sel == 2) {
-		format = CodecBase::format_yuv444;
-	}
-	codec->config->format = format;
-	init_bits();
 }
 
 //
@@ -141,12 +144,14 @@ void CodecH264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("format", codec_config.format, x264_formats);
+		reg.ReadInt("bitdepth", codec_config.bits, x264_bitdepths);
 		size_t n;
-		n = reg.CheckString("preset", x264_preset_names, std::size(x264_preset_names));
+		n = reg.CheckString("preset", x264_preset_names);
 		if (n != -1) {
 			codec_config.preset = (int)n;
 		}
-		n = reg.CheckString("tune", x264_tune_names, std::size(x264_tune_names));
+		n = reg.CheckString("tune", x264_tune_names);
 		if (n != -1) {
 			codec_config.tune = (int)n;
 		}
@@ -159,8 +164,10 @@ void CodecH264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
 		reg.WriteString("preset", x264_preset_names[codec_config.preset]);
-		reg.WriteString("tune", x264_preset_names[codec_config.tune]);
+		reg.WriteString("tune", x264_tune_names[codec_config.tune]);
 		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}

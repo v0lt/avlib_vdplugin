@@ -157,7 +157,8 @@ void CodecFFV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-
+		reg.ReadInt("format", codec_config.format, 1, 9);
+		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
 		reg.CloseKey();
 	}
 }
@@ -166,7 +167,8 @@ void CodecFFV1::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
 		reg.CloseKey();
 	}
 }

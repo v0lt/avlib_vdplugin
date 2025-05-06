@@ -9,6 +9,15 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int x265_formats[] = {
+	CodecBase::format_rgb,
+	CodecBase::format_yuv420,
+	CodecBase::format_yuv422,
+	CodecBase::format_yuv444,
+};
+
+const int x265_bitdepths[] = { 8, 10, 12 };
+
 const char* x265_preset_names[] = {
 	"ultrafast",
 	"superfast",
@@ -122,18 +131,10 @@ void ConfigH265::init_format()
 
 void ConfigH265::change_format(int sel)
 {
-	int format = CodecBase::format_rgb;
-	if (sel == 1) {
-		format = CodecBase::format_yuv420;
+	if (sel >= 0 && sel < std::size(x265_formats)) {
+		codec->config->format = x265_formats[sel];
+		init_bits();
 	}
-	else if (sel == 2) {
-		format = CodecBase::format_yuv422;
-	}
-	else if (sel == 3) {
-		format = CodecBase::format_yuv444;
-	}
-	codec->config->format = format;
-	init_bits();
 }
 
 //
@@ -146,12 +147,14 @@ void CodecH265::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("format", codec_config.format, x265_formats);
+		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
 		size_t n;
-		n = reg.CheckString("preset", x265_preset_names, std::size(x265_preset_names));
+		n = reg.CheckString("preset", x265_preset_names);
 		if (n != -1) {
 			codec_config.preset = (int)n;
 		}
-		n = reg.CheckString("tune", x265_tune_names, std::size(x265_tune_names));
+		n = reg.CheckString("tune", x265_tune_names);
 		if (n != -1) {
 			codec_config.tune = (int)n;
 		}
@@ -164,8 +167,10 @@ void CodecH265::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
 		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
-		reg.WriteString("tune", x265_preset_names[codec_config.tune]);
+		reg.WriteString("tune", x265_tune_names[codec_config.tune]);
 		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}
