@@ -11,13 +11,15 @@
 
 struct CodecHUFF : public CodecBase {
 	enum { id_tag = MKTAG('F', 'F', 'V', 'H') };
+
 	struct Config : public CodecBase::Config {
 		int prediction = 0;
 
+		Config() { reset(); }
 		void reset() {
-			version = 1;
-			format = format_rgb;
-			bits = 8;
+			version    = 1;
+			format     = format_rgb;
+			bits       = 8;
 			prediction = 0;
 		}
 	} codec_config;
