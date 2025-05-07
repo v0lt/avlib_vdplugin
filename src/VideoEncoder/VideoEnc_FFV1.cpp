@@ -10,6 +10,7 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int ffv1_levels[] = { 0, 1, 3 };
 const int ffv1_slice_tab[] = { 0, 4, 6, 9, 12, 16, 24, 30, 36, 42 };
 
 //
@@ -33,7 +34,7 @@ void ConfigFFV1::apply_level()
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_SLICES), config->level >= 3);
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_SLICECRC), config->level >= 3);
 	if (config->level < 3) {
-		config->slice = 0;
+		config->slices = 0;
 		config->slicecrc = 0;
 	}
 	init_slices();
@@ -47,7 +48,7 @@ void ConfigFFV1::init_slices()
 	CodecFFV1::Config* config = (CodecFFV1::Config*)codec->config;
 	size_t x = 0;
 	for (size_t i = 1; i < std::size(ffv1_slice_tab); i++) {
-		if (ffv1_slice_tab[i] == config->slice) {
+		if (ffv1_slice_tab[i] == config->slices) {
 			x = i;
 		}
 	}
@@ -128,7 +129,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_ENC_SLICES:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_GETCURSEL, 0, 0);
-				config->slice = ffv1_slice_tab[x];
+				config->slices = ffv1_slice_tab[x];
 				return TRUE;
 			}
 			break;
@@ -159,6 +160,11 @@ void CodecFFV1::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, 1, 9);
 		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
+		reg.ReadInt("level", codec_config.level, ffv1_levels);
+		reg.ReadInt("slices", codec_config.slices, ffv1_slice_tab);
+		reg.ReadInt("coder", codec_config.coder, 0, 1);
+		reg.ReadInt("context", codec_config.context, 0, 1);
+		reg.ReadInt("slicecrc", codec_config.slicecrc, 0, 1);
 		reg.CloseKey();
 	}
 }
@@ -169,6 +175,11 @@ void CodecFFV1::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		reg.WriteInt("format", codec_config.format);
 		reg.WriteInt("bitdepth", codec_config.bits);
+		reg.WriteInt("level", codec_config.level);
+		reg.WriteInt("slices", codec_config.slices);
+		reg.WriteInt("coder", codec_config.coder);
+		reg.WriteInt("context", codec_config.context);
+		reg.WriteInt("slicecrc", codec_config.slicecrc);
 		reg.CloseKey();
 	}
 }
@@ -177,7 +188,7 @@ bool CodecFFV1::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->strict_std_compliance = -2;
 	avctx->level = codec_config.level;
-	avctx->slices = codec_config.slice;
+	avctx->slices = codec_config.slices;
 	av_opt_set_int(avctx->priv_data, "slicecrc", codec_config.slicecrc, 0);
 	av_opt_set_int(avctx->priv_data, "context", codec_config.context, 0);
 	av_opt_set_int(avctx->priv_data, "coder", codec_config.coder, 0);

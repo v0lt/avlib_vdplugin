@@ -14,7 +14,7 @@ struct CodecFFV1 : public CodecBase {
 
 	struct Config : public CodecBase::Config {
 		int level;    // 0, 1, 3
-		int slice;    // 0-42
+		int slices;   // 0-42
 		int coder;    // 0-1
 		int context;  // 0-1
 		int slicecrc; // 0-1
@@ -25,7 +25,7 @@ struct CodecFFV1 : public CodecBase {
 			format   = format_yuv422;
 			bits     = 10;
 			level    = 3;
-			slice    = 0;
+			slices   = 0;
 			coder    = 1;
 			context  = 0;
 			slicecrc = 1;
