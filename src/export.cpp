@@ -707,6 +707,10 @@ void FFOutputFile::SetVideo(uint32 index, const VDXStreamInfo& si, const void* p
 
 	st->time_base = av_make_q(asi.dwScale, asi.dwRate);
 
+	//if (st->codecpar->codec_id == AV_CODEC_ID_VP8 && st->codecpar->format == AV_PIX_FMT_YUVA420P) {
+	//	int ret = av_dict_set_int(&st->metadata, "alpha_mode", 1, 0);
+	//}
+
 	s.st = st;
 	s.time_base = st->time_base;
 }
