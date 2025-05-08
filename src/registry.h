@@ -28,8 +28,8 @@ public:
 	void ReadBool(LPCSTR valueName, bool& value);
 
 	bool ReadString(LPCSTR valueName, std::string& value);
-	size_t CheckString(LPCSTR valueName, const std::span<LPCSTR> vars);
-	size_t CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count);
+	void CheckString(LPCSTR valueName, int& index, const std::span<LPCSTR> vars);
+	void CheckString(LPCSTR valueName, int& index, LPCSTR* vars, const size_t var_count);
 
 	void WriteInt(LPCSTR valueName, const int value);
 	void WriteBool(LPCSTR valueName, const bool value);

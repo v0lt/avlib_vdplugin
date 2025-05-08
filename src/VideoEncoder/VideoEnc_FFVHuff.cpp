@@ -68,10 +68,7 @@ void CodecHUFF::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, 1, 9);
 		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
-		size_t n = reg.CheckString("pred", ffvhuff_pred_names);
-		if (n != -1) {
-			codec_config.prediction = (int)n;
-		}
+		reg.CheckString("pred", codec_config.prediction, ffvhuff_pred_names);
 		reg.CloseKey();
 	}
 }

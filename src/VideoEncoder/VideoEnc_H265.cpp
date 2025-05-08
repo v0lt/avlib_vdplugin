@@ -149,15 +149,8 @@ void CodecH265::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, x265_formats);
 		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
-		size_t n;
-		n = reg.CheckString("preset", x265_preset_names);
-		if (n != -1) {
-			codec_config.preset = (int)n;
-		}
-		n = reg.CheckString("tune", x265_tune_names);
-		if (n != -1) {
-			codec_config.tune = (int)n;
-		}
+		reg.CheckString("preset", codec_config.preset, x265_preset_names);
+		reg.CheckString("tune", codec_config.tune, x265_tune_names);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
 		reg.CloseKey();
 	}

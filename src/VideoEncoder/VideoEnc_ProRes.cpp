@@ -149,10 +149,7 @@ void CodecProres::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		size_t n = reg.CheckString("profile", prores_profile_names);
-		if (n != -1) {
-			codec_config.profile = (int)n;
-		}
+		reg.CheckString("profile", codec_config.profile, prores_profile_names);
 		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
 		reg.CloseKey();
 	}

@@ -113,22 +113,22 @@ bool RegistryPrefs::ReadString(LPCSTR valueName, std::string& value)
 	return false;
 }
 
-size_t RegistryPrefs::CheckString(LPCSTR valueName, const std::span<LPCSTR> vars)
+void RegistryPrefs::CheckString(LPCSTR valueName, int& index, const std::span<LPCSTR> vars)
 {
 	std::string str;
 	if (ReadString(valueName, str)) {
 		for (size_t i = 0; i < vars.size(); i++) {
 			if (str.compare(vars[i]) == 0) {
-				return i;
+				index = (int)i;
+				return;
 			}
 		}
 	}
-	return (size_t)-1;
 }
 
-size_t RegistryPrefs::CheckString(LPCSTR valueName, LPCSTR* vars, const size_t var_count)
+void RegistryPrefs::CheckString(LPCSTR valueName, int& index, LPCSTR* vars, const size_t var_count)
 {
-	return CheckString(valueName, std::span(vars, var_count));
+	CheckString(valueName, index, std::span(vars, var_count));
 }
 
 void RegistryPrefs::WriteInt(LPCSTR valueName, const int value)
