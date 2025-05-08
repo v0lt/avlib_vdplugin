@@ -141,11 +141,11 @@ void ConfigH265::change_format(int sel)
 // CodecH265
 //
 
-#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_H265"
+#define REG_KEY_H265 "Software\\VirtualDub2\\avlib\\VideoEnc_H265"
 
 void CodecH265::load_config()
 {
-	RegistryPrefs reg(REG_KEY_APP);
+	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, x265_formats);
 		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
@@ -158,7 +158,7 @@ void CodecH265::load_config()
 
 void CodecH265::save_config()
 {
-	RegistryPrefs reg(REG_KEY_APP);
+	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		reg.WriteInt("format", codec_config.format);
 		reg.WriteInt("bitdepth", codec_config.bits);
@@ -191,12 +191,119 @@ LRESULT CodecH265::configure(HWND parent)
 }
 
 //
+// ConfigH265LS
+//
+
+class ConfigH265LS : public ConfigBase {
+public:
+	ConfigH265LS() { dialog_id = IDD_ENC_X265LS; }
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	virtual void init_format();
+	virtual void change_format(int sel);
+};
+
+INT_PTR ConfigH265LS::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+{
+	CodecH265LS::Config* config = (CodecH265LS::Config*)codec->config;
+	switch (msg) {
+	case WM_INITDIALOG:
+	{
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+		for (const auto& preset_name : x265_preset_names) {
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+		break;
+	}
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case IDC_ENC_PROFILE:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
+				return TRUE;
+			}
+			break;
+		}
+	}
+	return ConfigBase::DlgProc(msg, wParam, lParam);
+}
+
+void ConfigH265LS::init_format()
+{
+	const char* color_names[] = {
+		"RGB",
+		"YUV 4:2:0",
+		"YUV 4:2:2",
+		"YUV 4:4:4",
+	};
+
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
+	for (const auto& color_name : color_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
+	}
+	int sel = 0; // format_rgb
+	if (codec->config->format == CodecBase::format_yuv420) {
+		sel = 1;
+	}
+	else if (codec->config->format == CodecBase::format_yuv422) {
+		sel = 2;
+	}
+	else if (codec->config->format == CodecBase::format_yuv444) {
+		sel = 3;
+	}
+	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
+}
+
+void ConfigH265LS::change_format(int sel)
+{
+	if (sel >= 0 && sel < std::size(x265_formats)) {
+		codec->config->format = x265_formats[sel];
+		init_bits();
+	}
+}
+
+//
 // CodecH265LS
 //
 
+#define REG_KEY_H265LS "Software\\VirtualDub2\\avlib\\VideoEnc_H265LS"
+
+void CodecH265LS::load_config()
+{
+	RegistryPrefs reg(REG_KEY_H265LS);
+	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("format", codec_config.format, x265_formats);
+		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
+		reg.CheckString("preset", codec_config.preset, x265_preset_names);
+		reg.CloseKey();
+	}
+}
+
+void CodecH265LS::save_config()
+{
+	RegistryPrefs reg(REG_KEY_H265LS);
+	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
+		reg.WriteInt("bitdepth", codec_config.bits);
+		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
+		reg.CloseKey();
+	}
+}
+
+bool CodecH265LS::init_ctx(VDXPixmapLayout* layout)
+{
+	avctx->gop_size = -1;
+	avctx->max_b_frames = -1;
+
+	[[maybe_unused]] int ret = 0;
+	ret = av_opt_set(avctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
+	ret = av_opt_set(avctx->priv_data, "x265-params", "lossless=1", 0);
+	return true;
+}
+
 LRESULT CodecH265LS::configure(HWND parent)
 {
-	ConfigH265 dlg;
+	ConfigH265LS dlg;
 	dlg.dialog_id = IDD_ENC_X265LS;
 	dlg.Show(parent, this);
 	return ICERR_OK;
