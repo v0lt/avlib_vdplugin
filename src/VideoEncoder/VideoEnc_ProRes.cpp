@@ -9,6 +9,12 @@
 #include "../resource.h"
 #include "../registry.h"
 
+const int prores_formats[] = {
+	CodecBase::format_yuv422,
+	CodecBase::format_yuv444,
+	CodecBase::format_yuva444,
+};
+
 const char* prores_profile_names[] = {
 	"proxy",
 	"LT",
@@ -106,15 +112,9 @@ void ConfigProres::init_profile()
 
 void ConfigProres::init_format()
 {
-	const char* color_names[] = {
-		"YUV 4:2:2",
-		"YUV 4:4:4",
-		"YUV 4:4:4 + Alpha",
-	};
-
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& color_name : color_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
+	for (const auto& format : prores_formats) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
 	}
 	int sel = 0; // format_yuv422
 	if (codec->config->format == CodecBase::format_yuv444) {
@@ -128,15 +128,10 @@ void ConfigProres::init_format()
 
 void ConfigProres::change_format(int sel)
 {
-	int format = CodecBase::format_yuv422;
-	if (sel == 1) {
-		format = CodecBase::format_yuv444;
+	if (sel >= 0 && sel < std::size(prores_formats)) {
+		codec->config->format = prores_formats[sel];
+		init_profile();
 	}
-	else if (sel == 2) {
-		format = CodecBase::format_yuva444;
-	}
-	codec->config->format = format;
-	init_profile();
 }
 
 //

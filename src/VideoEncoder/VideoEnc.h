@@ -32,15 +32,15 @@ struct CodecClass {
 
 struct CodecBase : public CodecClass {
 	enum {
-		format_rgb = 1,
-		format_rgba = 2,
-		format_yuv420 = 3,
-		format_yuv422 = 4,
-		format_yuv444 = 5,
+		format_rgb     = 1,
+		format_rgba    = 2,
+		format_yuv420  = 3,
+		format_yuv422  = 4,
+		format_yuv444  = 5,
 		format_yuva420 = 6,
 		format_yuva422 = 7,
 		format_yuva444 = 8,
-		format_gray = 9,
+		format_gray    = 9,
 	};
 
 	struct Config {
@@ -132,4 +132,20 @@ public:
 	void adjust_bits();
 	void notify_bits_change(int bits_new, int bits_old);
 	void notify_hide();
+
+	static const char* GetFormatName(const int format)
+	{
+		switch (format) {
+		case CodecBase::format_rgb:     return "RGB";
+		case CodecBase::format_rgba:    return "RGB + Alpha";
+		case CodecBase::format_yuv420:  return "YUV 4:2:0";
+		case CodecBase::format_yuv422:  return "YUV 4:2:2";
+		case CodecBase::format_yuv444:  return "YUV 4:4:4";
+		case CodecBase::format_yuva420: return "YUV 4:2:0 + Alpha";
+		case CodecBase::format_yuva422: return "YUV 4:2:2 + Alpha";
+		case CodecBase::format_yuva444: return "YUV 4:4:4 + Alpha";
+		case CodecBase::format_gray:    return "Gray";
+		}
+		return "";
+	}
 };

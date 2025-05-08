@@ -301,21 +301,9 @@ void ConfigBase::Show(HWND parent, CodecBase* codec)
 
 void ConfigBase::init_format()
 {
-	const char* color_names[] = {
-		"RGB",
-		"RGB + Alpha",
-		"YUV 4:2:0",
-		"YUV 4:2:2",
-		"YUV 4:4:4",
-		"YUV 4:2:0 + Alpha",
-		"YUV 4:2:2 + Alpha",
-		"YUV 4:4:4 + Alpha",
-		"Gray",
-	};
-
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& color_name : color_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
+	for (int i = CodecBase::format_rgb; i <= CodecBase::format_gray; i++) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(i));
 	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
 }

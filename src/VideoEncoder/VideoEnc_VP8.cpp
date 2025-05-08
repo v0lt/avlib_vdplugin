@@ -52,14 +52,9 @@ INT_PTR ConfigVP8::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void ConfigVP8::init_format()
 {
-	const char* color_names[] = {
-		"YUV 4:2:0",
-		"YUV 4:2:0 + Alpha",
-	};
-
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& color_name : color_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
+	for (const auto& format : vp8_formats) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
 	}
 	int sel = 0; // format_yuv420
 	if (codec->config->format == CodecBase::format_yuva420) {

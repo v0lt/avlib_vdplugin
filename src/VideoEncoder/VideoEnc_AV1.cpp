@@ -81,14 +81,8 @@ INT_PTR ConfigAV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void ConfigAV1::init_format()
 {
-	const char* color_names[] = {
-		"YUV 4:2:0",
-	};
-
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& color_name : color_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
-	}
+	SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(CodecBase::format_yuv420));
 	int sel = 0; // format_yuv420
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }

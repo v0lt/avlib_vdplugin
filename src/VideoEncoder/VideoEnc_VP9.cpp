@@ -56,16 +56,9 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void ConfigVP9::init_format()
 {
-	const char* color_names[] = {
-		"RGB",
-		"YUV 4:2:0",
-		"YUV 4:2:2",
-		"YUV 4:4:4",
-	};
-
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& color_name : color_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
+	for (const auto& format : vp9_formats) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
 	}
 	int sel = 0; // format_rgb
 	if (codec->config->format == CodecBase::format_yuv420) {
