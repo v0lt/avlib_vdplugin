@@ -8,6 +8,7 @@
 #include "gopro.h"
 #include <stdio.h>
 #include <iterator>
+#include <span>
 #include <cassert>
 #include "Helper.h"
 
@@ -68,14 +69,15 @@ const char* strs_pt_color[] = { "Flat","GoPro Color*" };
 const char* strs_pt_iso_video[] = { "6400*","3200","1600","800","400" };
 const char* strs_pt_sharpness[] = { "Low","Medium","High*" };
 const char* strs_pt_ev[] = { "+2","+1.5","+1","+0.5","0","-0.5","-1","-1.5","-2" };
-const char str_unknown[] = "Unknown";
+const char* str_unknown = "Unknown";
 
-const char* DecipherValue(const char** strarray, size_t count, unsigned int value)
+const char* DecipherValue(const std::span<const char*> strarray, unsigned int value)
 {
-	if (value < count)
+	if (value < strarray.size()) {
 		return(strarray[value]);
-	else
+	} else {
 		return str_unknown;
+	}
 }
 
 void GoproInfo::get_settings(unsigned int* sett, int n)
@@ -111,26 +113,26 @@ void GoproInfo::get_settings(unsigned int* sett, int n)
 		setup_info += std::format("\tsubmode:\t{}\r\n", submode);
 	}
 	else {
-		setup_info += std::format("\tmode:\t{}\r\n", DecipherValue(strs_vmode, std::size(strs_vmode), submode));
+		setup_info += std::format("\tmode:\t{}\r\n", DecipherValue(strs_vmode, submode));
 	}
 
-	setup_info += std::format("\torientation:\t{}\r\n", DecipherValue(strs_orient, std::size(strs_orient), orientation));
-	setup_info += std::format("\tspotmeter:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), spotmeter));
+	setup_info += std::format("\torientation:\t{}\r\n", DecipherValue(strs_orient, orientation));
+	setup_info += std::format("\tspotmeter:\t{}\r\n", DecipherValue(strs_OffOn, spotmeter));
 
 	if (n > 1) {
-		setup_info += std::format("\tfov:\t{}\r\n", DecipherValue(strs_fov, std::size(strs_fov), fov));
+		setup_info += std::format("\tfov:\t{}\r\n", DecipherValue(strs_fov, fov));
 
-		setup_info += std::format("\tlowlight:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), lowlight));
-		setup_info += std::format("\tsuperview:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), superview));
+		setup_info += std::format("\tlowlight:\t{}\r\n", DecipherValue(strs_OffOn, lowlight));
+		setup_info += std::format("\tsuperview:\t{}\r\n", DecipherValue(strs_OffOn, superview));
 	}
 
-	setup_info += std::format("\tprotune:\t{}\r\n", DecipherValue(strs_OffOn, std::size(strs_OffOn), protune));
+	setup_info += std::format("\tprotune:\t{}\r\n", DecipherValue(strs_OffOn, protune));
 	if (protune && n > 1) {
-		setup_info += std::format("\tprotune_wb:\t{}\r\n", DecipherValue(strs_pt_wb, std::size(strs_pt_wb), protune_wb));
-		setup_info += std::format("\tprotune_color:\t{}\r\n", DecipherValue(strs_pt_color, std::size(strs_pt_color), protune_color));
-		setup_info += std::format("\tprotune_iso:\t{}\r\n", DecipherValue(strs_pt_iso_video, std::size(strs_pt_iso_video), protune_iso));
-		setup_info += std::format("\tprotune_sharpness:\t{}\r\n", DecipherValue(strs_pt_sharpness, std::size(strs_pt_sharpness), protune_sharpness));
-		setup_info += std::format("\tprotune_ev:\t{}\r\n", DecipherValue(strs_pt_ev, std::size(strs_pt_ev), protune_ev));
+		setup_info += std::format("\tprotune_wb:\t{}\r\n", DecipherValue(strs_pt_wb, protune_wb));
+		setup_info += std::format("\tprotune_color:\t{}\r\n", DecipherValue(strs_pt_color, protune_color));
+		setup_info += std::format("\tprotune_iso:\t{}\r\n", DecipherValue(strs_pt_iso_video, protune_iso));
+		setup_info += std::format("\tprotune_sharpness:\t{}\r\n", DecipherValue(strs_pt_sharpness, protune_sharpness));
+		setup_info += std::format("\tprotune_ev:\t{}\r\n", DecipherValue(strs_pt_ev, protune_ev));
 	}
 }
 
