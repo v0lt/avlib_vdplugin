@@ -13,22 +13,23 @@
 #define IDD_FFLAYER                     106
 #define IDD_FFLAYER_FILE                107
 
-#define IDD_ENC_FFV1                    110
-#define IDD_ENC_FFVHUFF                 111
-#define IDD_ENC_PRORES                  112
-#define IDD_ENC_VP8                     115
-#define IDD_ENC_VP9                     116
-#define IDD_ENC_AV1                     117
-#define IDD_ENC_X264                    120
-#define IDD_ENC_X265                    121
-#define IDD_ENC_X265LS                  122
+#define IDD_ENC_FFV1                    200
+#define IDD_ENC_FFVHUFF                 201
+#define IDD_ENC_PRORES                  202
+#define IDD_ENC_VP8                     210
+#define IDD_ENC_VP9                     211
+#define IDD_ENC_AV1                     212
+#define IDD_ENC_X264                    220
+#define IDD_ENC_X265                    222
+#define IDD_ENC_X265LS                  223
+#define IDD_ENC_NVENC_H264              230
 
-#define IDD_ENC_OPUS                    130
-#define IDD_ENC_VORBIS                  131
-#define IDD_ENC_ALAC                    132
-#define IDD_ENC_FLAC                    133
-#define IDD_ENC_AAC                     134
-#define IDD_ENC_MP3                     135
+#define IDD_ENC_OPUS                    301
+#define IDD_ENC_VORBIS                  302
+#define IDD_ENC_ALAC                    303
+#define IDD_ENC_FLAC                    304
+#define IDD_ENC_AAC                     305
+#define IDD_ENC_MP3                     306
 
 #define IDC_FORMATNAME                  1004
 #define IDC_VIDEO_PIXFMT                1006

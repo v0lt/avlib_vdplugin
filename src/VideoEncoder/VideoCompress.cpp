@@ -19,6 +19,7 @@ extern "C" {
 #include "VideoEnc_VP9.h"
 #include "VideoEnc_AV1.h"
 #include "VideoEnc_H264.h"
+#include "VideoEnc_H264_nvenc.h"
 #include "VideoEnc_H265.h"
 
 void init_av();
@@ -45,15 +46,16 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		CodecBase* new_codec = nullptr;
 		switch (icopen->fccHandler) {
 		case 0:
-		case CodecFFV1::id_tag:   new_codec = new CodecFFV1;   break;
-		case CodecHUFF::id_tag:   new_codec = new CodecHUFF;   break;
-		case CodecProres::id_tag: new_codec = new CodecProres; break;
-		case CodecVP8::id_tag:    new_codec = new CodecVP8;    break;
-		case CodecVP9::id_tag:    new_codec = new CodecVP9;    break;
-		case CodecAV1::id_tag:    new_codec = new CodecAV1;    break;
-		case CodecH264::id_tag:   new_codec = new CodecH264;   break;
-		case CodecH265::id_tag:   new_codec = new CodecH265;   break;
-		case CodecH265LS::id_tag: new_codec = new CodecH265LS; break;
+		case CodecFFV1::id_tag:       new_codec = new CodecFFV1;       break;
+		case CodecHUFF::id_tag:       new_codec = new CodecHUFF;       break;
+		case CodecProres::id_tag:     new_codec = new CodecProres;     break;
+		case CodecVP8::id_tag:        new_codec = new CodecVP8;        break;
+		case CodecVP9::id_tag:        new_codec = new CodecVP9;        break;
+		case CodecAV1::id_tag:        new_codec = new CodecAV1;        break;
+		case CodecH264::id_tag:       new_codec = new CodecH264;       break;
+		case CodecH264_NVENC::id_tag: new_codec = new CodecH264_NVENC; break;
+		case CodecH265::id_tag:       new_codec = new CodecH265;       break;
+		case CodecH265LS::id_tag:     new_codec = new CodecH265LS;     break;
 		}
 		if (new_codec) {
 			if (!new_codec->init()) {
@@ -137,14 +139,15 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 	switch (uMsg) {
 	case VDICM_ENUMFORMATS:
 		if (lParam1 == 0) return CodecFFV1::id_tag;
-		if (lParam1 == CodecFFV1::id_tag)   return CodecHUFF::id_tag;
-		if (lParam1 == CodecHUFF::id_tag)   return CodecProres::id_tag;
-		if (lParam1 == CodecProres::id_tag) return CodecVP8::id_tag;
-		if (lParam1 == CodecVP8::id_tag)    return CodecVP9::id_tag;
-		if (lParam1 == CodecVP9::id_tag)    return CodecAV1::id_tag;
-		if (lParam1 == CodecAV1::id_tag)    return CodecH264::id_tag;
-		if (lParam1 == CodecH264::id_tag)   return CodecH265::id_tag;
-		if (lParam1 == CodecH265::id_tag)   return CodecH265LS::id_tag;
+		if (lParam1 == CodecFFV1::id_tag)       return CodecHUFF::id_tag;
+		if (lParam1 == CodecHUFF::id_tag)       return CodecProres::id_tag;
+		if (lParam1 == CodecProres::id_tag)     return CodecVP8::id_tag;
+		if (lParam1 == CodecVP8::id_tag)        return CodecVP9::id_tag;
+		if (lParam1 == CodecVP9::id_tag)        return CodecAV1::id_tag;
+		if (lParam1 == CodecAV1::id_tag)        return CodecH264::id_tag;
+		if (lParam1 == CodecH264::id_tag)       return CodecH264_NVENC::id_tag;
+		if (lParam1 == CodecH264_NVENC::id_tag) return CodecH265::id_tag;
+		if (lParam1 == CodecH265::id_tag)       return CodecH265LS::id_tag;
 		return 0;
 
 	case VDICM_GETHANDLER:
