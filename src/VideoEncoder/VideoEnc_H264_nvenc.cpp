@@ -94,11 +94,8 @@ void ConfigH264_NVENC::init_format()
 		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)color_name);
 	}
 	int sel = 0; // format_yuv420
-	if (codec->config->format == CodecBase::format_yuv422) {
+	if (codec->config->format == CodecBase::format_yuv444) {
 		sel = 1;
-	}
-	else if (codec->config->format == CodecBase::format_yuv444) {
-		sel = 2;
 	}
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
