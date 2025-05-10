@@ -19,8 +19,9 @@ extern "C" {
 #include "VideoEnc_VP9.h"
 #include "VideoEnc_AV1.h"
 #include "VideoEnc_H264.h"
-#include "VideoEnc_H264_nvenc.h"
 #include "VideoEnc_H265.h"
+#include "VideoEnc_H264_nvenc.h"
+#include "VideoEnc_H265_nvenc.h"
 
 void init_av();
 
@@ -53,9 +54,10 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		case CodecVP9::id_tag:        new_codec = new CodecVP9;        break;
 		case CodecAV1::id_tag:        new_codec = new CodecAV1;        break;
 		case CodecH264::id_tag:       new_codec = new CodecH264;       break;
-		case CodecH264_NVENC::id_tag: new_codec = new CodecH264_NVENC; break;
 		case CodecH265::id_tag:       new_codec = new CodecH265;       break;
 		case CodecH265LS::id_tag:     new_codec = new CodecH265LS;     break;
+		case CodecH264_NVENC::id_tag: new_codec = new CodecH264_NVENC; break;
+		case CodecH265_NVENC::id_tag: new_codec = new CodecH265_NVENC; break;
 		}
 		if (new_codec) {
 			if (!new_codec->init()) {
@@ -145,9 +147,10 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 		if (lParam1 == CodecVP8::id_tag)        return CodecVP9::id_tag;
 		if (lParam1 == CodecVP9::id_tag)        return CodecAV1::id_tag;
 		if (lParam1 == CodecAV1::id_tag)        return CodecH264::id_tag;
-		if (lParam1 == CodecH264::id_tag)       return CodecH264_NVENC::id_tag;
-		if (lParam1 == CodecH264_NVENC::id_tag) return CodecH265::id_tag;
+		if (lParam1 == CodecH264::id_tag)       return CodecH265::id_tag;
 		if (lParam1 == CodecH265::id_tag)       return CodecH265LS::id_tag;
+		if (lParam1 == CodecH265LS::id_tag)     return CodecH264_NVENC::id_tag;
+		if (lParam1 == CodecH264_NVENC::id_tag) return CodecH265_NVENC::id_tag;
 		return 0;
 
 	case VDICM_GETHANDLER:
