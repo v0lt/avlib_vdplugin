@@ -108,16 +108,11 @@ void ConfigX264::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (const auto& format : x264_formats) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
+		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
+		if (idx >= 0 && format == codec->config->format) {
+			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
+		}
 	}
-	int sel = 0; // format_yuv420
-	if (codec->config->format == CodecBase::format_yuv422) {
-		sel = 1;
-	}
-	else if (codec->config->format == CodecBase::format_yuv444) {
-		sel = 2;
-	}
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigX264::change_format(int sel)

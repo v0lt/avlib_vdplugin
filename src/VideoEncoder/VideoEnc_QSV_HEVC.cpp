@@ -68,10 +68,11 @@ void ConfigQSV_HEVC::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (const auto& format : hevc_qsv_formats) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
+		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
+		if (idx >= 0 && format == codec->config->format) {
+			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
+		}
 	}
-	int sel = 0; // format_yuv420
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
 void ConfigQSV_HEVC::change_format(int sel)
