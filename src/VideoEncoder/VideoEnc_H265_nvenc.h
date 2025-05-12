@@ -47,6 +47,8 @@ struct CodecH265_NVENC : public CodecBase {
 
 	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
+	virtual LRESULT compress_input_format(FilterModPixmapInfo* info) override;
+
 	bool init_ctx(VDXPixmapLayout* layout);
 
 	LRESULT configure(HWND parent);

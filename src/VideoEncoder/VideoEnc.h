@@ -85,7 +85,7 @@ struct CodecBase : public CodecClass {
 
 	virtual int compress_input_info(VDXPixmapLayout* src) { return 0; }
 
-	LRESULT compress_input_format(FilterModPixmapInfo* info);
+	virtual LRESULT compress_input_format(FilterModPixmapInfo* info);
 
 	LRESULT compress_get_format(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout);
 

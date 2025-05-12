@@ -150,6 +150,32 @@ int CodecH265_NVENC::compress_input_info(VDXPixmapLayout* src)
 	return 0;
 }
 
+LRESULT CodecH265_NVENC::compress_input_format(FilterModPixmapInfo* info)
+{
+	if (config->format == format_yuv420) {
+		if (config->bits == 8) {
+			return nsVDXPixmap::kPixFormat_YUV420_Planar;
+		}
+		if (config->bits == 10) {
+			return nsVDXPixmap::kPixFormat_YUV420_P010;
+		}
+	}
+	else if (config->format == format_yuv444) {
+		if (config->bits == 8) {
+			return nsVDXPixmap::kPixFormat_YUV444_Planar;
+		}
+		if (config->bits == 10) {
+			int max_value = (1 << config->bits) - 1;
+			if (info) {
+				info->ref_r = max_value;
+			}
+			return nsVDXPixmap::kPixFormat_YUV444_Planar16;
+		}
+	}
+
+	return 0;
+}
+
 bool CodecH265_NVENC::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
