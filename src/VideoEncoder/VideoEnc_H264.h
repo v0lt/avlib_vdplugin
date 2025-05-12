@@ -50,6 +50,8 @@ struct CodecH264 : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / H.264 (x264)");
 	}
 
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
+
 	bool init_ctx(VDXPixmapLayout* layout);
 
 	LRESULT configure(HWND parent);

@@ -160,6 +160,20 @@ void CodecH264::save_config()
 	}
 }
 
+int CodecH264::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecH264::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;

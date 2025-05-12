@@ -45,6 +45,8 @@ struct CodecH264_NVENC : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / NVENC H.264");
 	}
 
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
+
 	bool init_ctx(VDXPixmapLayout* layout);
 
 	LRESULT configure(HWND parent);

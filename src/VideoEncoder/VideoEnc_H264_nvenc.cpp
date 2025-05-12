@@ -130,6 +130,16 @@ void CodecH264_NVENC::save_config()
 	}
 }
 
+int CodecH264_NVENC::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecH264_NVENC::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;

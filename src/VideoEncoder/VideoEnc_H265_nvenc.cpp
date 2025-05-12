@@ -136,6 +136,17 @@ void CodecH265_NVENC::save_config()
 	}
 }
 
+int CodecH265_NVENC::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecH265_NVENC::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
