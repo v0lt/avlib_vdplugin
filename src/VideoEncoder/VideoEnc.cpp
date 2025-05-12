@@ -692,7 +692,10 @@ LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layou
 
 	avctx = avcodec_alloc_context3(codec);
 
-	if (layout->format == nsVDXPixmap::kPixFormat_YUV420_P010) {
+	if (layout->format == nsVDXPixmap::kPixFormat_YUV420_NV12) {
+		avctx->pix_fmt = AV_PIX_FMT_NV12;
+	}
+	else if (layout->format == nsVDXPixmap::kPixFormat_YUV420_P010) {
 		avctx->pix_fmt = AV_PIX_FMT_P010;
 	}
 	else if (config->format == format_rgba) {
