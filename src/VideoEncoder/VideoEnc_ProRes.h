@@ -48,22 +48,14 @@ struct CodecProres : public CodecBase {
 	virtual void load_config() override;
 	virtual void save_config() override;
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
-			return 1;
-		}
-		return 0;
-	}
-
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES;
 		wcscpy_s(info.szName, L"prores_ks");
 		wcscpy_s(info.szDescription, L"FFmpeg / Apple ProRes (iCodec Pro)");
 	}
+
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

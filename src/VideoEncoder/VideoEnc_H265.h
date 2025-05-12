@@ -52,20 +52,7 @@ struct CodecH265 : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / HEVC (x265)");
 	}
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_RGB888:
-		case nsVDXPixmap::kPixFormat_XRGB64:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
-			return 1;
-		}
-		return 0;
-	}
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 
@@ -111,20 +98,7 @@ struct CodecH265LS : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / HEVC lossless (x265)");
 	}
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_RGB888:
-		case nsVDXPixmap::kPixFormat_XRGB64:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
-			return 1;
-		}
-		return 0;
-	}
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

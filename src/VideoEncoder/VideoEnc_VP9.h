@@ -37,27 +37,14 @@ struct CodecVP9 : public CodecBase {
 	virtual void load_config() override;
 	virtual void save_config() override;
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_YUV420_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
-		case nsVDXPixmap::kPixFormat_XRGB8888:
-		case nsVDXPixmap::kPixFormat_XRGB64:
-			return 1;
-		}
-		return 0;
-	}
-
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"vp9");
 		wcscpy_s(info.szDescription, L"FFmpeg / VP9");
 	}
+
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

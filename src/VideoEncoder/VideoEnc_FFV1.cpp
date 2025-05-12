@@ -184,6 +184,31 @@ void CodecFFV1::save_config()
 	}
 }
 
+int CodecFFV1::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_RGB888:
+	case nsVDXPixmap::kPixFormat_XRGB8888:
+	case nsVDXPixmap::kPixFormat_XRGB64:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
+	case nsVDXPixmap::kPixFormat_Y8:
+	case nsVDXPixmap::kPixFormat_Y16:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecFFV1::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->strict_std_compliance = -2;

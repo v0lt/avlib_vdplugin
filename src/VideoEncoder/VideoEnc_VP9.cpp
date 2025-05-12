@@ -109,6 +109,22 @@ void CodecVP9::save_config()
 	}
 }
 
+int CodecVP9::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+	case nsVDXPixmap::kPixFormat_XRGB8888:
+	case nsVDXPixmap::kPixFormat_XRGB64:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecVP9::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;

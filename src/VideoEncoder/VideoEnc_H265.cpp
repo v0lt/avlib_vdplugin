@@ -162,6 +162,22 @@ void CodecH265::save_config()
 	}
 }
 
+int CodecH265::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_RGB888:
+	case nsVDXPixmap::kPixFormat_XRGB64:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecH265::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
@@ -274,6 +290,22 @@ void CodecH265LS::save_config()
 		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
 		reg.CloseKey();
 	}
+}
+
+int CodecH265LS::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_RGB888:
+	case nsVDXPixmap::kPixFormat_XRGB64:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+		return 1;
+	}
+	return 0;
 }
 
 bool CodecH265LS::init_ctx(VDXPixmapLayout* layout)

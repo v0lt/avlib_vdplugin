@@ -160,6 +160,17 @@ void CodecProres::save_config()
 	}
 }
 
+int CodecProres::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecProres::init_ctx(VDXPixmapLayout* layout)
 {
 	av_opt_set_int(avctx->priv_data, "profile", codec_config.profile, 0);

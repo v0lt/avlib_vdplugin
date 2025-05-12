@@ -37,21 +37,14 @@ struct CodecVP8 : public CodecBase {
 	virtual void load_config() override;
 	virtual void save_config() override;
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_YUV420_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
-			return 1;
-		}
-		return 0;
-	}
-
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"vp8");
 		wcscpy_s(info.szDescription, L"FFmpeg / VP8");
 	}
+
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

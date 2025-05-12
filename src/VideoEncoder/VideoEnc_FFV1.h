@@ -94,36 +94,14 @@ struct CodecFFV1 : public CodecBase {
 		return CodecBase::test_av_format(format);
 	}
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
-		switch (src->format) {
-		case nsVDXPixmap::kPixFormat_RGB888:
-		case nsVDXPixmap::kPixFormat_XRGB8888:
-		case nsVDXPixmap::kPixFormat_XRGB64:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar16:
-		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
-		case nsVDXPixmap::kPixFormat_Y8:
-		case nsVDXPixmap::kPixFormat_Y16:
-			return 1;
-		}
-		return 0;
-	}
-
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"FFV1");
 		wcscpy_s(info.szDescription, L"FFmpeg / FFV1 lossless codec");
 	}
+
+	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

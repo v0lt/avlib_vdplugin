@@ -95,6 +95,16 @@ void CodecVP8::save_config()
 	}
 }
 
+int CodecVP8::compress_input_info(VDXPixmapLayout* src)
+{
+	switch (src->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
+		return 1;
+	}
+	return 0;
+}
+
 bool CodecVP8::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
