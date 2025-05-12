@@ -136,6 +136,21 @@ void CodecH265_NVENC::save_config()
 	}
 }
 
+bool CodecH265_NVENC::test_bits(int format, int bits)
+{
+	switch (format) {
+	case format_yuv420:
+		if (bits == 8) return test_av_format(AV_PIX_FMT_YUV420P);
+		if (bits == 10) return test_av_format(AV_PIX_FMT_P010);
+		break;
+	case format_yuv444:
+		if (bits == 8) return test_av_format(AV_PIX_FMT_YUV444P);
+		if (bits == 10) return test_av_format(AV_PIX_FMT_YUV444P10LE);
+		break;
+	}
+	return false;
+}
+
 int CodecH265_NVENC::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
@@ -172,7 +187,6 @@ LRESULT CodecH265_NVENC::compress_input_format(FilterModPixmapInfo* info)
 			return nsVDXPixmap::kPixFormat_YUV444_Planar16;
 		}
 	}
-
 	return 0;
 }
 

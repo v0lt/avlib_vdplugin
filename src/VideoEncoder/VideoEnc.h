@@ -81,7 +81,7 @@ struct CodecBase : public CodecClass {
 
 	virtual bool test_av_format(AVPixelFormat format);
 
-	bool test_bits(int format, int bits);
+	virtual bool test_bits(int format, int bits);
 
 	virtual int compress_input_info(VDXPixmapLayout* src) { return 0; }
 

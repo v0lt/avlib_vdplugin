@@ -45,6 +45,8 @@ struct CodecH265_NVENC : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / NVENC HEVC");
 	}
 
+	virtual bool test_bits(int format, int bits) override;
+
 	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
 	virtual LRESULT compress_input_format(FilterModPixmapInfo* info) override;
