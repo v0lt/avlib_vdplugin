@@ -86,13 +86,19 @@
     <ClInclude Include="VideoEncoder\VideoEnc_FFV1.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_FFVHuff.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>	
     <ClInclude Include="VideoEncoder\VideoEnc_H264.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="VideoEncoder\VideoEnc_H265.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
-    <ClInclude Include="VideoEncoder\VideoEnc_FFVHuff.h">
+    <ClInclude Include="VideoEncoder\VideoEnc_NVENC_H264.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_NVENC_HEVC.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="VideoEncoder\VideoEnc_ProRes.h">
@@ -105,12 +111,7 @@
       <Filter>VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="registry.h" />
-    <ClInclude Include="VideoEncoder\VideoEnc_H264_nvenc.h">
-      <Filter>VideoEncoder</Filter>
-    </ClInclude>
-    <ClInclude Include="VideoEncoder\VideoEnc_H265_nvenc.h">
-      <Filter>VideoEncoder</Filter>
-    </ClInclude>
+
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -178,13 +179,19 @@
     <ClCompile Include="VideoEncoder\VideoEnc_FFV1.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_FFVHuff.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>	
     <ClCompile Include="VideoEncoder\VideoEnc_H264.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_H265.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
-    <ClCompile Include="VideoEncoder\VideoEnc_FFVHuff.cpp">
+    <ClCompile Include="VideoEncoder\VideoEnc_NVENC_H264.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_NVENC_HEVC.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_ProRes.cpp">
@@ -194,12 +201,6 @@
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_VP9.cpp">
-      <Filter>VideoEncoder</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoEncoder\VideoEnc_H264_nvenc.cpp">
-      <Filter>VideoEncoder</Filter>
-    </ClCompile>
-    <ClCompile Include="VideoEncoder\VideoEnc_H265_nvenc.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
   </ItemGroup>

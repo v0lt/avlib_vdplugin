@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "VideoEnc_H264_nvenc.h"
+#include "VideoEnc_NVENC_H264.h"
 #include "../Helper.h"
 #include "../resource.h"
 #include "../registry.h"
@@ -32,20 +32,20 @@ const char* h264_nvenc_tune_names[] = {
 };
 
 //
-// ConfigH264_NVENC
+// ConfigNVENC_H264
 //
 
-class ConfigH264_NVENC : public ConfigBase {
+class ConfigNVENC_H264 : public ConfigBase {
 public:
-	ConfigH264_NVENC() { dialog_id = IDD_ENC_NVENC_H264; }
+	ConfigNVENC_H264() { dialog_id = IDD_ENC_NVENC_H264; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual void init_format();
 	virtual void change_format(int sel);
 };
 
-INT_PTR ConfigH264_NVENC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CodecH264_NVENC::Config* config = (CodecH264_NVENC::Config*)codec->config;
+	CodecNVENC_H264::Config* config = (CodecNVENC_H264::Config*)codec->config;
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -82,7 +82,7 @@ INT_PTR ConfigH264_NVENC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigH264_NVENC::init_format()
+void ConfigNVENC_H264::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (const auto& format : h264_nvenc_formats) {
@@ -95,7 +95,7 @@ void ConfigH264_NVENC::init_format()
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
-void ConfigH264_NVENC::change_format(int sel)
+void ConfigNVENC_H264::change_format(int sel)
 {
 	if (sel >= 0 && sel < std::size(h264_nvenc_formats)) {
 		codec->config->format = h264_nvenc_formats[sel];
@@ -103,12 +103,12 @@ void ConfigH264_NVENC::change_format(int sel)
 }
 
 //
-// CodecH264_NVENC
+// CodecNVENC_H264
 //
 
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_H264_nvenc"
 
-void CodecH264_NVENC::load_config()
+void CodecNVENC_H264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
@@ -119,7 +119,7 @@ void CodecH264_NVENC::load_config()
 	}
 }
 
-void CodecH264_NVENC::save_config()
+void CodecNVENC_H264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
@@ -130,7 +130,7 @@ void CodecH264_NVENC::save_config()
 	}
 }
 
-int CodecH264_NVENC::compress_input_info(VDXPixmapLayout* src)
+int CodecNVENC_H264::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Planar:
@@ -141,7 +141,7 @@ int CodecH264_NVENC::compress_input_info(VDXPixmapLayout* src)
 	return 0;
 }
 
-bool CodecH264_NVENC::init_ctx(VDXPixmapLayout* layout)
+bool CodecNVENC_H264::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
 	avctx->max_b_frames = -1;
@@ -152,9 +152,9 @@ bool CodecH264_NVENC::init_ctx(VDXPixmapLayout* layout)
 	return true;
 }
 
-LRESULT CodecH264_NVENC::configure(HWND parent)
+LRESULT CodecNVENC_H264::configure(HWND parent)
 {
-	ConfigH264_NVENC dlg;
+	ConfigNVENC_H264 dlg;
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }

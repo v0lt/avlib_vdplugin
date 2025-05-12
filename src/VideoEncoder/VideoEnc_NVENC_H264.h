@@ -8,8 +8,8 @@
 
 #include "VideoEnc.h"
 
-struct CodecH265_NVENC : public CodecBase {
-	enum { id_tag = MKTAG('h', '2', '6', '5') };
+struct CodecNVENC_H264 : public CodecBase {
+	enum { id_tag = MKTAG('h', '2', '6', '4') };
 
 	struct Config : public CodecBase::Config {
 		int preset;
@@ -19,15 +19,15 @@ struct CodecH265_NVENC : public CodecBase {
 		void reset() {
 			version = 1;
 			format  = format_yuv420;
-			bits    = 8;
+			bits    = 8; // only 8 bit
 			preset  = 5;
 			tune    = 0;
 		}
 	} codec_config;
 
-	CodecH265_NVENC() {
-		codec_name = "hevc_nvenc";
-		codec_tag = MKTAG('H', 'E', 'V', 'C');
+	CodecNVENC_H264() {
+		codec_name = "h264_nvenc";
+		codec_tag = MKTAG('H', '2', '6', '4');
 		config = &codec_config;
 		load_config();
 	}
@@ -41,15 +41,11 @@ struct CodecH265_NVENC : public CodecBase {
 	void getinfo(ICINFO& info) {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
-		wcscpy_s(info.szName, L"hevc_nvenc");
-		wcscpy_s(info.szDescription, L"FFmpeg / NVENC HEVC");
+		wcscpy_s(info.szName, L"h264_nvenc");
+		wcscpy_s(info.szDescription, L"FFmpeg / NVENC H.264");
 	}
 
-	virtual bool test_bits(int format, int bits) override;
-
 	virtual int compress_input_info(VDXPixmapLayout* src) override;
-
-	virtual LRESULT compress_input_format(FilterModPixmapInfo* info) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 
