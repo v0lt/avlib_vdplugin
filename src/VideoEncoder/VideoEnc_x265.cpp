@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "VideoEnc_H265.h"
+#include "VideoEnc_x265.h"
 #include "../resource.h"
 #include "../registry.h"
 
@@ -40,20 +40,20 @@ const char* x265_tune_names[] = {
 };
 
 //
-// ConfigH265
+// ConfigX265
 //
 
-class ConfigH265 : public ConfigBase {
+class ConfigX265 : public ConfigBase {
 public:
-	ConfigH265() { dialog_id = IDD_ENC_X265; }
+	ConfigX265() { dialog_id = IDD_ENC_X265; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual void init_format();
 	virtual void change_format(int sel);
 };
 
-INT_PTR ConfigH265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR ConfigX265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CodecH265::Config* config = (CodecH265::Config*)codec->config;
+	CodecX265::Config* config = (CodecX265::Config*)codec->config;
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -103,7 +103,7 @@ INT_PTR ConfigH265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigH265::init_format()
+void ConfigX265::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (const auto& format : x265_formats) {
@@ -122,7 +122,7 @@ void ConfigH265::init_format()
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
-void ConfigH265::change_format(int sel)
+void ConfigX265::change_format(int sel)
 {
 	if (sel >= 0 && sel < std::size(x265_formats)) {
 		codec->config->format = x265_formats[sel];
@@ -131,12 +131,12 @@ void ConfigH265::change_format(int sel)
 }
 
 //
-// CodecH265
+// CodecX265
 //
 
 #define REG_KEY_H265 "Software\\VirtualDub2\\avlib\\VideoEnc_H265"
 
-void CodecH265::load_config()
+void CodecX265::load_config()
 {
 	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
@@ -149,7 +149,7 @@ void CodecH265::load_config()
 	}
 }
 
-void CodecH265::save_config()
+void CodecX265::save_config()
 {
 	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
@@ -162,7 +162,7 @@ void CodecH265::save_config()
 	}
 }
 
-int CodecH265::compress_input_info(VDXPixmapLayout* src)
+int CodecX265::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
 	case nsVDXPixmap::kPixFormat_RGB888:
@@ -178,7 +178,7 @@ int CodecH265::compress_input_info(VDXPixmapLayout* src)
 	return 0;
 }
 
-bool CodecH265::init_ctx(VDXPixmapLayout* layout)
+bool CodecX265::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
 	avctx->max_b_frames = -1;
@@ -192,9 +192,9 @@ bool CodecH265::init_ctx(VDXPixmapLayout* layout)
 	return true;
 }
 
-LRESULT CodecH265::configure(HWND parent)
+LRESULT CodecX265::configure(HWND parent)
 {
-	ConfigH265 dlg;
+	ConfigX265 dlg;
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }

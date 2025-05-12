@@ -5,7 +5,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "VideoEnc_H264.h"
+#include "VideoEnc_x264.h"
 #include "../Helper.h"
 #include "../resource.h"
 #include "../registry.h"
@@ -41,20 +41,20 @@ const char* x264_tune_names[] = {
 };
 
 //
-// ConfigH264
+// ConfigX264
 //
 
-class ConfigH264 : public ConfigBase {
+class ConfigX264 : public ConfigBase {
 public:
-	ConfigH264() { dialog_id = IDD_ENC_X264; }
+	ConfigX264() { dialog_id = IDD_ENC_X264; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
 	virtual void init_format();
 	virtual void change_format(int sel);
 };
 
-INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CodecH264::Config* config = (CodecH264::Config*)codec->config;
+	CodecX264::Config* config = (CodecX264::Config*)codec->config;
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -104,7 +104,7 @@ INT_PTR ConfigH264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigH264::init_format()
+void ConfigX264::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
 	for (const auto& format : x264_formats) {
@@ -120,7 +120,7 @@ void ConfigH264::init_format()
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
 }
 
-void ConfigH264::change_format(int sel)
+void ConfigX264::change_format(int sel)
 {
 	if (sel >= 0 && sel < std::size(x264_formats)) {
 		codec->config->format = x264_formats[sel];
@@ -129,12 +129,12 @@ void ConfigH264::change_format(int sel)
 }
 
 //
-// CodecH264
+// CodecX264
 //
 
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_H264"
 
-void CodecH264::load_config()
+void CodecX264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
@@ -147,7 +147,7 @@ void CodecH264::load_config()
 	}
 }
 
-void CodecH264::save_config()
+void CodecX264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
@@ -160,7 +160,7 @@ void CodecH264::save_config()
 	}
 }
 
-int CodecH264::compress_input_info(VDXPixmapLayout* src)
+int CodecX264::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Planar:
@@ -174,7 +174,7 @@ int CodecH264::compress_input_info(VDXPixmapLayout* src)
 	return 0;
 }
 
-bool CodecH264::init_ctx(VDXPixmapLayout* layout)
+bool CodecX264::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
 	avctx->max_b_frames = -1;
@@ -189,9 +189,9 @@ bool CodecH264::init_ctx(VDXPixmapLayout* layout)
 	return true;
 }
 
-LRESULT CodecH264::configure(HWND parent)
+LRESULT CodecX264::configure(HWND parent)
 {
-	ConfigH264 dlg;
+	ConfigX264 dlg;
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }

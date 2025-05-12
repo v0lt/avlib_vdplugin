@@ -10,10 +10,10 @@
 #include "VideoEnc.h"
 
 //
-// CodecH265
+// CodecX265
 //
 
-struct CodecH265 : public CodecBase {
+struct CodecX265 : public CodecBase {
 	enum { id_tag = MKTAG('H', 'E', 'V', 'C') };
 
 	struct Config : public CodecBase::Config {
@@ -32,7 +32,7 @@ struct CodecH265 : public CodecBase {
 		}
 	} codec_config;
 
-	CodecH265() {
+	CodecX265() {
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
@@ -64,7 +64,7 @@ struct CodecH265 : public CodecBase {
 //
 
 struct CodecH265LS : public CodecBase {
-	enum { id_tag = MKTAG('H', '2', '6', '5') }; // Here we use another one because 'HEVC' is already used in CodecH265
+	enum { id_tag = MKTAG('H', '2', '6', '5') }; // Here we use another one because 'HEVC' is already used in CodecX265
 
 	struct Config : public CodecBase::Config {
 		int preset;
