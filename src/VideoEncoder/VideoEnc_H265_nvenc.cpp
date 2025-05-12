@@ -140,6 +140,9 @@ int CodecH265_NVENC::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_NV12:
+	case nsVDXPixmap::kPixFormat_YUV420_P010:
+	case nsVDXPixmap::kPixFormat_YUV420_P016:
 	case nsVDXPixmap::kPixFormat_YUV444_Planar:
 	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
 		return 1;

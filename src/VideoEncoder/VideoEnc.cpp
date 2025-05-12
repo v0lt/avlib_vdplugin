@@ -177,6 +177,13 @@ void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 }
 
+void copy_nv12_p01x(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+{
+	int h2 = layout->h / 2;
+	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
+	copy_plane(h2, frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
+}
+
 bool CodecBase::init()
 {
 	codec = avcodec_find_encoder_by_name(codec_name);
@@ -997,7 +1004,11 @@ LRESULT CodecBase::compress2(ICCOMPRESS* icc, VDXPictureCompress* pc)
 		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
 			copy_yuv(frame, layout, icc->lpInput);
 			break;
-
+		case nsVDXPixmap::kPixFormat_YUV420_NV12:
+		case nsVDXPixmap::kPixFormat_YUV420_P010:
+		case nsVDXPixmap::kPixFormat_YUV420_P016:
+			copy_nv12_p01x(frame, layout, icc->lpInput);
+			break;
 		}
 
 		ret = avcodec_send_frame(avctx, frame);
