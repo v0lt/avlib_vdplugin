@@ -106,7 +106,7 @@ void ConfigNVENC_H264::change_format(int sel)
 // CodecNVENC_H264
 //
 
-#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_H264_nvenc"
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_NVENC_H264"
 
 void CodecNVENC_H264::load_config()
 {

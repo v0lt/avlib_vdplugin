@@ -132,7 +132,7 @@ void ConfigX264::change_format(int sel)
 // CodecX264
 //
 
-#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_H264"
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_x264"
 
 void CodecX264::load_config()
 {

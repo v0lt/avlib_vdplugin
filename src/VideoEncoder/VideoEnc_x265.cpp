@@ -134,7 +134,7 @@ void ConfigX265::change_format(int sel)
 // CodecX265
 //
 
-#define REG_KEY_H265 "Software\\VirtualDub2\\avlib\\VideoEnc_H265"
+#define REG_KEY_H265 "Software\\VirtualDub2\\avlib\\VideoEnc_x265"
 
 void CodecX265::load_config()
 {
@@ -268,7 +268,7 @@ void ConfigH265LS::change_format(int sel)
 // CodecH265LS
 //
 
-#define REG_KEY_H265LS "Software\\VirtualDub2\\avlib\\VideoEnc_H265LS"
+#define REG_KEY_H265LS "Software\\VirtualDub2\\avlib\\VideoEnc_x265LS"
 
 void CodecH265LS::load_config()
 {
