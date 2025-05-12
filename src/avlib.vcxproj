@@ -201,6 +201,7 @@
     <ClInclude Include="VideoEncoder\VideoEnc_NVENC_HEVC.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_ProRes.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_QSV_H264.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_QSV_HEVC.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_VP8.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_VP9.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_x264.h" />
@@ -240,6 +241,7 @@
     <ClCompile Include="VideoEncoder\VideoEnc_NVENC_HEVC.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_ProRes.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_QSV_H264.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_QSV_HEVC.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_VP8.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_VP9.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_x264.cpp" />

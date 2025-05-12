@@ -23,6 +23,7 @@ extern "C" {
 #include "VideoEnc_NVENC_H264.h"
 #include "VideoEnc_NVENC_HEVC.h"
 #include "VideoEnc_QSV_H264.h"
+#include "VideoEnc_QSV_HEVC.h"
 
 void init_av();
 
@@ -59,7 +60,8 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		case CodecH265LS::id_tag:     new_codec = new CodecH265LS;     break;
 		case CodecNVENC_H264::id_tag: new_codec = new CodecNVENC_H264; break;
 		case CodecNVENC_HEVC::id_tag: new_codec = new CodecNVENC_HEVC; break;
-		case CodecQSV_H264::id_tag:   new_codec = new CodecQSV_H264; break;
+		case CodecQSV_H264::id_tag:   new_codec = new CodecQSV_H264;   break;
+		case CodecQSV_HEVC::id_tag:   new_codec = new CodecQSV_HEVC;   break;
 		}
 		if (new_codec) {
 			if (!new_codec->init()) {
@@ -154,6 +156,7 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 		if (lParam1 == CodecH265LS::id_tag)     return CodecNVENC_H264::id_tag;
 		if (lParam1 == CodecNVENC_H264::id_tag) return CodecNVENC_HEVC::id_tag;
 		if (lParam1 == CodecNVENC_HEVC::id_tag) return CodecQSV_H264::id_tag;
+		if (lParam1 == CodecQSV_H264::id_tag)   return CodecQSV_HEVC::id_tag;
 		return 0;
 
 	case VDICM_GETHANDLER:

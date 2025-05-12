@@ -114,6 +114,9 @@
     <ClInclude Include="VideoEncoder\VideoEnc_QSV_H264.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_QSV_HEVC.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -206,6 +209,9 @@
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_QSV_H264.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_QSV_HEVC.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
   </ItemGroup>
