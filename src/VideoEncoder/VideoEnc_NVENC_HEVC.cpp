@@ -172,6 +172,10 @@ LRESULT CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
 			return nsVDXPixmap::kPixFormat_YUV420_Planar;
 		}
 		if (config->bits == 10) {
+			int max_value = (1 << config->bits) - 1;
+			if (info) {
+				info->ref_r = max_value;
+			}
 			return nsVDXPixmap::kPixFormat_YUV420_P010;
 		}
 	}
