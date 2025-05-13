@@ -83,9 +83,9 @@ struct CodecBase : public CodecClass {
 
 	virtual bool test_bits(int format, int bits);
 
-	virtual int compress_input_info(VDXPixmapLayout* src) { return 0; }
+	virtual int compress_input_info(VDXPixmapLayout* src) { return 0; } // test if format is known to encoder, irrespective of current settings
 
-	virtual LRESULT compress_input_format(FilterModPixmapInfo* info);
+	virtual int compress_input_format(FilterModPixmapInfo* info); // query which format to use as input
 
 	LRESULT compress_get_format(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout);
 

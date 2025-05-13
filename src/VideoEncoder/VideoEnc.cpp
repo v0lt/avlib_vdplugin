@@ -459,7 +459,7 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 //---------------------------------------------------------------------------
 
-LRESULT CodecBase::compress_input_format(FilterModPixmapInfo* info)
+int CodecBase::compress_input_format(FilterModPixmapInfo* info)
 {
 	if (config->format == format_rgba) {
 		if (config->bits == 8) {

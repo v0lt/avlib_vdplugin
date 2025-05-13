@@ -49,7 +49,7 @@ struct CodecNVENC_HEVC : public CodecBase {
 
 	virtual int compress_input_info(VDXPixmapLayout* src) override;
 
-	virtual LRESULT compress_input_format(FilterModPixmapInfo* info) override;
+	virtual int compress_input_format(FilterModPixmapInfo* info) override;
 
 	bool init_ctx(VDXPixmapLayout* layout);
 

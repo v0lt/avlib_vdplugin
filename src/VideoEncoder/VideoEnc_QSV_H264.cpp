@@ -112,7 +112,7 @@ int CodecQSV_H264::compress_input_info(VDXPixmapLayout* src)
 	return 0;
 }
 
-LRESULT CodecQSV_H264::compress_input_format(FilterModPixmapInfo* info)
+int CodecQSV_H264::compress_input_format(FilterModPixmapInfo* info)
 {
 	if (config->format == format_yuv420) {
 		if (config->bits == 8) {

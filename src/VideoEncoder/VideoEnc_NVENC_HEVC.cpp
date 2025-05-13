@@ -157,13 +157,13 @@ int CodecNVENC_HEVC::compress_input_info(VDXPixmapLayout* src)
 	case nsVDXPixmap::kPixFormat_YUV420_P010:
 	case nsVDXPixmap::kPixFormat_YUV420_P016:
 	case nsVDXPixmap::kPixFormat_YUV444_Planar:
-	case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV444_Planar16: // truncated to 10bits
 		return 1;
 	}
 	return 0;
 }
 
-LRESULT CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
+int CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
 {
 	if (config->format == format_yuv420) {
 		if (config->bits == 8) {
@@ -184,7 +184,7 @@ LRESULT CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
 			if (info) {
 				info->ref_r = 0xFFC0; // max value for Y
 			}
-			return nsVDXPixmap::kPixFormat_YUV444_Planar16;
+			return nsVDXPixmap::kPixFormat_YUV444_Planar16; // truncated to 10bits
 		}
 	}
 	return 0;
