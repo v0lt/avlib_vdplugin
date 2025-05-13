@@ -701,6 +701,9 @@ LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layou
 	else if (layout->format == nsVDXPixmap::kPixFormat_YUV420_P016) {
 		avctx->pix_fmt = AV_PIX_FMT_P016;
 	}
+	else if (layout->format == nsVDXPixmap::kPixFormat_YUV444_Planar16) {
+		avctx->pix_fmt = AV_PIX_FMT_YUV444P16;
+	}
 	else if (config->format == format_rgba) {
 		switch (config->bits) {
 		case 16:

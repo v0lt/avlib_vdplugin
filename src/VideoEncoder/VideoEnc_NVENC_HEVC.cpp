@@ -143,7 +143,7 @@ bool CodecNVENC_HEVC::test_bits(int format, int bits)
 		break;
 	case format_yuv444:
 		if (bits == 8) return test_av_format(AV_PIX_FMT_YUV444P);
-		if (bits == 10) return test_av_format(AV_PIX_FMT_YUV444P10LE);
+		if (bits == 10) return test_av_format(AV_PIX_FMT_YUV444P16);
 		break;
 	}
 	return false;
@@ -171,7 +171,7 @@ LRESULT CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
 		}
 		if (config->bits == 10) {
 			if (info) {
-				info->ref_r = 0xFFC0;
+				info->ref_r = 0xFFC0; // max value for Y
 			}
 			return nsVDXPixmap::kPixFormat_YUV420_P010;
 		}
@@ -181,9 +181,8 @@ LRESULT CodecNVENC_HEVC::compress_input_format(FilterModPixmapInfo* info)
 			return nsVDXPixmap::kPixFormat_YUV444_Planar;
 		}
 		if (config->bits == 10) {
-			int max_value = (1 << config->bits) - 1;
 			if (info) {
-				info->ref_r = max_value;
+				info->ref_r = 0xFFC0; // max value for Y
 			}
 			return nsVDXPixmap::kPixFormat_YUV444_Planar16;
 		}

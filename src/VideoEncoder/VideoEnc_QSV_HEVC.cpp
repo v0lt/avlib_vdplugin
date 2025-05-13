@@ -140,7 +140,7 @@ LRESULT CodecQSV_HEVC::compress_input_format(FilterModPixmapInfo* info)
 		}
 		if (config->bits == 10) {
 			if (info) {
-				info->ref_r = 0xFFC0;
+				info->ref_r = 0xFFC0; // max value for Y
 			}
 			return nsVDXPixmap::kPixFormat_YUV420_P010;
 		}
