@@ -1082,12 +1082,12 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 		init_format();
 	}
 
-	VDXPixmapFormat base_format = kPixFormat_Null;
-	VDXPixmapFormat ext_format = kPixFormat_Null;
-	VDXPixmapFormat trigger = kPixFormat_Null;
+	VDXPixmapFormat base_format    = kPixFormat_Null;
+	VDXPixmapFormat ext_format     = kPixFormat_Null;
+	VDXPixmapFormat trigger        = kPixFormat_Null;
 	VDXPixmapFormat perfect_format = kPixFormat_Null;
-	AVPixelFormat perfect_av_fmt = frame_fmt;
-	AVPixelFormat src_fmt = frame_fmt;
+	AVPixelFormat perfect_av_fmt   = frame_fmt;
+	AVPixelFormat src_fmt          = frame_fmt;
 	bool perfect_bitexact = false;
 
 	m_convertInfo.req_format = opt_format;
@@ -1737,15 +1737,13 @@ bool VDFFVideoSource::SetTargetFormat(nsVDXPixmap::VDXPixmapFormat opt_format, b
 
 void VDFFVideoSource::set_pixmap_layout(const uint8_t* p)
 {
-	using namespace nsVDXPixmap;
-
 	int w = m_pixmap.w;
 	int h = m_pixmap.h;
 
 	AVFrame pic = { 0 };
 	av_image_fill_arrays(pic.data, pic.linesize, p, m_convertInfo.av_fmt, w, h, line_align);
 
-	if (m_pixmap.format == kPixFormat_YUV422_V210) {
+	if (m_pixmap.format == nsVDXPixmap::kPixFormat_YUV422_V210) {
 		int row = (w + 47) / 48 * 128;
 		pic.linesize[0] = row;
 	}
@@ -1762,10 +1760,10 @@ void VDFFVideoSource::set_pixmap_layout(const uint8_t* p)
 
 	if (m_convertInfo.req_dib ^ flip_image) {
 		switch (m_pixmap.format) {
-		case kPixFormat_XRGB1555:
-		case kPixFormat_RGB565:
-		case kPixFormat_RGB888:
-		case kPixFormat_XRGB8888:
+		case nsVDXPixmap::kPixFormat_XRGB1555:
+		case nsVDXPixmap::kPixFormat_RGB565:
+		case nsVDXPixmap::kPixFormat_RGB888:
+		case nsVDXPixmap::kPixFormat_XRGB8888:
 			m_pixmap.data = pic.data[0] + pic.linesize[0] * (h - 1);
 			m_pixmap.pitch = -pic.linesize[0];
 			break;
