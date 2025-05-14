@@ -1,5 +1,13 @@
 avlib.vdplugin history
 
+0.7.1.x dev
+----------------------
+The FFmpeg 7.1.1 x64 build from BtbN is used.
+Added saving and reading of encoder settings from the registry.
+Added hardware video encoders NVENC, QSV, AMF for H.264 and HEVC.
+Cosmetic changes.
+
+
 0.7.1.264 - 2025-04-16
 ----------------------
 FFmpeg 7.1.1 is now supported.
