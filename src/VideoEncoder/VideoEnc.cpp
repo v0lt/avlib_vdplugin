@@ -37,6 +37,37 @@ void copy_plane(const int lines, uint8_t* dst, size_t dst_pitch, const uint8_t* 
 	}
 }
 
+void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+{
+	int h2 = layout->h;
+	switch (layout->format) {
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
+	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
+		h2 = h2 / 2;
+		break;
+	}
+
+	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
+	copy_plane(h2, frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
+	copy_plane(h2, frame->data[2], frame->linesize[2], (uint8_t*)data + layout->data3, layout->pitch3);
+}
+
+void copy_yuva(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+{
+	copy_yuv(frame, layout, data);
+	const VDXPixmapLayoutAlpha* layout2 = (const VDXPixmapLayoutAlpha*)layout;
+	copy_plane(layout->h, frame->data[3], frame->linesize[3], (uint8_t*)data + layout2->data4, layout2->pitch4);
+}
+
+void copy_nv12_p01x(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
+{
+	int h2 = layout->h / 2;
+	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
+	copy_plane(h2, frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
+}
+
 void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	if (frame->format == AV_PIX_FMT_RGB24) {
@@ -96,12 +127,15 @@ bool planar_rgba16(int format) {
 
 void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
-	if (frame->format == AV_PIX_FMT_BGRA64) {
+	switch (frame->format) {
+	case AV_PIX_FMT_BGRA64:
 		copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
-		return;
-	}
-
-	if (planar_rgb16(frame->format)) {
+		break;
+	case AV_PIX_FMT_GBRP16LE:
+	case AV_PIX_FMT_GBRP14LE:
+	case AV_PIX_FMT_GBRP12LE:
+	case AV_PIX_FMT_GBRP10LE:
+	case AV_PIX_FMT_GBRP9LE:
 		for (int y = 0; y < layout->h; y++) {
 			const uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
@@ -116,10 +150,10 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 				s += 4;
 			}
 		}
-		return;
-	}
-
-	if (planar_rgba16(frame->format)) {
+		break;
+	case AV_PIX_FMT_GBRAP16LE:
+	case AV_PIX_FMT_GBRAP12LE:
+	case AV_PIX_FMT_GBRAP10LE:
 		for (int y = 0; y < layout->h; y++) {
 			const uint16_t* s = (uint16_t*)((uint8_t*)data + layout->data + layout->pitch * y);
 
@@ -136,52 +170,11 @@ void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 				s += 4;
 			}
 		}
-		return;
-	}
-
-	assert(0);
-}
-
-void copy_yuv(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
-{
-	int w2 = layout->w;
-	int h2 = layout->h;
-	switch (layout->format) {
-	case nsVDXPixmap::kPixFormat_YUV420_Planar:
-	case nsVDXPixmap::kPixFormat_YUV420_Planar16:
-		w2 = (w2 + 1) / 2;
-		h2 = h2 / 2;
 		break;
-	case nsVDXPixmap::kPixFormat_YUV422_Planar:
-	case nsVDXPixmap::kPixFormat_YUV422_Planar16:
-		w2 = (w2 + 1) / 2;
+	default:
+		assert(0);
 		break;
 	}
-
-	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data,  layout->pitch);
-	copy_plane(h2,        frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
-	copy_plane(h2,        frame->data[2], frame->linesize[2], (uint8_t*)data + layout->data3, layout->pitch3);
-
-	switch (layout->format) {
-	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
-	case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
-	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
-	case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
-	case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar16:
-	case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
-	{
-		const VDXPixmapLayoutAlpha* layout2 = (const VDXPixmapLayoutAlpha*)layout;
-		copy_plane(layout->h, frame->data[3], frame->linesize[3], (uint8_t*)data + layout2->data4, layout2->pitch4);
-		break;
-	}
-	}
-}
-
-void copy_nv12_p01x(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
-{
-	int h2 = layout->h / 2;
-	copy_plane(layout->h, frame->data[0], frame->linesize[0], (uint8_t*)data + layout->data, layout->pitch);
-	copy_plane(h2, frame->data[1], frame->linesize[1], (uint8_t*)data + layout->data2, layout->pitch2);
 }
 
 bool CodecBase::init()
@@ -1006,16 +999,18 @@ LRESULT CodecBase::compress2(ICCOMPRESS* icc, VDXPictureCompress* pc)
 		case nsVDXPixmap::kPixFormat_YUV420_Planar:
 		case nsVDXPixmap::kPixFormat_YUV422_Planar:
 		case nsVDXPixmap::kPixFormat_YUV444_Planar:
-		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
-		case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
-		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
 		case nsVDXPixmap::kPixFormat_YUV420_Planar16:
 		case nsVDXPixmap::kPixFormat_YUV422_Planar16:
 		case nsVDXPixmap::kPixFormat_YUV444_Planar16:
+			copy_yuv(frame, layout, icc->lpInput);
+			break;
+		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar:
+		case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar:
+		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar:
 		case nsVDXPixmap::kPixFormat_YUV420_Alpha_Planar16:
 		case nsVDXPixmap::kPixFormat_YUV422_Alpha_Planar16:
 		case nsVDXPixmap::kPixFormat_YUV444_Alpha_Planar16:
-			copy_yuv(frame, layout, icc->lpInput);
+			copy_yuva(frame, layout, icc->lpInput);
 			break;
 		case nsVDXPixmap::kPixFormat_YUV420_NV12:
 		case nsVDXPixmap::kPixFormat_YUV420_P010:
