@@ -103,28 +103,6 @@ void copy_rgb24(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 	}
 }
 
-bool planar_rgb16(int format) {
-	switch (format) {
-	case AV_PIX_FMT_GBRP16LE:
-	case AV_PIX_FMT_GBRP14LE:
-	case AV_PIX_FMT_GBRP12LE:
-	case AV_PIX_FMT_GBRP10LE:
-	case AV_PIX_FMT_GBRP9LE:
-		return true;
-	}
-	return false;
-}
-
-bool planar_rgba16(int format) {
-	switch (format) {
-	case AV_PIX_FMT_GBRAP16LE:
-	case AV_PIX_FMT_GBRAP12LE:
-	case AV_PIX_FMT_GBRAP10LE:
-		return true;
-	}
-	return false;
-}
-
 void copy_rgb64(AVFrame* frame, const VDXPixmapLayout* layout, const void* data)
 {
 	switch (frame->format) {
