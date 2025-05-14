@@ -194,6 +194,8 @@
     <ClInclude Include="Utils\StringUtil.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="VideoEncoder\VideoEnc.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_AMF_H264.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_AMF_HEVC.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_AV1.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_FFV1.h" />
     <ClInclude Include="VideoEncoder\VideoEnc_FFVHuff.h" />
@@ -234,6 +236,8 @@
     <ClCompile Include="vfmain.cpp" />
     <ClCompile Include="VideoEncoder\VideoCompress.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_AMF_H264.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_AMF_HEVC.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_AV1.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_FFV1.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_FFVHuff.cpp" />
