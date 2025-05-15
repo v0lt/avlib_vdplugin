@@ -150,6 +150,20 @@ bool CodecAMF_HEVC::init_ctx(VDXPixmapLayout* layout)
 	avctx->gop_size = -1;
 	avctx->max_b_frames = -1;
 
+	avctx->profile = (config->bits == 10) ? AV_PROFILE_HEVC_MAIN_10 : AV_PROFILE_HEVC_MAIN;
+
+	switch (avctx->colorspace) {
+		case AVCOL_SPC_BT470BG:
+			avctx->color_primaries = AVCOL_PRI_SMPTE170M;
+			avctx->color_trc = AVCOL_TRC_SMPTE170M;
+			break;
+		case AVCOL_SPC_BT709:
+		default:
+			avctx->color_primaries = AVCOL_PRI_BT709;
+			avctx->color_trc = AVCOL_TRC_BT709;
+			break;
+	}
+
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", hevc_amf_preset_names[codec_config.preset], 0);
 	return true;
