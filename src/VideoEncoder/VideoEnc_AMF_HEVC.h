@@ -20,7 +20,7 @@ struct CodecAMF_HEVC : public CodecBase {
 			version = 1;
 			format  = format_yuv420;
 			bits    = 8;
-			preset  = 3;
+			preset  = 2; // "balanced"
 			tune    = 0;
 		}
 	} codec_config;

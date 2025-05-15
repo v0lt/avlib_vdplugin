@@ -16,6 +16,7 @@ const int hevc_amf_formats[] = {
 const int hevc_amf_bitdepths[] = { 8, 10 };
 
 const char* hevc_amf_preset_names[] = {
+	"default",
 	"speed",
 	"balanced",
 	"quality",
