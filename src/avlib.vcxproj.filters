@@ -123,6 +123,9 @@
     <ClInclude Include="VideoEncoder\VideoEnc_AMF_HEVC.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_NVENC_AV1.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -224,6 +227,9 @@
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_AMF_HEVC.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_NVENC_AV1.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
   </ItemGroup>

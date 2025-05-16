@@ -24,6 +24,7 @@
 #define IDD_ENC_X265LS                  223
 #define IDD_ENC_NVENC_H264              230
 #define IDD_ENC_NVENC_HEVC              231
+#define IDD_ENC_NVENC_AV1               232
 #define IDD_ENC_QSV_H264                240
 #define IDD_ENC_QSV_HEVC                241
 #define IDD_ENC_AMF_H264                250
