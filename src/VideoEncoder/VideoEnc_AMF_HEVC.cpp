@@ -122,7 +122,8 @@ bool CodecAMF_HEVC::test_bits(int format, int bits)
 int CodecAMF_HEVC::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
-	case nsVDXPixmap::kPixFormat_YUV420_NV12:
+	case nsVDXPixmap::kPixFormat_YUV420_Planar:
+	case nsVDXPixmap::kPixFormat_YUV420_NV12: // also an acceptable format
 	case nsVDXPixmap::kPixFormat_YUV420_P010:
 		return 1;
 	}
@@ -133,7 +134,7 @@ int CodecAMF_HEVC::compress_input_format(FilterModPixmapInfo* info)
 {
 	if (config->format == format_yuv420) {
 		if (config->bits == 8) {
-			return nsVDXPixmap::kPixFormat_YUV420_NV12;
+			return nsVDXPixmap::kPixFormat_YUV420_Planar;
 		}
 		if (config->bits == 10) {
 			if (info) {

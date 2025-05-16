@@ -153,9 +153,9 @@ int CodecNVENC_HEVC::compress_input_info(VDXPixmapLayout* src)
 {
 	switch (src->format) {
 	case nsVDXPixmap::kPixFormat_YUV420_Planar:
-	case nsVDXPixmap::kPixFormat_YUV420_NV12:
+	case nsVDXPixmap::kPixFormat_YUV420_NV12:     // also an acceptable format
 	case nsVDXPixmap::kPixFormat_YUV420_P010:
-	case nsVDXPixmap::kPixFormat_YUV420_P016:
+	case nsVDXPixmap::kPixFormat_YUV420_P016:     // also an acceptable format, truncated to 10bits
 	case nsVDXPixmap::kPixFormat_YUV444_Planar:
 	case nsVDXPixmap::kPixFormat_YUV444_Planar16: // truncated to 10bits
 		return 1;
