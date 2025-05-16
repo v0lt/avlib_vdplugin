@@ -95,7 +95,7 @@ void CodecAMF_H264::save_config()
 bool CodecAMF_H264::test_bits(int format, int bits)
 {
 	if (format == format_yuv420 && bits == 8) {
-		return test_av_format(AV_PIX_FMT_NV12);
+		return test_av_format(AV_PIX_FMT_YUV420P);
 	}
 	return false;
 }

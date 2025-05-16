@@ -112,7 +112,7 @@ bool CodecAMF_HEVC::test_bits(int format, int bits)
 {
 	switch (format) {
 	case format_yuv420:
-		if (bits == 8)  return test_av_format(AV_PIX_FMT_NV12);
+		if (bits == 8)  return test_av_format(AV_PIX_FMT_YUV420P);
 		if (bits == 10) return test_av_format(AV_PIX_FMT_P010);
 		break;
 	}
