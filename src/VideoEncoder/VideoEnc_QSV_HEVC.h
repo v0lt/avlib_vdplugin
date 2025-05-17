@@ -42,23 +42,23 @@ struct CodecQSV_HEVC : public CodecBase {
 	int config_size() override { return sizeof(Config); }
 	void reset_config() override { codec_config.reset(); }
 
-	virtual void load_config() override;
-	virtual void save_config() override;
+	void load_config() override;
+	void save_config() override;
 
-	void getinfo(ICINFO& info) {
+	void getinfo(ICINFO& info) override {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"hevc_qsv");
 		wcscpy_s(info.szDescription, L"FFmpeg / QSV HEVC");
 	}
 
-	virtual bool test_bits(int format, int bits) override;
+	bool test_bits(int format, int bits) override;
 
-	virtual int compress_input_info(VDXPixmapLayout* src) override;
+	int compress_input_info(VDXPixmapLayout* src) override;
 
-	virtual int compress_input_format(FilterModPixmapInfo* info) override;
+	int compress_input_format(FilterModPixmapInfo* info) override;
 
-	bool init_ctx(VDXPixmapLayout* layout);
+	bool init_ctx(VDXPixmapLayout* layout) override;
 
-	LRESULT configure(HWND parent);
+	LRESULT configure(HWND parent) override;
 };

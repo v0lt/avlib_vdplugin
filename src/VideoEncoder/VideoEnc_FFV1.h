@@ -57,10 +57,10 @@ struct CodecFFV1 : public CodecBase {
 	int config_size() override { return sizeof(Config); }
 	void reset_config() override { codec_config.reset(); }
 
-	virtual void load_config();
-	virtual void save_config();
+	void load_config() override;
+	void save_config() override;
 
-	virtual bool test_av_format(AVPixelFormat format) {
+	virtual bool test_av_format(AVPixelFormat format) override {
 		switch (format) {
 		case AV_PIX_FMT_GRAY9:
 		case AV_PIX_FMT_YUV444P9:
@@ -109,16 +109,16 @@ struct CodecFFV1 : public CodecBase {
 		return CodecBase::test_av_format(format);
 	}
 
-	void getinfo(ICINFO& info) {
+	void getinfo(ICINFO& info) override {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"FFV1");
 		wcscpy_s(info.szDescription, L"FFmpeg / FFV1 lossless codec");
 	}
 
-	virtual int compress_input_info(VDXPixmapLayout* src) override;
+	int compress_input_info(VDXPixmapLayout* src) override;
 
-	bool init_ctx(VDXPixmapLayout* layout);
+	bool init_ctx(VDXPixmapLayout* layout) override;
 
-	LRESULT configure(HWND parent);
+	LRESULT configure(HWND parent) override;
 };
