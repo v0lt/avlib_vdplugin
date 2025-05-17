@@ -42,6 +42,8 @@ struct CodecProres : public CodecBase {
 	};
 	static constexpr int codec_bitdepths[] = { 10 };
 
+	std::span<const char*> prores_profile_names;
+
 	CodecProres() {
 		codec_name = "prores_ks";
 		codec_tag = MKTAG('a', 'p', 'c', 'h');

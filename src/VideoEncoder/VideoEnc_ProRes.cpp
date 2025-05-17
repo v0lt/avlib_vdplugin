@@ -9,13 +9,16 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const char* prores_profile_names[] = {
+const char* prores_profile_422_names[] = {
 	"proxy",
-	"LT",
+	"lt",
 	"standard",
-	"high quality",
+	"hq",
+};
+
+const char* prores_profile_4444_names[] = {
 	"4444",
-	"4444XQ",
+	"4444xq",
 };
 
 //
@@ -26,6 +29,7 @@ class ConfigProres : public ConfigBase {
 public:
 	ConfigProres() { dialog_id = IDD_ENC_PRORES; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
+	void change_format(int sel) override;
 	void init_profile();
 };
 
@@ -57,13 +61,10 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				CodecProres::Config* config = (CodecProres::Config*)codec->config;
-				int v = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
-				if (config->format == CodecBase::format_yuva444) {
-					config->profile = v + 4;
-				}
-				else {
-					config->profile = v;
+				LRESULT ret = SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
+				if (ret >= 0) {
+					CodecProres::Config* config = (CodecProres::Config*)codec->config;
+					config->profile = (int)ret;
 				}
 				return TRUE;
 			}
@@ -73,33 +74,35 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
+void ConfigProres::change_format(int sel)
+{
+	if (sel >= 0 && sel < std::size(codec->formats)) {
+		codec->config->format = codec->formats[sel];
+		init_profile();
+	}
+}
+
 void ConfigProres::init_profile()
 {
-	CodecProres::Config* config = (CodecProres::Config*)codec->config;
-	if (config->format == CodecBase::format_yuva444) {
-		if (config->profile < 4) {
-			config->profile = 4;
+	CodecProres* prores_codec = (CodecProres*)codec;
+
+	if (codec->config->format == CodecBase::format_yuva444) {
+		if (prores_codec->prores_profile_names.data() != prores_profile_4444_names) {
+			prores_codec->prores_profile_names = prores_profile_4444_names;
+			prores_codec->codec_config.profile = 0; // "4444"
 		}
-
-		const char* profile_names[] = {
-			"4444",
-			"4444XQ",
-		};
-
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (const auto& profile_name : profile_names) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
+	} else {
+		if (prores_codec->prores_profile_names.data() != prores_profile_422_names) {
+			prores_codec->prores_profile_names = prores_profile_422_names;
+			prores_codec->codec_config.profile = 3; // "HQ"
 		}
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile - 4, 0);
-
 	}
-	else {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-		for (const auto& profile_name : prores_profile_names) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
-		}
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
+
+	SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+	for (const auto& profile_name : prores_codec->prores_profile_names) {
+		SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
 	}
+	SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, prores_codec->codec_config.profile, 0);
 }
 
 //
@@ -112,6 +115,12 @@ void CodecProres::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		reg.ReadInt("format", codec_config.format, formats);
+		if (codec_config.format == CodecBase::format_yuva444) {
+			prores_profile_names = prores_profile_4444_names;
+		} else {
+			prores_profile_names = prores_profile_422_names;
+		}
 		reg.CheckString("profile", codec_config.profile, prores_profile_names);
 		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
 		reg.CloseKey();
@@ -122,6 +131,7 @@ void CodecProres::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		reg.WriteInt("format", codec_config.format);
 		reg.WriteString("profile", prores_profile_names[codec_config.profile]);
 		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();
@@ -141,9 +151,10 @@ int CodecProres::compress_input_info(VDXPixmapLayout* src)
 
 bool CodecProres::init_ctx(VDXPixmapLayout* layout)
 {
-	av_opt_set_int(avctx->priv_data, "profile", codec_config.profile, 0);
+	[[maybe_unused]] int ret = 0;
+	ret = av_opt_set(avctx->priv_data, "profile", prores_profile_names[codec_config.profile], 0);
 	if (codec_config.format == format_yuva444) {
-		av_opt_set_int(avctx->priv_data, "alpha_bits", 16, 0);
+		ret = av_opt_set_int(avctx->priv_data, "alpha_bits", 16, 0);
 	}
 	avctx->flags |= AV_CODEC_FLAG_QSCALE;
 	avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
