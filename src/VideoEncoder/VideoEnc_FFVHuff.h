@@ -35,12 +35,14 @@ struct CodecHUFF : public CodecBase {
 		CodecBase::format_yuva444,
 		CodecBase::format_gray,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 9, 10, 12, 14, 16 };
 
 	CodecHUFF() {
 		codec_name = "ffvhuff";
 		codec_tag = MKTAG('F', 'F', 'V', 'H');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

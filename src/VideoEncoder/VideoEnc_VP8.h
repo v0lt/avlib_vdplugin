@@ -28,12 +28,14 @@ struct CodecVP8 : public CodecBase {
 		CodecBase::format_yuv420,
 		CodecBase::format_yuva420,
 	};
+	static constexpr int codec_bitdepths[] = { 8 };
 
 	CodecVP8() {
 		codec_name = "libvpx";
 		codec_tag = MKTAG('V', 'P', '8', '0');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

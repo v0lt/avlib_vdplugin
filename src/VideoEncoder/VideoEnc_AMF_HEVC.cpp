@@ -9,8 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int hevc_amf_bitdepths[] = { 8, 10 };
-
 const char* hevc_amf_preset_names[] = {
 	"default",
 	"speed",
@@ -66,7 +64,7 @@ void CodecAMF_HEVC::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, hevc_amf_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.CheckString("preset", codec_config.preset, hevc_amf_preset_names);
 		reg.CloseKey();
 	}

@@ -40,12 +40,14 @@ struct CodecProres : public CodecBase {
 		CodecBase::format_yuv444,
 		CodecBase::format_yuva444,
 	};
+	static constexpr int codec_bitdepths[] = { 10 };
 
 	CodecProres() {
 		codec_name = "prores_ks";
 		codec_tag = MKTAG('a', 'p', 'c', 'h');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

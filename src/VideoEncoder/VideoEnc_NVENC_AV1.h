@@ -28,12 +28,14 @@ struct CodecNVENC_AV1 : public CodecBase {
 	static constexpr int codec_formats[] = {
 		CodecBase::format_yuv420,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10 };
 
 	CodecNVENC_AV1() {
 		codec_name = "av1_nvenc";
 		codec_tag = MKTAG('A', 'V', '0', '1');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

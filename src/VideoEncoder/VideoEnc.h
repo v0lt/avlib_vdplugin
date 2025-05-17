@@ -66,6 +66,7 @@ struct CodecBase : public CodecClass {
 	bool global_header = false;
 
 	std::span<const int> formats;
+	std::span<const int> bitdepths;
 
 	virtual ~CodecBase() {
 		compress_end();

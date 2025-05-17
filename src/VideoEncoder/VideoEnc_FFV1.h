@@ -43,12 +43,14 @@ struct CodecFFV1 : public CodecBase {
 		CodecBase::format_yuva444,
 		CodecBase::format_gray,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 9, 10, 12, 14, 16 };
 
 	CodecFFV1() {
 		codec_name = "ffv1";
 		codec_tag = MKTAG('F', 'F', 'V', '1');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

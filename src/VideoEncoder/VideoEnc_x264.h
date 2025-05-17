@@ -35,12 +35,14 @@ struct CodecX264 : public CodecBase {
 		CodecBase::format_yuv422,
 		CodecBase::format_yuv444,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10 };
 
 	CodecX264() {
 		codec_name = "libx264";
 		codec_tag = MKTAG('H', '2', '6', '4');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

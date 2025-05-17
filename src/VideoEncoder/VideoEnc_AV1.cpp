@@ -8,8 +8,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int stv_av1_bitdepths[] = { 8, 10 };
-
 const char* stv_av1_preset_names[] = {
 	"0 - slow",
 	"1",
@@ -87,7 +85,7 @@ void CodecAV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("bitdepth", codec_config.bits, stv_av1_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.ReadInt("preset", codec_config.preset, 0, 13);
 		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();

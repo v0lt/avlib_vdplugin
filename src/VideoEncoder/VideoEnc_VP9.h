@@ -30,12 +30,14 @@ struct CodecVP9 : public CodecBase {
 		CodecBase::format_yuv422,
 		CodecBase::format_yuv444,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10, 12 };
 
 	CodecVP9() {
 		codec_name = "libvpx-vp9";
 		codec_tag  = MKTAG('V', 'P', '9', '0');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

@@ -10,8 +10,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int x264_bitdepths[] = { 8, 10 };
-
 const char* x264_preset_names[] = {
 	"ultrafast",
 	"superfast",
@@ -107,7 +105,7 @@ void CodecX264::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, x264_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.CheckString("preset", codec_config.preset, x264_preset_names);
 		reg.CheckString("tune", codec_config.tune, x264_tune_names);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);

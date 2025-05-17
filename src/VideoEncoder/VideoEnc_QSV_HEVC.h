@@ -28,12 +28,14 @@ struct CodecQSV_HEVC : public CodecBase {
 	static constexpr int codec_formats[] = {
 		CodecBase::format_yuv420,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10 };
 
 	CodecQSV_HEVC() {
 		codec_name = "hevc_qsv";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

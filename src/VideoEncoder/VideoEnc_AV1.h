@@ -28,12 +28,14 @@ struct CodecAV1 : public CodecBase {
 	static constexpr int codec_formats[] = {
 		CodecBase::format_yuv420,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10 };
 
 	CodecAV1() {
 		codec_name = "libsvtav1";
 		codec_tag = MKTAG('A', 'V', '0', '1');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

@@ -28,12 +28,14 @@ struct CodecQSV_H264 : public CodecBase {
 	static constexpr int codec_formats[] = {
 		CodecBase::format_yuv420,
 	};
+	static constexpr int codec_bitdepths[] = { 8 };
 
 	CodecQSV_H264() {
 		codec_name = "h264_qsv";
 		codec_tag = MKTAG('H', '2', '6', '4');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

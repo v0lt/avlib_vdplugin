@@ -9,8 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int x265_bitdepths[] = { 8, 10, 12 };
-
 const char* x265_preset_names[] = {
 	"ultrafast",
 	"superfast",
@@ -105,7 +103,7 @@ void CodecX265::load_config()
 	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.CheckString("preset", codec_config.preset, x265_preset_names);
 		reg.CheckString("tune", codec_config.tune, x265_tune_names);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
@@ -210,7 +208,7 @@ void CodecH265LS::load_config()
 	RegistryPrefs reg(REG_KEY_H265LS);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, x265_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.CheckString("preset", codec_config.preset, x265_preset_names);
 		reg.CloseKey();
 	}

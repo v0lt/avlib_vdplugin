@@ -38,12 +38,14 @@ struct CodecX265 : public CodecBase {
 		CodecBase::format_yuv422,
 		CodecBase::format_yuv444,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10, 12 };
 
 	CodecX265() {
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 
@@ -92,12 +94,14 @@ struct CodecH265LS : public CodecBase {
 		CodecBase::format_yuv422,
 		CodecBase::format_yuv444,
 	};
+	static constexpr int codec_bitdepths[] = { 8, 10, 12 };
 
 	CodecH265LS() {
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
 		formats = codec_formats;
+		bitdepths = codec_bitdepths;
 		load_config();
 	}
 

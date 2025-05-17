@@ -9,8 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int vp9_bitdepths[] = { 8, 10, 12 };
-
 //
 // ConfigVP9
 //
@@ -56,7 +54,7 @@ void CodecVP9::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, vp9_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();
 	}
