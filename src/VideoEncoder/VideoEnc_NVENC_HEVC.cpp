@@ -106,6 +106,14 @@ void CodecNVENC_HEVC::save_config()
 	}
 }
 
+AVPixelFormat CodecNVENC_HEVC::match_av_format(int vd_format)
+{
+	if (vd_format == nsVDXPixmap::kPixFormat_YUV444_Planar16) {
+		return AV_PIX_FMT_YUV444P16; // truncated to 10bits
+	}
+	return CodecBase::match_av_format(vd_format);
+}
+
 bool CodecNVENC_HEVC::test_bits(int format, int bits)
 {
 	switch (format) {

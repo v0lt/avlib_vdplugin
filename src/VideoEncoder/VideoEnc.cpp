@@ -174,6 +174,109 @@ bool CodecBase::load_config(void* data, size_t size) {
 	return true;
 }
 
+AVPixelFormat CodecBase::match_av_format(int vd_format)
+{
+	switch (vd_format) {
+	case nsVDXPixmap::kPixFormat_YUV420_NV12: return AV_PIX_FMT_NV12;
+	case nsVDXPixmap::kPixFormat_YUV420_P010: return AV_PIX_FMT_P010;
+	case nsVDXPixmap::kPixFormat_YUV420_P016: return AV_PIX_FMT_P016;
+	}
+
+	// vd_format is ignored here. It is expected that the format passed by the compress_input_format function is used.
+	if (config->format == format_rgba) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_GBRAP16LE;
+		case 12: return AV_PIX_FMT_GBRAP12LE;
+		case 10: return AV_PIX_FMT_GBRAP10LE;
+		case 8:  return AV_PIX_FMT_RGB32;
+		}
+	}
+	else if (config->format == format_rgb) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_GBRP16LE;
+		case 14: return AV_PIX_FMT_GBRP14LE;
+		case 12: return AV_PIX_FMT_GBRP12LE;
+		case 10: return AV_PIX_FMT_GBRP10LE;
+		case 9:  return AV_PIX_FMT_GBRP9LE;
+		case 8:
+			if (test_av_format(AV_PIX_FMT_0RGB32)) {
+				return AV_PIX_FMT_0RGB32;
+			}
+			if (test_av_format(AV_PIX_FMT_RGB24)) {
+				return AV_PIX_FMT_RGB24;
+			}
+			if (test_av_format(AV_PIX_FMT_GBRP)) {
+				return AV_PIX_FMT_GBRP;
+			}
+			break;
+		}
+	}
+	else if (config->format == format_yuv420) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUV420P16LE;
+		case 14: return AV_PIX_FMT_YUV420P14LE;
+		case 12: return AV_PIX_FMT_YUV420P12LE;
+		case 10: return AV_PIX_FMT_YUV420P10LE;
+		case 9:  return AV_PIX_FMT_YUV420P9LE;
+		case 8:  return AV_PIX_FMT_YUV420P;
+		}
+	}
+	else if (config->format == format_yuv422) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUV422P16LE;
+		case 14: return AV_PIX_FMT_YUV422P14LE;
+		case 12: return AV_PIX_FMT_YUV422P12LE;
+		case 10: return AV_PIX_FMT_YUV422P10LE;
+		case 9:  return AV_PIX_FMT_YUV422P9LE;
+		case 8:  return AV_PIX_FMT_YUV422P;
+		}
+	}
+	else if (config->format == format_yuv444) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUV444P16LE;
+		case 14: return AV_PIX_FMT_YUV444P14LE;
+		case 12: return AV_PIX_FMT_YUV444P12LE;
+		case 10: return AV_PIX_FMT_YUV444P10LE;
+		case 9:  return AV_PIX_FMT_YUV444P9LE;
+		case 8:  return AV_PIX_FMT_YUV444P;
+		}
+	}
+	else if (config->format == format_yuva420) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUVA420P16LE;
+		case 10: return AV_PIX_FMT_YUVA420P10LE;
+		case 9:  return AV_PIX_FMT_YUVA420P9LE;
+		case 8:  return AV_PIX_FMT_YUVA420P;
+		}
+	}
+	else if (config->format == format_yuva422) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUVA422P16LE;
+		case 10: return AV_PIX_FMT_YUVA422P10LE;
+		case 9:  return AV_PIX_FMT_YUVA422P9LE;
+		case 8:  return AV_PIX_FMT_YUVA422P;
+		}
+	}
+	else if (config->format == format_yuva444) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_YUVA444P16LE;
+		case 10: return AV_PIX_FMT_YUVA444P10LE;
+		case 9:  return AV_PIX_FMT_YUVA444P9LE;
+		case 8:  return AV_PIX_FMT_YUVA444P;
+		}
+	}
+	else if (config->format == format_gray) {
+		switch (config->bits) {
+		case 16: return AV_PIX_FMT_GRAY16LE;
+		case 12: return AV_PIX_FMT_GRAY12LE;
+		case 10: return AV_PIX_FMT_GRAY10LE;
+		case 9:  return AV_PIX_FMT_GRAY9LE;
+		case 8:  return AV_PIX_FMT_GRAY8;
+		}
+	}
+	return AV_PIX_FMT_NONE;
+}
+
 bool CodecBase::test_av_format(AVPixelFormat format) {
 	const enum AVPixelFormat* pix_fmts = nullptr;
 	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_PIX_FORMAT, 0, (const void**)&pix_fmts, nullptr);
@@ -663,203 +766,17 @@ LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layou
 		return ICERR_BADFORMAT;
 	}
 
+	AVPixelFormat av_pix_fmt = match_av_format(layout->format);
+	if (av_pix_fmt == AV_PIX_FMT_NONE) {
+		return ICERR_BADFORMAT;
+	}
+
 	avctx = avcodec_alloc_context3(codec);
-
-	if (layout->format == nsVDXPixmap::kPixFormat_YUV420_NV12) {
-		avctx->pix_fmt = AV_PIX_FMT_NV12;
-	}
-	else if (layout->format == nsVDXPixmap::kPixFormat_YUV420_P010) {
-		avctx->pix_fmt = AV_PIX_FMT_P010;
-	}
-	else if (layout->format == nsVDXPixmap::kPixFormat_YUV420_P016) {
-		avctx->pix_fmt = AV_PIX_FMT_P016;
-	}
-	else if (layout->format == nsVDXPixmap::kPixFormat_YUV444_Planar16) {
-		avctx->pix_fmt = AV_PIX_FMT_YUV444P16;
-	}
-	else if (config->format == format_rgba) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_GBRAP16LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_GBRAP12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_GBRAP10LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_RGB32;
-			break;
-		}
-	}
-	else if (config->format == format_rgb) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_GBRP16LE;
-			break;
-		case 14:
-			avctx->pix_fmt = AV_PIX_FMT_GBRP14LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_GBRP12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_GBRP10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_GBRP9LE;
-			break;
-		case 8:
-			if (test_av_format(AV_PIX_FMT_0RGB32)) {
-				avctx->pix_fmt = AV_PIX_FMT_0RGB32;
-				break;
-			}
-			if (test_av_format(AV_PIX_FMT_RGB24)) {
-				avctx->pix_fmt = AV_PIX_FMT_RGB24;
-				break;
-			}
-			if (test_av_format(AV_PIX_FMT_GBRP)) {
-				avctx->pix_fmt = AV_PIX_FMT_GBRP;
-				break;
-			}
-			break;
-		}
-	}
-	else if (config->format == format_yuv420) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P16LE;
-			break;
-		case 14:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P14LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUV420P;
-			break;
-		}
-	}
-	else if (config->format == format_yuv422) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P16LE;
-			break;
-		case 14:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P14LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUV422P;
-			break;
-		}
-	}
-	else if (config->format == format_yuv444) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P16LE;
-			break;
-		case 14:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P14LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUV444P;
-			break;
-		}
-	}
-	else if (config->format == format_yuva420) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA420P16LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA420P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA420P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA420P;
-			break;
-		}
-	}
-	else if (config->format == format_yuva422) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA422P16LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA422P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA422P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA422P;
-			break;
-		}
-	}
-	else if (config->format == format_yuva444) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA444P16LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA444P10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA444P9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_YUVA444P;
-			break;
-		}
-	}
-	else if (config->format == format_gray) {
-		switch (config->bits) {
-		case 16:
-			avctx->pix_fmt = AV_PIX_FMT_GRAY16LE;
-			break;
-		case 12:
-			avctx->pix_fmt = AV_PIX_FMT_GRAY12LE;
-			break;
-		case 10:
-			avctx->pix_fmt = AV_PIX_FMT_GRAY10LE;
-			break;
-		case 9:
-			avctx->pix_fmt = AV_PIX_FMT_GRAY9LE;
-			break;
-		case 8:
-			avctx->pix_fmt = AV_PIX_FMT_GRAY8;
-			break;
-		}
+	if (!avctx) {
+		return ICERR_INTERNAL;
 	}
 
+	avctx->pix_fmt = av_pix_fmt;
 	avctx->thread_count = 0;
 	avctx->bit_rate = 0;
 	avctx->width = layout->w;

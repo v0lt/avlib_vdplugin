@@ -84,6 +84,8 @@ struct CodecBase : public CodecClass {
 
 	virtual bool load_config(void* data, size_t size);
 
+	virtual AVPixelFormat match_av_format(int vd_format);
+
 	virtual bool test_av_format(AVPixelFormat format);
 
 	virtual bool test_bits(int format, int bits);

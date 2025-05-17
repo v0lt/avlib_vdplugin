@@ -53,6 +53,8 @@ struct CodecNVENC_HEVC : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / NVENC HEVC");
 	}
 
+	AVPixelFormat match_av_format(int vd_format) override;
+
 	bool test_bits(int format, int bits) override;
 
 	int compress_input_info(VDXPixmapLayout* src) override;
