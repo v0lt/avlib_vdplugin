@@ -31,15 +31,15 @@ public:
 		load_config();
 	}
 
-	virtual void reset_config() override { codec_config.reset(); }
-	virtual void load_config() override;
-	virtual void save_config() override;
+	void reset_config() override { codec_config.reset(); }
+	void load_config() override;
+	void save_config() override;
 
-	virtual const char* GetElementaryFormat() { return "ogg"; }
+	const char* GetElementaryFormat() override { return "ogg"; }
 	int SuggestFileFormat(const char* name);
-	virtual void CreateCodec();
-	virtual void InitContext();
-	virtual size_t GetConfigSize() { return sizeof(Config); }
-	virtual bool HasConfig() { return true; }
-	virtual void ShowConfig(VDXHWND parent);
+	void CreateCodec() override;
+	void InitContext() override;
+	size_t GetConfigSize() override { return sizeof(Config); }
+	bool HasConfig() override { return true; }
+	void ShowConfig(VDXHWND parent) override;
 };
