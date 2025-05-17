@@ -22,7 +22,7 @@ public:
 	VDFFAudio_mp3::Config* codec_config = nullptr;
 
 	AConfigMp3() { dialog_id = IDD_ENC_MP3; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_quality();
 	void change_quality();
 };

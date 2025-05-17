@@ -20,7 +20,7 @@ public:
 	VDFFAudio_flac::Config* codec_config = nullptr;
 
 	AConfigFlac() { dialog_id = IDD_ENC_FLAC; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_quality();
 	void change_quality();
 };

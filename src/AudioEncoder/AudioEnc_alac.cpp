@@ -17,7 +17,7 @@ public:
 	VDFFAudio_alac::Config* codec_config = nullptr;
 
 	AConfigAlac() { dialog_id = IDD_ENC_ALAC; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_quality();
 	void change_quality();
 };

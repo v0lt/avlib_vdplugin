@@ -17,7 +17,7 @@ public:
 	VDFFAudio_aac::Config* codec_config = nullptr;
 
 	AConfigAAC() { dialog_id = IDD_ENC_AAC; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_quality();
 	void change_quality();
 };

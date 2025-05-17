@@ -17,7 +17,7 @@ public:
 	VDFFAudio_vorbis::Config* codec_config = nullptr;
 
 	AConfigVorbis() { dialog_id = IDD_ENC_VORBIS; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_quality();
 	void change_quality();
 };
