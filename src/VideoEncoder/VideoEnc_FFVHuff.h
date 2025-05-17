@@ -24,10 +24,23 @@ struct CodecHUFF : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_rgb,
+		CodecBase::format_rgba,
+		CodecBase::format_yuv420,
+		CodecBase::format_yuv422,
+		CodecBase::format_yuv444,
+		CodecBase::format_yuva420,
+		CodecBase::format_yuva422,
+		CodecBase::format_yuva444,
+		CodecBase::format_gray,
+	};
+
 	CodecHUFF() {
 		codec_name = "ffvhuff";
 		codec_tag = MKTAG('F', 'F', 'V', 'H');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

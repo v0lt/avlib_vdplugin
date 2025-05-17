@@ -11,6 +11,8 @@
 #include <commctrl.h>
 #include <vfw.h>
 
+#include <span>
+
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 
@@ -62,6 +64,8 @@ struct CodecBase : public CodecClass {
 	AVFrame* frame = nullptr;
 	VDLogProc logProc = nullptr;
 	bool global_header = false;
+
+	std::span<const int> formats;
 
 	virtual ~CodecBase() {
 		compress_end();
@@ -125,7 +129,7 @@ public:
 	void Show(HWND parent, CodecBase* codec);
 
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
-	virtual void init_format();
+	void init_format();
 	virtual void change_format(int sel);
 	virtual void change_bits() {}
 	void init_bits();

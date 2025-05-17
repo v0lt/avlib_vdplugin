@@ -280,10 +280,20 @@ void ConfigBase::Show(HWND parent, CodecBase* codec)
 void ConfigBase::init_format()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (int i = CodecBase::format_rgb; i <= CodecBase::format_gray; i++) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(i));
+	for (const auto& format : codec->formats) {
+		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
+		if (idx >= 0 && format == codec->config->format) {
+			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
+		}
 	}
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, codec->config->format - 1, 0);
+}
+
+void ConfigBase::change_format(int sel)
+{
+	if (sel >= 0 && sel < std::size(codec->formats)) {
+		codec->config->format = codec->formats[sel];
+		init_bits();
+	}
 }
 
 void ConfigBase::adjust_bits()
@@ -314,14 +324,6 @@ void ConfigBase::adjust_bits()
 		notify_bits_change(bits1, codec->config->bits);
 		codec->config->bits = bits1;
 	}
-}
-
-void ConfigBase::change_format(int sel)
-{
-	codec->config->format = sel + 1;
-	adjust_bits();
-	init_bits();
-	change_bits();
 }
 
 void ConfigBase::init_bits()

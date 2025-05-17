@@ -25,10 +25,15 @@ struct CodecAMF_H264 : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_yuv420,
+	};
+
 	CodecAMF_H264() {
 		codec_name = "h264_amf";
 		codec_tag = MKTAG('H', '2', '6', '4');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

@@ -9,10 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int av1_nvenc_formats[] = {
-	CodecBase::format_yuv420,
-};
-
 const int av1_nvenc_bitdepths[] = { 8, 10 };
 
 const char* av1_nvenc_preset_names[] = {
@@ -40,9 +36,7 @@ const char* av1_nvenc_tune_names[] = {
 class ConfigNVENC_AV1 : public ConfigBase {
 public:
 	ConfigNVENC_AV1() { dialog_id = IDD_ENC_NVENC_AV1; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigNVENC_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -82,25 +76,6 @@ INT_PTR ConfigNVENC_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
-}
-
-void ConfigNVENC_AV1::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : av1_nvenc_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-}
-
-void ConfigNVENC_AV1::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(av1_nvenc_formats)) {
-		codec->config->format = av1_nvenc_formats[sel];
-		init_bits();
-	}
 }
 
 //

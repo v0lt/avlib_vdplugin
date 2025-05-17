@@ -25,7 +25,8 @@ public:
 		dialog_id = IDD_ENC_FFVHUFF;
 		idc_message = IDC_ENC_MESSAGE;
 	}
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
+	void change_format(int sel) override;
 };
 
 INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -56,6 +57,16 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
+void ConfigHUFF::change_format(int sel)
+{
+	if (sel >= 0 && sel < std::size(codec->formats)) {
+		codec->config->format = codec->formats[sel];
+		adjust_bits();
+		init_bits();
+		change_bits();
+	}
+}
+
 //
 // CodecHUFF
 //
@@ -66,7 +77,7 @@ void CodecHUFF::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, 1, 9);
+		reg.ReadInt("format", codec_config.format, formats);
 		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
 		reg.CheckString("pred", codec_config.prediction, ffvhuff_pred_names);
 		reg.CloseKey();

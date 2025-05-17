@@ -25,10 +25,15 @@ struct CodecNVENC_AV1 : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_yuv420,
+	};
+
 	CodecNVENC_AV1() {
 		codec_name = "av1_nvenc";
 		codec_tag = MKTAG('A', 'V', '0', '1');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

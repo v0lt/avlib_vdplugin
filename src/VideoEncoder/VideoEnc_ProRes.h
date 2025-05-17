@@ -35,10 +35,17 @@ struct CodecProres : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_yuv422,
+		CodecBase::format_yuv444,
+		CodecBase::format_yuva444,
+	};
+
 	CodecProres() {
 		codec_name = "prores_ks";
 		codec_tag = MKTAG('a', 'p', 'c', 'h');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

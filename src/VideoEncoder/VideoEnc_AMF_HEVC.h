@@ -25,10 +25,15 @@ struct CodecAMF_HEVC : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_yuv420,
+	};
+
 	CodecAMF_HEVC() {
 		codec_name = "hevc_amf";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

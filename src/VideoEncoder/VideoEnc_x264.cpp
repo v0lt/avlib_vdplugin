@@ -10,12 +10,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int x264_formats[] = {
-	CodecBase::format_yuv420,
-	CodecBase::format_yuv422,
-	CodecBase::format_yuv444,
-};
-
 const int x264_bitdepths[] = { 8, 10 };
 
 const char* x264_preset_names[] = {
@@ -47,9 +41,7 @@ const char* x264_tune_names[] = {
 class ConfigX264 : public ConfigBase {
 public:
 	ConfigX264() { dialog_id = IDD_ENC_X264; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -104,25 +96,6 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigX264::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : x264_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-}
-
-void ConfigX264::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(x264_formats)) {
-		codec->config->format = x264_formats[sel];
-		init_bits();
-	}
-}
-
 //
 // CodecX264
 //
@@ -133,7 +106,7 @@ void CodecX264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, x264_formats);
+		reg.ReadInt("format", codec_config.format, formats);
 		reg.ReadInt("bitdepth", codec_config.bits, x264_bitdepths);
 		reg.CheckString("preset", codec_config.preset, x264_preset_names);
 		reg.CheckString("tune", codec_config.tune, x264_tune_names);

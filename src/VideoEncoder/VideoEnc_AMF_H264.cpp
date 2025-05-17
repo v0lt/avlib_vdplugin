@@ -23,9 +23,7 @@ const char* h264_amf_preset_names[] = {
 class ConfigAMF_H264 : public ConfigBase {
 public:
 	ConfigAMF_H264() { dialog_id = IDD_ENC_AMF_H264; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigAMF_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -53,19 +51,6 @@ INT_PTR ConfigAMF_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
-}
-
-void ConfigAMF_H264::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(CodecBase::format_yuv420));
-	int sel = 0; // format_yuv420
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, sel, 0);
-}
-
-void ConfigAMF_H264::change_format(int sel)
-{
-	codec->config->format = CodecBase::format_yuv420;
 }
 
 //

@@ -9,10 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int hevc_qsv_formats[] = {
-	CodecBase::format_yuv420,
-};
-
 const int hevc_qsv_bitdepths[] = { 8, 10 };
 
 const char* hevc_qsv_preset_names[] = {
@@ -32,9 +28,7 @@ const char* hevc_qsv_preset_names[] = {
 class ConfigQSV_HEVC : public ConfigBase {
 public:
 	ConfigQSV_HEVC() { dialog_id = IDD_ENC_QSV_HEVC; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigQSV_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -64,25 +58,6 @@ INT_PTR ConfigQSV_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigQSV_HEVC::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : hevc_qsv_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-}
-
-void ConfigQSV_HEVC::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(hevc_qsv_formats)) {
-		codec->config->format = hevc_qsv_formats[sel];
-		init_bits();
-	}
-}
-
 //
 // CodecQSV_HEVC
 //
@@ -93,7 +68,7 @@ void CodecQSV_HEVC::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, hevc_qsv_formats);
+		reg.ReadInt("format", codec_config.format, formats);
 		reg.ReadInt("bitdepth", codec_config.bits, hevc_qsv_bitdepths);
 		reg.CheckString("preset", codec_config.preset, hevc_qsv_preset_names);
 		reg.CloseKey();

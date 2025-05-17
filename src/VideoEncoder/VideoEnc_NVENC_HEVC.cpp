@@ -9,11 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int hevc_nvenc_formats[] = {
-	CodecBase::format_yuv420,
-	CodecBase::format_yuv444,
-};
-
 const int hevc_nvenc_bitdepths[] = { 8, 10 };
 
 const char* hevc_nvenc_preset_names[] = {
@@ -41,9 +36,7 @@ const char* hevc_nvenc_tune_names[] = {
 class ConfigNVENC_HEVC : public ConfigBase {
 public:
 	ConfigNVENC_HEVC() { dialog_id = IDD_ENC_NVENC_HEVC; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigNVENC_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -85,25 +78,6 @@ INT_PTR ConfigNVENC_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigNVENC_HEVC::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : hevc_nvenc_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-}
-
-void ConfigNVENC_HEVC::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(hevc_nvenc_formats)) {
-		codec->config->format = hevc_nvenc_formats[sel];
-		init_bits();
-	}
-}
-
 //
 // CodecNVENC_HEVC
 //
@@ -114,7 +88,7 @@ void CodecNVENC_HEVC::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, hevc_nvenc_formats);
+		reg.ReadInt("format", codec_config.format, formats);
 		reg.ReadInt("bitdepth", codec_config.bits, hevc_nvenc_bitdepths);
 		reg.CheckString("preset", codec_config.preset, hevc_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, hevc_nvenc_tune_names);

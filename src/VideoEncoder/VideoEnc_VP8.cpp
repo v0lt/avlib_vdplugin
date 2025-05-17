@@ -9,11 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int vp8_formats[] = {
-	CodecBase::format_yuv420,
-	CodecBase::format_yuva420,
-};
-
 //
 // ConfigVP8
 //
@@ -21,9 +16,7 @@ const int vp8_formats[] = {
 class ConfigVP8 : public ConfigBase {
 public:
 	ConfigVP8() { dialog_id = IDD_ENC_VP8; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
 INT_PTR ConfigVP8::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -48,25 +41,6 @@ INT_PTR ConfigVP8::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		return FALSE;
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
-}
-
-void ConfigVP8::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : vp8_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_COLORSPACE), FALSE); //! need to pass side_data
-}
-
-void ConfigVP8::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(vp8_formats)) {
-		codec->config->format = vp8_formats[sel];
-	}
 }
 
 //

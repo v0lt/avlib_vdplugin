@@ -32,10 +32,18 @@ struct CodecX265 : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_rgb,
+		CodecBase::format_yuv420,
+		CodecBase::format_yuv422,
+		CodecBase::format_yuv444,
+	};
+
 	CodecX265() {
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 
@@ -78,10 +86,18 @@ struct CodecH265LS : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_rgb,
+		CodecBase::format_yuv420,
+		CodecBase::format_yuv422,
+		CodecBase::format_yuv444,
+	};
+
 	CodecH265LS() {
 		codec_name = "libx265";
 		codec_tag = MKTAG('H', 'E', 'V', 'C');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 

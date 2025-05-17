@@ -9,12 +9,6 @@
 #include "../resource.h"
 #include "../registry.h"
 
-const int prores_formats[] = {
-	CodecBase::format_yuv422,
-	CodecBase::format_yuv444,
-	CodecBase::format_yuva444,
-};
-
 const char* prores_profile_names[] = {
 	"proxy",
 	"LT",
@@ -31,9 +25,7 @@ const char* prores_profile_names[] = {
 class ConfigProres : public ConfigBase {
 public:
 	ConfigProres() { dialog_id = IDD_ENC_PRORES; }
-	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	virtual void init_format();
-	virtual void change_format(int sel);
+	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 	void init_profile();
 };
 
@@ -107,25 +99,6 @@ void ConfigProres::init_profile()
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->profile, 0);
-	}
-}
-
-void ConfigProres::init_format()
-{
-	SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_RESETCONTENT, 0, 0);
-	for (const auto& format : prores_formats) {
-		LRESULT idx = SendDlgItemMessageA(mhdlg, IDC_ENC_COLORSPACE, CB_ADDSTRING, 0, (LPARAM)GetFormatName(format));
-		if (idx >= 0 && format == codec->config->format) {
-			SendDlgItemMessageW(mhdlg, IDC_ENC_COLORSPACE, CB_SETCURSEL, idx, 0);
-		}
-	}
-}
-
-void ConfigProres::change_format(int sel)
-{
-	if (sel >= 0 && sel < std::size(prores_formats)) {
-		codec->config->format = prores_formats[sel];
-		init_profile();
 	}
 }
 

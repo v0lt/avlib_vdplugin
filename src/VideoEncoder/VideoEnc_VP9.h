@@ -24,10 +24,18 @@ struct CodecVP9 : public CodecBase {
 		}
 	} codec_config;
 
+	static constexpr int codec_formats[] = {
+		CodecBase::format_rgb,
+		CodecBase::format_yuv420,
+		CodecBase::format_yuv422,
+		CodecBase::format_yuv444,
+	};
+
 	CodecVP9() {
 		codec_name = "libvpx-vp9";
 		codec_tag  = MKTAG('V', 'P', '9', '0');
 		config = &codec_config;
+		formats = codec_formats;
 		load_config();
 	}
 
