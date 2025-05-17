@@ -59,7 +59,7 @@ struct CodecHUFF : public CodecBase {
 		wcscpy_s(info.szDescription, L"FFmpeg / FFVHuff lossless codec");
 	}
 
-	virtual int compress_input_info(VDXPixmapLayout* src) {
+	int compress_input_info(VDXPixmapLayout* src) override {
 		switch (src->format) {
 		case nsVDXPixmap::kPixFormat_RGB888:
 		case nsVDXPixmap::kPixFormat_XRGB8888:

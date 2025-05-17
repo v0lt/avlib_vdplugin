@@ -60,7 +60,7 @@ struct CodecFFV1 : public CodecBase {
 	void load_config() override;
 	void save_config() override;
 
-	virtual bool test_av_format(AVPixelFormat format) override {
+	bool test_av_format(AVPixelFormat format) override {
 		switch (format) {
 		case AV_PIX_FMT_GRAY9:
 		case AV_PIX_FMT_YUV444P9:
