@@ -7,7 +7,6 @@
 
 #include "VideoEnc_FFVHuff.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* ffvhuff_pred_names[] = {
 	"left",
@@ -77,8 +76,7 @@ void CodecHUFF::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("pred", codec_config.prediction, ffvhuff_pred_names);
 		reg.CloseKey();
 	}
@@ -88,8 +86,7 @@ void CodecHUFF::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("pred", ffvhuff_pred_names[codec_config.prediction]);
 		reg.CloseKey();
 	}

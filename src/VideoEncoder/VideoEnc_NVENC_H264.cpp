@@ -7,7 +7,6 @@
 #include "VideoEnc_NVENC_H264.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* h264_nvenc_preset_names[] = {
 	"p1",
@@ -85,7 +84,7 @@ void CodecNVENC_H264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, h264_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, h264_nvenc_tune_names);
 		reg.CloseKey();
@@ -96,7 +95,7 @@ void CodecNVENC_H264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", h264_nvenc_preset_names[codec_config.preset]);
 		reg.WriteString("tune", h264_nvenc_tune_names[codec_config.tune]);
 		reg.CloseKey();

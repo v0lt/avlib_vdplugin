@@ -7,7 +7,6 @@
 #include "VideoEnc_NVENC_AV1.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* av1_nvenc_preset_names[] = {
 	"p1",
@@ -86,7 +85,7 @@ void CodecNVENC_AV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, av1_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, av1_nvenc_tune_names);
 		reg.CloseKey();
@@ -97,7 +96,7 @@ void CodecNVENC_AV1::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", av1_nvenc_preset_names[codec_config.preset]);
 		reg.WriteString("tune", av1_nvenc_tune_names[codec_config.tune]);
 		reg.CloseKey();

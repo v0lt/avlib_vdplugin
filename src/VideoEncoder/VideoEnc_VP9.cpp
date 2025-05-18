@@ -7,7 +7,6 @@
 
 #include "VideoEnc_VP9.h"
 #include "../resource.h"
-#include "../registry.h"
 
 //
 // ConfigVP9
@@ -53,8 +52,7 @@ void CodecVP9::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.ReadInt("crf", codec_config.crf, 0, 63);
 		reg.CloseKey();
 	}
@@ -64,8 +62,7 @@ void CodecVP9::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteInt("crf", codec_config.crf);
 		reg.CloseKey();
 	}

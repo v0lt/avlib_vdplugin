@@ -7,7 +7,6 @@
 #include "VideoEnc_QSV_H264.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* h264_qsv_preset_names[] = {
 	"veryfast",
@@ -66,6 +65,7 @@ void CodecQSV_H264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, h264_qsv_preset_names);
 		reg.CloseKey();
 	}
@@ -75,6 +75,7 @@ void CodecQSV_H264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", h264_qsv_preset_names[codec_config.preset]);
 		reg.CloseKey();
 	}

@@ -7,7 +7,6 @@
 
 #include "VideoEnc_ProRes.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* prores_profile_422_names[] = {
 	"proxy",
@@ -115,7 +114,7 @@ void CodecProres::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
+		load_format_bitdepth(reg);
 		if (codec_config.format == CodecBase::format_yuva444) {
 			prores_profile_names = prores_profile_4444_names;
 		} else {
@@ -131,7 +130,7 @@ void CodecProres::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
+		save_format_bitdepth(reg);
 		reg.WriteString("profile", prores_profile_names[codec_config.profile]);
 		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();

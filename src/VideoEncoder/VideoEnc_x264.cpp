@@ -8,7 +8,6 @@
 #include "VideoEnc_x264.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* x264_preset_names[] = {
 	"ultrafast",
@@ -104,8 +103,7 @@ void CodecX264::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, x264_preset_names);
 		reg.CheckString("tune", codec_config.tune, x264_tune_names);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
@@ -117,8 +115,7 @@ void CodecX264::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", x264_preset_names[codec_config.preset]);
 		reg.WriteString("tune", x264_tune_names[codec_config.tune]);
 		reg.WriteInt("crf", codec_config.crf);

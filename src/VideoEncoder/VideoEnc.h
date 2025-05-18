@@ -11,8 +11,6 @@
 #include <commctrl.h>
 #include <vfw.h>
 
-#include <span>
-
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 
@@ -21,7 +19,10 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 
+#include <span>
 #include <memory>
+
+#include "../registry.h"
 
 struct CodecClass {
 	int class_id;
@@ -80,6 +81,11 @@ struct CodecBase : public CodecClass {
 	virtual void load_config() = 0;
 	virtual void save_config() = 0;
 
+protected:
+	void load_format_bitdepth(RegistryPrefs& reg);
+	void save_format_bitdepth(RegistryPrefs& reg);
+
+public:
 	virtual bool load_config(void* data, size_t size);
 
 	virtual AVPixelFormat match_av_format(int vd_format);

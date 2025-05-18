@@ -8,7 +8,6 @@
 #include "VideoEnc_FFV1.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const int ffv1_levels[] = { 0, 1, 3 };
 const int ffv1_slice_tab[] = { 0, 4, 6, 9, 12, 16, 24, 30, 36, 42 };
@@ -169,8 +168,7 @@ void CodecFFV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.ReadInt("level", codec_config.level, ffv1_levels);
 		reg.ReadInt("slices", codec_config.slices, ffv1_slice_tab);
 		reg.ReadInt("coder", codec_config.coder, 0, 1);
@@ -184,8 +182,7 @@ void CodecFFV1::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteInt("level", codec_config.level);
 		reg.WriteInt("slices", codec_config.slices);
 		reg.WriteInt("coder", codec_config.coder);

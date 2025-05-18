@@ -7,7 +7,6 @@
 #include "VideoEnc_AMF_HEVC.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* hevc_amf_preset_names[] = {
 	"default",
@@ -63,8 +62,7 @@ void CodecAMF_HEVC::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, hevc_amf_preset_names);
 		reg.CloseKey();
 	}
@@ -74,8 +72,7 @@ void CodecAMF_HEVC::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", hevc_amf_preset_names[codec_config.preset]);
 		reg.CloseKey();
 	}

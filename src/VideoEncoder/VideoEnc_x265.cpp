@@ -7,7 +7,6 @@
 
 #include "VideoEnc_x265.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* x265_preset_names[] = {
 	"ultrafast",
@@ -102,8 +101,7 @@ void CodecX265::load_config()
 {
 	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, x265_preset_names);
 		reg.CheckString("tune", codec_config.tune, x265_tune_names);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
@@ -115,8 +113,7 @@ void CodecX265::save_config()
 {
 	RegistryPrefs reg(REG_KEY_H265);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
 		reg.WriteString("tune", x265_tune_names[codec_config.tune]);
 		reg.WriteInt("crf", codec_config.crf);
@@ -207,8 +204,7 @@ void CodecH265LS::load_config()
 {
 	RegistryPrefs reg(REG_KEY_H265LS);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, x265_preset_names);
 		reg.CloseKey();
 	}
@@ -218,8 +214,7 @@ void CodecH265LS::save_config()
 {
 	RegistryPrefs reg(REG_KEY_H265LS);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", x265_preset_names[codec_config.preset]);
 		reg.CloseKey();
 	}

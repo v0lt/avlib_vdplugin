@@ -161,6 +161,26 @@ bool CodecBase::init()
 	return codec != 0;
 }
 
+void CodecBase::load_format_bitdepth(RegistryPrefs& reg)
+{
+	if (formats.size() > 1) {
+		reg.ReadInt("format", config->format, formats);
+	}
+	if (bitdepths.size() > 1) {
+		reg.ReadInt("bitdepth", config->bits, bitdepths);
+	}
+}
+
+void CodecBase::save_format_bitdepth(RegistryPrefs& reg)
+{
+	if (formats.size() > 1) {
+		reg.WriteInt("format", config->format);
+	}
+	if (bitdepths.size() > 1) {
+		reg.WriteInt("bitdepth", config->bits);
+	}
+}
+
 bool CodecBase::load_config(void* data, size_t size) {
 	size_t rsize = config_size();
 	if (size != rsize) {

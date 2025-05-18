@@ -7,7 +7,6 @@
 #include "VideoEnc_NVENC_HEVC.h"
 #include "../Helper.h"
 #include "../resource.h"
-#include "../registry.h"
 
 const char* hevc_nvenc_preset_names[] = {
 	"p1",
@@ -86,8 +85,7 @@ void CodecNVENC_HEVC::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
-		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
+		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, hevc_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, hevc_nvenc_tune_names);
 		reg.CloseKey();
@@ -98,8 +96,7 @@ void CodecNVENC_HEVC::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
-		reg.WriteInt("format", codec_config.format);
-		reg.WriteInt("bitdepth", codec_config.bits);
+		save_format_bitdepth(reg);
 		reg.WriteString("preset", hevc_nvenc_preset_names[codec_config.preset]);
 		reg.WriteString("tune", hevc_nvenc_tune_names[codec_config.tune]);
 		reg.CloseKey();
