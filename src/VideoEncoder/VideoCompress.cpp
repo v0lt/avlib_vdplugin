@@ -17,7 +17,7 @@ extern "C" {
 #include "VideoEnc_ProRes.h"
 #include "VideoEnc_VP8.h"
 #include "VideoEnc_VP9.h"
-#include "VideoEnc_AV1.h"
+#include "VideoEnc_SVT_AV1.h"
 #include "VideoEnc_x264.h"
 #include "VideoEnc_x265.h"
 #include "VideoEnc_NVENC_H264.h"

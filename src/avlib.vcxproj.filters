@@ -80,7 +80,7 @@
     <ClInclude Include="VideoEncoder\VideoEnc.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
-    <ClInclude Include="VideoEncoder\VideoEnc_AV1.h">
+    <ClInclude Include="VideoEncoder\VideoEnc_SVT_AV1.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
     <ClInclude Include="VideoEncoder\VideoEnc_FFV1.h">
@@ -187,7 +187,7 @@
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="registry.cpp" />
-    <ClCompile Include="VideoEncoder\VideoEnc_AV1.cpp">
+    <ClCompile Include="VideoEncoder\VideoEnc_SVT_AV1.cpp">
       <Filter>VideoEncoder</Filter>
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_FFV1.cpp">

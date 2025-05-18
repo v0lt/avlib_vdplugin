@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "VideoEnc_AV1.h"
+#include "VideoEnc_SVT_AV1.h"
 #include "../resource.h"
 
 const char* stv_av1_preset_names[] = {
@@ -78,7 +78,7 @@ INT_PTR ConfigAV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 // CodecAV1
 //
 
-#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_AV1"
+#define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_SVT_AV1"
 
 void CodecAV1::load_config()
 {
