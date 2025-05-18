@@ -59,7 +59,7 @@ struct CodecX265 : public CodecBase {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"x265");
-		wcscpy_s(info.szDescription, L"FFmpeg / HEVC (x265)");
+		wcscpy_s(info.szDescription, L"FFmpeg / x265 - HEVC");
 	}
 
 	int compress_input_info(VDXPixmapLayout* src) override;
@@ -115,7 +115,7 @@ struct CodecH265LS : public CodecBase {
 		info.fccHandler = id_tag;
 		info.dwFlags = VIDCF_COMPRESSFRAMES | VIDCF_FASTTEMPORALC;
 		wcscpy_s(info.szName, L"x265 lossless");
-		wcscpy_s(info.szDescription, L"FFmpeg / HEVC lossless (x265)");
+		wcscpy_s(info.szDescription, L"FFmpeg / x265 - HEVC lossless");
 	}
 
 	int compress_input_info(VDXPixmapLayout* src) override;
