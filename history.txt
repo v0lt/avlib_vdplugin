@@ -5,6 +5,7 @@ avlib.vdplugin history
 The FFmpeg 7.1.1 x64 build from BtbN is used.
 Added saving and reading of encoder settings from the registry.
 Added hardware video encoders NVENC, QSV, AMF for H.264 and HEVC.
+Added hardware video encoders NVENC, AMF for AV1.
 Cosmetic changes.
 
 
