@@ -10,7 +10,7 @@
 #include "VideoEnc.h"
 
 struct CodecFFV1 : public CodecBase {
-	enum { id_tag = MKTAG('F', 'F', 'V', '1') };
+	enum { id_tag = CODEC_FFV1 };
 
 	struct Config : public CodecBase::Config {
 		int level;    // 0, 1, 3

@@ -19,7 +19,7 @@ enum {
 };
 
 struct CodecProres : public CodecBase {
-	enum { id_tag = MKTAG('a', 'p', 'c', 'h') };
+	enum { id_tag = CODEC_PRORES };
 
 	struct Config : public CodecBase::Config {
 		int profile;

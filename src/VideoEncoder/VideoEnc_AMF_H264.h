@@ -9,7 +9,7 @@
 #include "VideoEnc.h"
 
 struct CodecAMF_H264 : public CodecBase {
-	enum { id_tag = MKTAG('a', 'v', 'c', '1') };
+	enum { id_tag = CODEC_AMF_H264 };
 
 	struct Config : public CodecBase::Config {
 		int preset;

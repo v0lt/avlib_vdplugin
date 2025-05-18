@@ -9,7 +9,7 @@
 #include "VideoEnc.h"
 
 struct CodecNVENC_AV1 : public CodecBase {
-	enum { id_tag = MKTAG('a', 'v', '0', '1') };
+	enum { id_tag = CODEC_NVENC_AV1 };
 
 	struct Config : public CodecBase::Config {
 		int preset;

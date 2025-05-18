@@ -10,7 +10,7 @@
 #include "VideoEnc.h"
 
 struct CodecHUFF : public CodecBase {
-	enum { id_tag = MKTAG('F', 'F', 'V', 'H') };
+	enum { id_tag = CODEC_FFVHUFF };
 
 	struct Config : public CodecBase::Config {
 		int prediction = 0;

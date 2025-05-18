@@ -10,7 +10,7 @@
 #include "VideoEnc.h"
 
 struct CodecVP8 : public CodecBase {
-	enum { id_tag = MKTAG('V', 'P', '8', '0') };
+	enum { id_tag = CODEC_VP8 };
 
 	struct Config : public CodecBase::Config {
 		int crf; // 4-63

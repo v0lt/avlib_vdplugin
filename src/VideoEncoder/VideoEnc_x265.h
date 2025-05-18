@@ -14,7 +14,7 @@
 //
 
 struct CodecX265 : public CodecBase {
-	enum { id_tag = MKTAG('X', '2', '6', '5') };
+	enum { id_tag = CODEC_X265 };
 
 	struct Config : public CodecBase::Config {
 		int preset;
@@ -74,7 +74,7 @@ struct CodecX265 : public CodecBase {
 //
 
 struct CodecH265LS : public CodecBase {
-	enum { id_tag = MKTAG('x', '2', '6', '5') }; // Here we use another one because 'X265' is already used in CodecX265
+	enum { id_tag = CODEC_H265LS };
 
 	struct Config : public CodecBase::Config {
 		int preset;

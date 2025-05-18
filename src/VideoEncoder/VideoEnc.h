@@ -24,6 +24,26 @@ extern "C" {
 
 #include "../registry.h"
 
+enum VCodecID {
+	CODEC_FFV1 = 0xFF01,
+	CODEC_FFVHUFF,
+	CODEC_PRORES,
+	CODEC_VP8,
+	CODEC_VP9,
+	CODEC_SVT_AV1,
+	CODEC_X264,
+	CODEC_X265,
+	CODEC_H265LS,
+	CODEC_NVENC_H264,
+	CODEC_NVENC_HEVC,
+	CODEC_NVENC_AV1,
+	CODEC_QSV_H264,
+	CODEC_QSV_HEVC,
+	CODEC_AMF_H264,
+	CODEC_AMF_HEVC,
+	CODEC_AMF_AV1,
+};
+
 struct CodecClass {
 	int class_id;
 
