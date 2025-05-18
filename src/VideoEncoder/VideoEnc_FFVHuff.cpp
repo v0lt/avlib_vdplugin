@@ -78,7 +78,7 @@ void CodecHUFF::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.CheckString("pred", codec_config.prediction, ffvhuff_pred_names);
 		reg.CloseKey();
 	}

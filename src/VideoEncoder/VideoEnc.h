@@ -23,8 +23,6 @@ extern "C" {
 
 #include <memory>
 
-const int all_bitdepths[] = { 8, 9, 10, 12, 14, 16 };
-
 struct CodecClass {
 	int class_id;
 

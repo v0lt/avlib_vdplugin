@@ -170,7 +170,7 @@ void CodecFFV1::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		reg.ReadInt("format", codec_config.format, formats);
-		reg.ReadInt("bitdepth", codec_config.bits, all_bitdepths);
+		reg.ReadInt("bitdepth", codec_config.bits, bitdepths);
 		reg.ReadInt("level", codec_config.level, ffv1_levels);
 		reg.ReadInt("slices", codec_config.slices, ffv1_slice_tab);
 		reg.ReadInt("coder", codec_config.coder, 0, 1);
