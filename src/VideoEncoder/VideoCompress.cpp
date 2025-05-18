@@ -54,7 +54,7 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		switch (icopen->fccHandler) {
 		case 0:
 		case CodecFFV1::id_tag:       new_codec = new CodecFFV1;       break;
-		case CodecHUFF::id_tag:       new_codec = new CodecHUFF;       break;
+		case CodecFFVHuff::id_tag:       new_codec = new CodecFFVHuff;       break;
 		case CodecProres::id_tag:     new_codec = new CodecProres;     break;
 		case CodecVP8::id_tag:        new_codec = new CodecVP8;        break;
 		case CodecVP9::id_tag:        new_codec = new CodecVP9;        break;
@@ -153,8 +153,8 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 	switch (uMsg) {
 	case VDICM_ENUMFORMATS:
 		if (lParam1 == 0) return CodecFFV1::id_tag;
-		if (lParam1 == CodecFFV1::id_tag)       return CodecHUFF::id_tag;
-		if (lParam1 == CodecHUFF::id_tag)       return CodecProres::id_tag;
+		if (lParam1 == CodecFFV1::id_tag)       return CodecFFVHuff::id_tag;
+		if (lParam1 == CodecFFVHuff::id_tag)       return CodecProres::id_tag;
 		if (lParam1 == CodecProres::id_tag)     return CodecVP8::id_tag;
 		if (lParam1 == CodecVP8::id_tag)        return CodecVP9::id_tag;
 		if (lParam1 == CodecVP9::id_tag)        return CodecSVT_AV1::id_tag;

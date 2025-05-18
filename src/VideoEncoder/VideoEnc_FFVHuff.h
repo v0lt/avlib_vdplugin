@@ -9,7 +9,7 @@
 
 #include "VideoEnc.h"
 
-struct CodecHUFF : public CodecBase {
+struct CodecFFVHuff : public CodecBase {
 	enum { id_tag = CODEC_FFVHUFF };
 
 	struct Config : public CodecBase::Config {
@@ -37,7 +37,7 @@ struct CodecHUFF : public CodecBase {
 	};
 	static constexpr int codec_bitdepths[] = { 8, 9, 10, 12, 14, 16 };
 
-	CodecHUFF() {
+	CodecFFVHuff() {
 		codec_name = "ffvhuff";
 		codec_tag = MKTAG('F', 'F', 'V', 'H');
 		config = &codec_config;

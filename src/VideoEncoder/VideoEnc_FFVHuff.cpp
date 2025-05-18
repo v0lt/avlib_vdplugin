@@ -15,12 +15,12 @@ const char* ffvhuff_pred_names[] = {
 };
 
 //
-// ConfigHUFF
+// ConfigFFVHuff
 //
 
-class ConfigHUFF : public ConfigBase {
+class ConfigFFVHuff : public ConfigBase {
 public:
-	ConfigHUFF() {
+	ConfigFFVHuff() {
 		dialog_id = IDD_ENC_FFVHUFF;
 		idc_message = IDC_ENC_MESSAGE;
 	}
@@ -28,7 +28,7 @@ public:
 	void change_format(int sel) override;
 };
 
-INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR ConfigFFVHuff::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	switch (msg) {
 	case WM_INITDIALOG:
@@ -37,7 +37,7 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		for (const auto& pred_name : ffvhuff_pred_names) {
 			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_name);
 		}
-		CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
+		CodecFFVHuff::Config* config = (CodecFFVHuff::Config*)codec->config;
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
 		break;
 	}
@@ -46,7 +46,7 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		switch (LOWORD(wParam)) {
 		case IDC_PREDICTION:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				CodecHUFF::Config* config = (CodecHUFF::Config*)codec->config;
+				CodecFFVHuff::Config* config = (CodecFFVHuff::Config*)codec->config;
 				config->prediction = (int)SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}
@@ -56,7 +56,7 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }
 
-void ConfigHUFF::change_format(int sel)
+void ConfigFFVHuff::change_format(int sel)
 {
 	if (sel >= 0 && sel < (int)std::size(codec->formats)) {
 		codec->config->format = codec->formats[sel];
@@ -67,12 +67,12 @@ void ConfigHUFF::change_format(int sel)
 }
 
 //
-// CodecHUFF
+// CodecFFVHuff
 //
 
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_FFVHuff"
 
-void CodecHUFF::load_config()
+void CodecFFVHuff::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
@@ -82,7 +82,7 @@ void CodecHUFF::load_config()
 	}
 }
 
-void CodecHUFF::save_config()
+void CodecFFVHuff::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
@@ -92,7 +92,7 @@ void CodecHUFF::save_config()
 	}
 }
 
-bool CodecHUFF::init_ctx(VDXPixmapLayout* layout)
+bool CodecFFVHuff::init_ctx(VDXPixmapLayout* layout)
 {
 	int pred = codec_config.prediction;
 	if (pred == 2 && config->format == format_rgb && config->bits == 8) {
@@ -102,9 +102,9 @@ bool CodecHUFF::init_ctx(VDXPixmapLayout* layout)
 	return true;
 }
 
-LRESULT CodecHUFF::configure(HWND parent)
+LRESULT CodecFFVHuff::configure(HWND parent)
 {
-	ConfigHUFF dlg;
+	ConfigFFVHuff dlg;
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }
