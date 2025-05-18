@@ -13,9 +13,9 @@
 #include "gopro.h"
 #include "Utils/StringUtil.h"
 #include "Helper.h"
+#include "Version.h"
 
-
-static const char* vsnstr = "Version 2.1";
+static const char* vsnstr = "avlib.vdplugin version " VERSION_STR;
 
 extern HINSTANCE hInstance;
 

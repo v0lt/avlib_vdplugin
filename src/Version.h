@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2024 v0lt
+ * Copyright (C) 2023-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -28,9 +28,9 @@
 #define DO_MAKE_STR(x) #x
 #define MAKE_STR(x)    DO_MAKE_STR(x)
 
-#define VER_MAJOR      0
-#define VER_MINOR      7
-#define VER_BUILD      1
+#define VER_MAJOR      1
+#define VER_MINOR      0
+#define VER_BUILD      0
 
 #define VERSION_NUM    VER_MAJOR,VER_MINOR,VER_BUILD,REV_NUM
 #define VERSION_STR    MAKE_STR(VER_MAJOR) "." MAKE_STR(VER_MINOR) "." MAKE_STR(VER_BUILD) "." MAKE_STR(REV_NUM)

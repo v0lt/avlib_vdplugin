@@ -1,6 +1,6 @@
 avlib.vdplugin history
 
-0.7.1.x dev
+1.0.0.x dev
 ----------------------
 The FFmpeg 7.1.1 x64 build from BtbN is used.
 Added saving and reading of encoder settings from the registry.

@@ -258,7 +258,7 @@ void saveConfig()
 	}
 	*pSlash = 0;
 
-	wcscat_s(buf, L"\\cch_input.ini");
+	wcscat_s(buf, L"\\avlib-1.ini");
 
 	WritePrivateProfileStringW(L"force_ffmpeg", L"raw", config_decode_raw ? L"1" : L"0", buf);
 	WritePrivateProfileStringW(L"force_ffmpeg", L"MagicYUV", config_decode_magic ? L"1" : L"0", buf);
@@ -286,7 +286,7 @@ void loadConfig()
 	}
 	*pSlash = 0;
 
-	wcscat_s(buf, L"\\cch_input.ini");
+	wcscat_s(buf, L"\\avlib-1.ini");
 
 	config_decode_raw = GetPrivateProfileIntW(L"force_ffmpeg", L"raw", 0, buf) != 0;
 	config_decode_magic = GetPrivateProfileIntW(L"force_ffmpeg", L"MagicYUV", 0, buf) != 0;
