@@ -413,7 +413,7 @@ void ConfigBase::init_format()
 
 void ConfigBase::change_format(int sel)
 {
-	if (sel >= 0 && sel < std::size(codec->formats)) {
+	if (sel >= 0 && sel < (int)std::size(codec->formats)) {
 		codec->config->format = codec->formats[sel];
 		init_bits();
 	}

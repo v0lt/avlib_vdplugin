@@ -58,7 +58,7 @@ INT_PTR ConfigHUFF::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 void ConfigHUFF::change_format(int sel)
 {
-	if (sel >= 0 && sel < std::size(codec->formats)) {
+	if (sel >= 0 && sel < (int)std::size(codec->formats)) {
 		codec->config->format = codec->formats[sel];
 		adjust_bits();
 		init_bits();
