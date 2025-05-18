@@ -29,6 +29,7 @@
 #define IDD_ENC_QSV_HEVC                241
 #define IDD_ENC_AMF_H264                250
 #define IDD_ENC_AMF_HEVC                251
+#define IDD_ENC_AMF_AV1                 252
 
 #define IDD_ENC_OPUS                    301
 #define IDD_ENC_VORBIS                  302
