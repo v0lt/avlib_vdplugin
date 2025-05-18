@@ -25,18 +25,18 @@ const char* stv_av1_preset_names[] = {
 };
 
  //
- // ConfigAV1
+ // ConfigSVT_AV1
  //
 
-class ConfigAV1 : public ConfigBase {
+class ConfigSVT_AV1 : public ConfigBase {
 public:
-	ConfigAV1() { dialog_id = IDD_ENC_AV1; }
+	ConfigSVT_AV1() { dialog_id = IDD_ENC_AV1; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
 
-INT_PTR ConfigAV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	CodecAV1::Config* config = (CodecAV1::Config*)codec->config;
+	CodecSVT_AV1::Config* config = (CodecSVT_AV1::Config*)codec->config;
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -75,12 +75,12 @@ INT_PTR ConfigAV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 }
 
 //
-// CodecAV1
+// CodecSVT_AV1
 //
 
 #define REG_KEY_APP "Software\\VirtualDub2\\avlib\\VideoEnc_SVT_AV1"
 
-void CodecAV1::load_config()
+void CodecSVT_AV1::load_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
@@ -91,7 +91,7 @@ void CodecAV1::load_config()
 	}
 }
 
-void CodecAV1::save_config()
+void CodecSVT_AV1::save_config()
 {
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
@@ -102,7 +102,7 @@ void CodecAV1::save_config()
 	}
 }
 
-bool CodecAV1::init_ctx(VDXPixmapLayout* layout)
+bool CodecSVT_AV1::init_ctx(VDXPixmapLayout* layout)
 {
 	avctx->gop_size = -1;
 	avctx->max_b_frames = -1;
@@ -113,9 +113,9 @@ bool CodecAV1::init_ctx(VDXPixmapLayout* layout)
 	return true;
 }
 
-LRESULT CodecAV1::configure(HWND parent)
+LRESULT CodecSVT_AV1::configure(HWND parent)
 {
-	ConfigAV1 dlg;
+	ConfigSVT_AV1 dlg;
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }

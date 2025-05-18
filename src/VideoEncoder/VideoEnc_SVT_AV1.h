@@ -8,7 +8,7 @@
 
 #include "VideoEnc.h"
 
-struct CodecAV1 : public CodecBase {
+struct CodecSVT_AV1 : public CodecBase {
 	enum { id_tag = MKTAG('A', 'V', '0', '1') };
 
 	struct Config : public CodecBase::Config {
@@ -30,7 +30,7 @@ struct CodecAV1 : public CodecBase {
 	};
 	static constexpr int codec_bitdepths[] = { 8, 10 };
 
-	CodecAV1() {
+	CodecSVT_AV1() {
 		codec_name = "libsvtav1";
 		codec_tag = MKTAG('A', 'V', '0', '1');
 		config = &codec_config;
