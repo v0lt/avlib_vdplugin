@@ -8,8 +8,6 @@
 #include "stdafx.h"
 
 #include "gopro.h"
-#include <stdio.h>
-#include <iterator>
 #include <span>
 #include "Helper.h"
 

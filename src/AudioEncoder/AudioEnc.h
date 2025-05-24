@@ -7,14 +7,11 @@
 
 #pragma once
 
-#include <windows.h>
 #include <mmreg.h>
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include <vd2/VDXFrame/Unknown.h>
-
-#include <memory>
 
 extern "C" {
 #include <libavcodec/avcodec.h>

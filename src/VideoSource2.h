@@ -10,8 +10,6 @@
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
 #include <vector>
-#include <memory>
-
 
 extern "C"
 {
@@ -20,8 +18,6 @@ extern "C"
 #include <libavformat/avformat.h>
 #include <libswscale/swscale.h>
 }
-
-#include <windows.h>
 
 class VDFFInputFile;
 

@@ -7,11 +7,6 @@
 
 #pragma once
 
-#include "windows.h"
-#include "inttypes.h"
-#include <memory>
-#include <string>
-
 struct MovAtom {
 	int64_t sz;
 	uint32_t t;

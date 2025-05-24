@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <windows.h>
 #include <commctrl.h>
 #include <vfw.h>
 
@@ -20,7 +19,6 @@ extern "C" {
 }
 
 #include <span>
-#include <memory>
 
 #include "../registry.h"
 

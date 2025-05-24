@@ -9,7 +9,6 @@
 
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
-#include <string>
 #include <vector>
 extern "C" {
 #include <libavformat/avformat.h>

@@ -6,9 +6,6 @@
 
 #pragma once
 
-#include <string>
-#include <format>
-
 #if _DEBUG
 template <typename... Args>
 void DLog(const std::string_view format, Args ...args)

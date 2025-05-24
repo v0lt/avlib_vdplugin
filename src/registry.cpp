@@ -6,7 +6,6 @@
 
 #include "stdafx.h"
 
-#include <stdint.h>
 #include "Utils/StringUtil.h"
 #include "registry.h"
 

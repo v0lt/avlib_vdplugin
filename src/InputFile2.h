@@ -8,11 +8,8 @@
 #pragma once
 
 #define __STDC_LIMIT_MACROS
-#include <stdint.h>
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/Unknown.h>
-#include <windows.h>
-#include <string>
 
 extern "C"
 {
