@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "gopro.h"
 #include <stdio.h>
 #include <iterator>

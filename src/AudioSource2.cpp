@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "InputFile2.h"
 #include "AudioSource2.h"
 #include <memory>

@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "fflayer.h"
 
 typedef void(*BlendFunc)(uint8_t* dst, const uint8_t* src, int w);

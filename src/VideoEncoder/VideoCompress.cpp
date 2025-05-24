@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #pragma once
 extern "C" {
 #include <libavutil/opt.h>

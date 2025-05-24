@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "VideoEnc.h"
 
 #include <commctrl.h>
@@ -834,7 +836,10 @@ LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layou
 	frame->height = avctx->height;
 
 	ret = av_image_alloc(frame->data, frame->linesize, avctx->width, avctx->height, avctx->pix_fmt, 32);
-	if (ret < 0) { compress_end(); return ICERR_MEMORY; }
+	if (ret < 0) {
+		compress_end();
+		return ICERR_MEMORY;
+	}
 
 	return ICERR_OK;
 }

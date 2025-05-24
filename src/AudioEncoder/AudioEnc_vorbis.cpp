@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "AudioEnc_vorbis.h"
 #include <commctrl.h>
 #include "../Helper.h"

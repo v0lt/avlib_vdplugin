@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "VideoEnc_x264.h"
 #include "../Helper.h"
 #include "../resource.h"

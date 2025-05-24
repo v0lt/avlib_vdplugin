@@ -16,6 +16,9 @@
     <Filter Include="VideoEncoder">
       <UniqueIdentifier>{ba0b0ab8-55b7-45c2-a892-6262d2b81df4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="pch">
+      <UniqueIdentifier>{fbbe1ec7-099b-4585-a1af-0d81f9a9de42}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fflayer.h">
@@ -129,6 +132,9 @@
     <ClInclude Include="VideoEncoder\VideoEnc_AMF_AV1.h">
       <Filter>VideoEncoder</Filter>
     </ClInclude>
+    <ClInclude Include="pch\stdafx.h">
+      <Filter>pch</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -237,6 +243,9 @@
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_AMF_AV1.cpp">
       <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="pch\stdafx.cpp">
+      <Filter>pch</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

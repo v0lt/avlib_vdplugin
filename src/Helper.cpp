@@ -1,8 +1,10 @@
 /*
- * Copyright (C) 2024 v0lt
+ * Copyright (C) 2024-2025 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
+
+#include "stdafx.h"
 
 #include <windows.h>
 #include <amvideo.h>

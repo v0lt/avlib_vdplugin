@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include "mov_mp4.h"
 
 MovParser::MovParser(const void* _buf, int _buf_size, int64_t _fileSize)

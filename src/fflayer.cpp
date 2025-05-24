@@ -5,6 +5,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
+#include "stdafx.h"
+
 #include <windows.h>
 #include <commdlg.h>
 #include <commctrl.h>
