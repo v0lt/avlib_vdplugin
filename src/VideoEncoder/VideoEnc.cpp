@@ -12,9 +12,6 @@
 #include <commctrl.h>
 #include <shellapi.h>
 
-#include <functional>
-#include <cassert>
-
 extern "C" {
 #include <libavutil/imgutils.h>
 }

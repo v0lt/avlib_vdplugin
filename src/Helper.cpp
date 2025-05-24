@@ -6,7 +6,6 @@
 
 #include "stdafx.h"
 
-#include <windows.h>
 #include <amvideo.h>
 #include <vector>
 #include "Helper.h"

@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cassert>
 #include <memory>
+#include <functional>
 #include <string>
 #include <format>
 

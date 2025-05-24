@@ -10,8 +10,6 @@
 #include "InputFile2.h"
 #include "VideoSource2.h"
 #include "export.h"
-#include <functional>
-#include <cassert>
 #include "Helper.h"
 
 extern "C" {

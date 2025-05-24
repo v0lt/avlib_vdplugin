@@ -9,9 +9,6 @@
 
 #include "InputFile2.h"
 #include "AudioSource2.h"
-#include <memory>
-#include <functional>
-#include <cassert>
 #include "Utils/StringUtil.h"
 #include "Helper.h"
 

@@ -9,8 +9,6 @@
 
 #include "AudioEnc.h"
 
-#include <cassert>
-
 extern "C" {
 #include <libavformat/avformat.h>
 #include <libavutil/opt.h>

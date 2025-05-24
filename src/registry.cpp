@@ -6,13 +6,10 @@
 
 #include "stdafx.h"
 
-#include <windows.h>
 #include <stdint.h>
 #include "Utils/StringUtil.h"
 #include "registry.h"
 
-#include <cassert>
- 
 RegistryPrefs::RegistryPrefs(LPCSTR subKey)
 {
 	m_subKey = subKey;

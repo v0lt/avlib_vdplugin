@@ -13,7 +13,6 @@
 #include "AudioSource2.h"
 #include "mov_mp4.h"
 #include "export.h"
-#include <windows.h>
 #include <vfw.h>
 #include <aviriff.h>
 #include "resource.h"

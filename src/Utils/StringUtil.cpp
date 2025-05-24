@@ -20,7 +20,6 @@
 
 #include "stdafx.h"
 
-#include <windows.h>
 #include <vector>
 #include <sstream>
 #include "StringUtil.h"

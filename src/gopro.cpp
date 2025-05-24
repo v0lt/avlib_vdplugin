@@ -11,7 +11,6 @@
 #include <stdio.h>
 #include <iterator>
 #include <span>
-#include <cassert>
 #include "Helper.h"
 
 // parts from GoProInfo - HYPOXIC
