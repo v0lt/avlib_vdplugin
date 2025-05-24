@@ -7,7 +7,6 @@
 
 #pragma once
 
-#include <commctrl.h>
 #include <vfw.h>
 
 #include <vd2/plugin/vdinputdriver.h>

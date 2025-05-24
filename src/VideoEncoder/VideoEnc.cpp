@@ -9,7 +9,6 @@
 
 #include "VideoEnc.h"
 
-#include <commctrl.h>
 #include <shellapi.h>
 
 extern "C" {

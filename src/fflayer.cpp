@@ -7,10 +7,6 @@
 
 #include "stdafx.h"
 
-#include <commdlg.h>
-#include <commctrl.h>
-#include <malloc.h>
-
 #include "fflayer.h"
 #include "resource.h"
 #include "Helper.h"

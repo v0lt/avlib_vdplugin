@@ -8,7 +8,6 @@
 #include "stdafx.h"
 
 #include "AudioEnc_mp3.h"
-#include <commctrl.h>
 extern "C" {
 #include <libavutil/opt.h>
 }

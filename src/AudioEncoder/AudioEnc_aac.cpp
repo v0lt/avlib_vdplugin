@@ -8,7 +8,6 @@
 #include "stdafx.h"
 
 #include "AudioEnc_aac.h"
-#include <commctrl.h>
 #include "../Helper.h"
 #include "../resource.h"
 #include "../registry.h"

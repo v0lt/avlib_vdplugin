@@ -7,8 +7,6 @@
 
 #include "stdafx.h"
 
-#include <commctrl.h>
-
 #include <vd2/plugin/vdinputdriver.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
 #include "InputFile2.h"

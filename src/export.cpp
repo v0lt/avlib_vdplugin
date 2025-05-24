@@ -13,8 +13,6 @@
 #include "AudioSource2.h"
 #include "export.h"
 #include "AudioEncoder/AudioEnc.h"
-#include <commdlg.h>
-#include <commctrl.h>
 #include "resource.h"
 #include <vfw.h>
 #include "Helper.h"
