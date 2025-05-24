@@ -481,13 +481,15 @@ long __cdecl VDXVideoFilter::FilterModParam(VDXFilterActivation *fa, const VDXFi
 }
 
 void VDXVideoFilter::SafePrintf(char *buf, int maxbuf, const char *format, ...) {
-	if (maxbuf <= 0)
+	if (maxbuf <= 0) {
 		return;
+	}
 
 	va_list val;
 	va_start(val, format);
-	if ((unsigned)_vsnprintf(buf, maxbuf, format, val) >= (unsigned)maxbuf)
+	if ((unsigned)vsprintf_s(buf, maxbuf, format, val) >= (unsigned)maxbuf) {
 		buf[maxbuf - 1] = 0;
+	}
 	va_end(val);
 }
 
