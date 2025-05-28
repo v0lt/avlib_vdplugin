@@ -32,6 +32,7 @@ public:
 
 INT_PTR ConfigFFVHuff::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
+	CodecFFVHuff::Config* config = (CodecFFVHuff::Config*)codec->config;
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -39,16 +40,20 @@ INT_PTR ConfigFFVHuff::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		for (const auto& pred_name : ffvhuff_pred_names) {
 			SendDlgItemMessageA(mhdlg, IDC_PREDICTION, CB_ADDSTRING, 0, (LPARAM)pred_name);
 		}
-		CodecFFVHuff::Config* config = (CodecFFVHuff::Config*)codec->config;
 		SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
 		break;
 	}
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
+		case IDC_BUTTON_DEFAULT:
+			codec->reset_config();
+			init_format();
+			init_bits();
+			SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_SETCURSEL, config->prediction, 0);
+			break;
 		case IDC_PREDICTION:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				CodecFFVHuff::Config* config = (CodecFFVHuff::Config*)codec->config;
 				config->prediction = (int)SendDlgItemMessageW(mhdlg, IDC_PREDICTION, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}

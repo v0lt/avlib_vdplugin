@@ -450,14 +450,14 @@ void ConfigBase::adjust_bits()
 void ConfigBase::init_bits()
 {
 	int format = codec->config->format;
-	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_8_BIT), codec->test_bits(format, 8));
-	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_9_BIT), codec->test_bits(format, 9));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_8_BIT),  codec->test_bits(format, 8));
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_9_BIT),  codec->test_bits(format, 9));
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_10_BIT), codec->test_bits(format, 10));
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_12_BIT), codec->test_bits(format, 12));
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_14_BIT), codec->test_bits(format, 14));
 	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_16_BIT), codec->test_bits(format, 16));
-	CheckDlgButton(mhdlg, IDC_ENC_8_BIT, codec->config->bits == 8 ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_ENC_9_BIT, codec->config->bits == 9 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_8_BIT,  codec->config->bits ==  8 ? BST_CHECKED : BST_UNCHECKED);
+	CheckDlgButton(mhdlg, IDC_ENC_9_BIT,  codec->config->bits ==  9 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(mhdlg, IDC_ENC_10_BIT, codec->config->bits == 10 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(mhdlg, IDC_ENC_12_BIT, codec->config->bits == 12 ? BST_CHECKED : BST_UNCHECKED);
 	CheckDlgButton(mhdlg, IDC_ENC_14_BIT, codec->config->bits == 14 ? BST_CHECKED : BST_UNCHECKED);
@@ -488,7 +488,7 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		init_format();
 		init_bits();
 		notify_hide();
-		return TRUE;
+		return FALSE;
 	}
 
 	case WM_COMMAND:

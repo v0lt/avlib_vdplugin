@@ -40,6 +40,17 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		return FALSE;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case IDC_BUTTON_DEFAULT:
+			codec->reset_config();
+			init_format();
+			init_bits();
+			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
+			break;
+		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
 }

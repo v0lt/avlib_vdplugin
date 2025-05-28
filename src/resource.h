@@ -38,6 +38,7 @@
 #define IDD_ENC_AAC                     305
 #define IDD_ENC_MP3                     306
 
+#define IDC_BUTTON_DEFAULT              1000
 #define IDC_FORMATNAME                  1004
 #define IDC_VIDEO_PIXFMT                1006
 #define IDC_VIDEO_WXH                   1007

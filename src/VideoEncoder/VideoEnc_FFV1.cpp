@@ -102,14 +102,8 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		for (const auto& v_name : v_names) {
 			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_name);
 		}
-		int x = 0;
-		if (config->level == 1) {
-			x = 1;
-		}
-		else if (config->level == 3) {
-			x = 2;
-		}
-		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, x, 0);
+		const int level_idx = (config->level == 1) ? 1 : (config->level == 3) ? 2 : 0;
+		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, level_idx, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_ADDSTRING, 0, (LPARAM)L"default");
@@ -124,6 +118,15 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
+		case IDC_BUTTON_DEFAULT: {
+			codec->reset_config();
+			init_format();
+			const int level_idx = (config->level == 1) ? 1 : (config->level == 3) ? 2 : 0;
+			SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, level_idx, 0);
+			CheckDlgButton(mhdlg, IDC_ENC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
+			apply_level();
+			break;
+		}
 		case IDC_LEVEL:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				int x = (int)SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_GETCURSEL, 0, 0);
