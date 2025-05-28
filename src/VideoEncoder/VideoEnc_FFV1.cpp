@@ -11,7 +11,7 @@
 #include "../Helper.h"
 #include "../resource.h"
 
-const int ffv1_levels[] = { 0, 1, 3 };
+const int ffv1_levels[] = { 1, 3 };
 const int ffv1_slice_tab[] = { 0, 4, 6, 9, 12, 16, 24, 30, 36, 42 };
 
 //
@@ -94,7 +94,6 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_INITDIALOG:
 	{
 		const char* v_names[] = {
-			"FFV1.0",
 			"FFV1.1",
 			"FFV1.3",
 		};
@@ -102,7 +101,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		for (const auto& v_name : v_names) {
 			SendDlgItemMessageA(mhdlg, IDC_LEVEL, CB_ADDSTRING, 0, (LPARAM)v_name);
 		}
-		const int level_idx = (config->level == 1) ? 1 : (config->level == 3) ? 2 : 0;
+		const int level_idx = (config->level == 3) ? 1 : 0;
 		SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, level_idx, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_SLICES, CB_RESETCONTENT, 0, 0);
@@ -121,7 +120,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_BUTTON_DEFAULT: {
 			codec->reset_config();
 			init_format();
-			const int level_idx = (config->level == 1) ? 1 : (config->level == 3) ? 2 : 0;
+			const int level_idx = (config->level == 3) ? 1 : 0;
 			SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_SETCURSEL, level_idx, 0);
 			CheckDlgButton(mhdlg, IDC_ENC_CONTEXT, config->context == 1 ? BST_CHECKED : BST_UNCHECKED);
 			apply_level();
@@ -130,13 +129,7 @@ INT_PTR ConfigFFV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_LEVEL:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				int x = (int)SendDlgItemMessageW(mhdlg, IDC_LEVEL, CB_GETCURSEL, 0, 0);
-				config->level = 0;
-				if (x == 1) {
-					config->level = 1;
-				}
-				else if (x == 2) {
-					config->level = 3;
-				}
+				config->level = (x == 1) ? 3 : 1;
 				apply_level();
 				return TRUE;
 			}
@@ -224,7 +217,6 @@ int CodecFFV1::compress_input_info(VDXPixmapLayout* src)
 
 bool CodecFFV1::init_ctx(VDXPixmapLayout* layout)
 {
-	avctx->strict_std_compliance = -2;
 	avctx->level = codec_config.level;
 	avctx->slices = codec_config.slices;
 	av_opt_set_int(avctx->priv_data, "slicecrc", codec_config.slicecrc, 0);
