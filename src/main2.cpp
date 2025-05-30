@@ -33,7 +33,7 @@ void saveConfig();
 
 int av_initialized = 0;
 
-static int av_log_level = AV_LOG_INFO;
+static int av_log_level = AV_LOG_VERBOSE;
 
 void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
 {
