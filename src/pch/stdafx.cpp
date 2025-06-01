@@ -5,3 +5,11 @@
  */
 
 #include <stdafx.h>
+
+#pragma comment(lib, "avcodec")
+#pragma comment(lib, "avformat")
+#pragma comment(lib, "avutil")
+#pragma comment(lib, "swscale")
+#pragma comment(lib, "swresample")
+
+#pragma comment(lib, "vfw32")

@@ -15,14 +15,6 @@
 #include "resource.h"
 #include "Helper.h"
 
-#pragma comment(lib, "avcodec")
-#pragma comment(lib, "avformat")
-#pragma comment(lib, "avutil")
-#pragma comment(lib, "swscale")
-#pragma comment(lib, "swresample")
-
-#pragma comment(lib, "vfw32")
-
 HINSTANCE hInstance;
 bool config_decode_raw = false;
 bool config_decode_magic = false;
@@ -82,10 +74,13 @@ float GetDlgItemFloat(HWND wnd, int id, float bv)
 {
 	HWND w1 = GetDlgItem(wnd, id);
 	wchar_t buf[128];
-	if (!GetWindowTextW(w1, buf, (int)std::size(buf))) return bv;
-	float v;
-	if (swscanf_s(buf, L"%f", &v) != 1) return bv;
-	return v;
+	if (GetWindowTextW(w1, buf, (int)std::size(buf))) {
+		float v;
+		if (swscanf_s(buf, L"%f", &v) == 1) {
+			return v;
+		}
+	}
+	return bv;
 }
 
 void SetDlgItemFloat(HWND wnd, int id, float v)
