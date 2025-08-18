@@ -14,6 +14,7 @@ struct CodecQSV_HEVC : public CodecBase {
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
+		int qscale;
 
 		Config() { reset(); }
 		void reset() {
@@ -22,6 +23,7 @@ struct CodecQSV_HEVC : public CodecBase {
 			bits    = 8;
 			preset  = 3;
 			tune    = 0;
+			qscale  = 30;
 		}
 	} codec_config;
 

@@ -41,8 +41,21 @@ INT_PTR ConfigQSV_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 		break;
 	}
+
+	case WM_HSCROLL:
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
+			break;
+		}
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -51,6 +64,8 @@ INT_PTR ConfigQSV_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_format();
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
@@ -75,6 +90,7 @@ void CodecQSV_H264::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, h264_qsv_preset_names);
+		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
 		reg.CloseKey();
 	}
 }
@@ -85,6 +101,7 @@ void CodecQSV_H264::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		save_format_bitdepth(reg);
 		reg.WriteString("preset", h264_qsv_preset_names[codec_config.preset]);
+		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();
 	}
 }
@@ -123,6 +140,8 @@ bool CodecQSV_H264::init_ctx(VDXPixmapLayout* layout)
 
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", h264_qsv_preset_names[codec_config.preset], 0);
+	avctx->flags |= AV_CODEC_FLAG_QSCALE;
+	avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
 	return true;
 }
 
