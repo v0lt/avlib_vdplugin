@@ -51,14 +51,14 @@ INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 63);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
 		break;
 	}
 
 	case WM_HSCROLL:
 		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
 			break;
 		}
 		return FALSE;
@@ -71,7 +71,7 @@ INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, false);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {

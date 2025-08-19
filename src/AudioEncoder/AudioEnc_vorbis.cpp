@@ -38,7 +38,7 @@ void AConfigVorbis::init_quality()
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, -1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, true);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, TRUE);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality");
 	}
 }
@@ -53,7 +53,7 @@ void AConfigVorbis::change_quality()
 	}
 	else {
 		codec_config->quality = x;
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, true);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, TRUE);
 	}
 }
 
