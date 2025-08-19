@@ -14,6 +14,7 @@ struct CodecAMF_AV1 : public CodecBase {
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
+		int qscale;
 
 		Config() { reset(); }
 		void reset() {
@@ -22,6 +23,7 @@ struct CodecAMF_AV1 : public CodecBase {
 			bits    = 8;
 			preset  = 2; // "balanced"
 			tune    = 0;
+			qscale  = 25;
 		}
 	} codec_config;
 

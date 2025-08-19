@@ -38,8 +38,21 @@ INT_PTR ConfigAMF_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 		break;
 	}
+
+	case WM_HSCROLL:
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
+			break;
+		}
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -48,6 +61,8 @@ INT_PTR ConfigAMF_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_format();
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, false);
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
@@ -72,6 +87,7 @@ void CodecAMF_HEVC::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, hevc_amf_preset_names);
+		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
 		reg.CloseKey();
 	}
 }
@@ -82,6 +98,7 @@ void CodecAMF_HEVC::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		save_format_bitdepth(reg);
 		reg.WriteString("preset", hevc_amf_preset_names[codec_config.preset]);
+		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();
 	}
 }
@@ -145,6 +162,10 @@ bool CodecAMF_HEVC::init_ctx(VDXPixmapLayout* layout)
 
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", hevc_amf_preset_names[codec_config.preset], 0);
+
+	ret = av_opt_set(avctx->priv_data, "rc", "cqp", 0);
+	ret = av_opt_set_int(avctx->priv_data, "qp_i", codec_config.qscale, 0);
+	ret = av_opt_set_int(avctx->priv_data, "qp_p", codec_config.qscale, 0);
 	return true;
 }
 
