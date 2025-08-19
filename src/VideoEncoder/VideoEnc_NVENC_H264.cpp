@@ -54,8 +54,21 @@ INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			SendDlgItemMessageA(mhdlg, IDC_ENC_TUNE, CB_ADDSTRING, 0, (LPARAM)tune_name);
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
+
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
 		break;
 	}
+
+	case WM_HSCROLL:
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+			break;
+		}
+		return FALSE;
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -65,6 +78,8 @@ INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
+			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
@@ -96,6 +111,7 @@ void CodecNVENC_H264::load_config()
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, h264_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, h264_nvenc_tune_names);
+		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
 		reg.CloseKey();
 	}
 }
@@ -107,6 +123,7 @@ void CodecNVENC_H264::save_config()
 		save_format_bitdepth(reg);
 		reg.WriteString("preset", h264_nvenc_preset_names[codec_config.preset]);
 		reg.WriteString("tune", h264_nvenc_tune_names[codec_config.tune]);
+		reg.WriteInt("qscale", codec_config.qscale);
 		reg.CloseKey();
 	}
 }
@@ -130,6 +147,9 @@ bool CodecNVENC_H264::init_ctx(VDXPixmapLayout* layout)
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", h264_nvenc_preset_names[codec_config.preset], 0);
 	ret = av_opt_set(avctx->priv_data, "tune", h264_nvenc_tune_names[codec_config.tune], 0);
+
+	ret = av_opt_set(avctx->priv_data, "rc", "constqp", 0);
+	ret = av_opt_set_int(avctx->priv_data, "qp", codec_config.qscale, 0);
 	return true;
 }
 
