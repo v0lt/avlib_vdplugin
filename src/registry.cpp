@@ -145,5 +145,5 @@ void RegistryPrefs::WriteBool(LPCSTR valueName, const bool value)
 
 void RegistryPrefs::WriteString(LPCSTR valueName, std::string_view value)
 {
-	LSTATUS lRes = ::RegSetValueExA(m_key, valueName, 0, REG_SZ, reinterpret_cast<const BYTE*>(value.data()), (DWORD)(value.size() + 1) * sizeof(wchar_t));
+	LSTATUS lRes = ::RegSetValueExA(m_key, valueName, 0, REG_SZ, reinterpret_cast<const BYTE*>(value.data()), (DWORD)(value.size() + 1));
 }
