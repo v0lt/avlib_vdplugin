@@ -13,37 +13,6 @@ IF NOT EXIST "%SEVENZIP%" (
   GOTO :END
 )
 
-REM -------------------------------------
-
-SET "FFMPEG_DLLS=avcodec-61.dll avformat-61.dll avutil-59.dll swresample-5.dll swscale-8.dll"
-
-SET /A COUNT=0
-FOR %%D IN (%FFMPEG_DLLS%) DO IF EXIST "_bin\ffmpeg\%%D" SET /A COUNT+=1
-
-IF %COUNT% EQU 5 (
-  ECHO FFmpeg files are already downloaded and unpacked.
-  GOTO :MakeArchive
-)
-
-SET FFMPEG_ZIP=ffmpeg-n7.1-latest-win64-gpl-shared-7.1.zip
-
-IF NOT EXIST _bin\ffmpeg\%FFMPEG_ZIP% (
-  ECHO Downloading "%FFMPEG_ZIP%"...
-  MKDIR _bin\ffmpeg
-  curl -o "_bin\ffmpeg\%FFMPEG_ZIP%" --insecure -L "https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/%FFMPEG_ZIP%"
-)
-
-IF NOT EXIST _bin\ffmpeg\%FFMPEG_ZIP% (
-  ECHO Failed to download %FFMPEG_ZIP%.
-  GOTO :END
-)
-
-"%SEVENZIP%" e "_bin\ffmpeg\%FFMPEG_ZIP%" -o"_bin\ffmpeg\" %FFMPEG_DLLS% -r -aos
-
-REM -------------------------------------
-
-:MakeArchive
-
 MKDIR _bin\plugins64
 
 COPY /Y /V "_bin\Release_x64\avlib-1.vdplugin" "_bin\plugins64\avlib-1.vdplugin"

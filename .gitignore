@@ -1,6 +1,8 @@
 _bin/
 _obj/
 .vs/
+ffmpeg/lib_x64/
+ffmpeg/lib_win32/
 /revision.h
 *.aps
 *.user
