@@ -16,6 +16,7 @@ enum {
 	PRORES_PROFILE_STANDARD,
 	PRORES_PROFILE_HQ,
 	PRORES_PROFILE_4444,
+	PRORES_PROFILE_4444XQ,
 };
 
 struct CodecProres : public CodecBase {

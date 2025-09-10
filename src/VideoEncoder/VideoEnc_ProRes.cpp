@@ -63,6 +63,7 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			codec->reset_config();
 			init_format();
 			init_bits();
+			init_profile();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
 			break;
@@ -92,15 +93,15 @@ void ConfigProres::init_profile()
 {
 	CodecProres* prores_codec = (CodecProres*)codec;
 
-	if (codec->config->format == CodecBase::format_yuva444) {
-		if (prores_codec->prores_profile_names.data() != prores_profile_4444_names) {
-			prores_codec->prores_profile_names = prores_profile_4444_names;
-			prores_codec->codec_config.profile = 0; // "4444"
-		}
-	} else {
+	if (codec->config->format == CodecBase::format_yuv422) {
 		if (prores_codec->prores_profile_names.data() != prores_profile_422_names) {
 			prores_codec->prores_profile_names = prores_profile_422_names;
 			prores_codec->codec_config.profile = 3; // "HQ"
+		}
+	} else { // format_yuv444, format_yuva444
+		if (prores_codec->prores_profile_names.data() != prores_profile_4444_names) {
+			prores_codec->prores_profile_names = prores_profile_4444_names;
+			prores_codec->codec_config.profile = 0; // "4444"
 		}
 	}
 
@@ -122,10 +123,12 @@ void CodecProres::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
-		if (codec_config.format == CodecBase::format_yuva444) {
-			prores_profile_names = prores_profile_4444_names;
-		} else {
+		if (codec_config.format == CodecBase::format_yuv422) {
 			prores_profile_names = prores_profile_422_names;
+			codec_config.profile = 3; // "HQ"
+		} else { // format_yuv444, format_yuva444
+			prores_profile_names = prores_profile_4444_names;
+			codec_config.profile = 0; // "4444"
 		}
 		reg.CheckString("profile", codec_config.profile, prores_profile_names);
 		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
