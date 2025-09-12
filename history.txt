@@ -2,7 +2,8 @@ avlib.vdplugin history
 
 1.0.0.x dev
 ----------------------
-The FFmpeg 7.1.1 x64 build from BtbN is used.
+The FFmpeg 8.0 x64 build from BtbN is used.
+The FFmpeg 8.0 win32 build from Defisym is used.
 Added saving and reading of encoder settings from the registry.
 Added hardware video encoders NVENC, QSV, AMF for H.264 and HEVC.
 Added hardware video encoders NVENC, AMF for AV1.
