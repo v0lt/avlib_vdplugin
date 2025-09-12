@@ -29,12 +29,12 @@ IF %COUNT% EQU 15 (
   GOTO :END
 )
 
-SET FFMPEG_ZIP=ffmpeg-8.0-windows-desktop-vs2022-default.7z
+SET FFMPEG_ZIP=ffmpeg-n8.0-latest-win32-gpl-shared-8.0.zip
 
 IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
   ECHO Downloading "%FFMPEG_ZIP%"...
   MKDIR _bin\ffmpeg_win32
-  curl -o "_bin\ffmpeg_win32\%FFMPEG_ZIP%" --insecure -L "https://sourceforge.net/projects/avbuild/files/windows-desktop/%FFMPEG_ZIP%/download"
+  curl -o "_bin\ffmpeg_win32\%FFMPEG_ZIP%" --insecure -L "https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/%FFMPEG_ZIP%"
 )
 
 IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
@@ -42,14 +42,9 @@ IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
   GOTO :END
 )
 
-SET PATH_DLLS=
-FOR %%D IN (%FFMPEG_DLLS%) DO SET PATH_DLLS=!PATH_DLLS! *\x86\%%D
-SET PATH_LIBS=
-FOR %%D IN (%FFMPEG_LIBS%) DO SET PATH_LIBS=!PATH_LIBS! *\x86\%%D
-FOR %%D IN (%FFMPEG_DEFS%) DO SET PATH_LIBS=!PATH_LIBS! *\x86\%%D
-
-"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"_bin\ffmpeg_win32\" %PATH_DLLS% -r -aos
-"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %PATH_LIBS% -r -aos
+"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"_bin\ffmpeg_win32\" %FFMPEG_DLLS% -r -aos
+"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %FFMPEG_LIBS% -r -aos
+"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %FFMPEG_DEFS% -r -aos
 
 :END
 ENDLOCAL
