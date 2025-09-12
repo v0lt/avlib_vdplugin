@@ -10,7 +10,7 @@
 #include "VideoEnc.h"
 
 enum {
-	PRORES_PROFILE_AUTO = -1,
+	PRORES_PROFILE_AUTO = -1, // not used
 	PRORES_PROFILE_PROXY = 0,
 	PRORES_PROFILE_LT,
 	PRORES_PROFILE_STANDARD,
@@ -23,8 +23,8 @@ struct CodecProres : public CodecBase {
 	enum { id_tag = CODEC_PRORES };
 
 	struct Config : public CodecBase::Config {
-		int profile;
-		int qscale; // 2-31
+		int profile; // 0-5
+		int qscale;  // 2-31
 
 		Config() { reset(); }
 		void reset() {
@@ -42,8 +42,6 @@ struct CodecProres : public CodecBase {
 		CodecBase::format_yuva444,
 	};
 	static constexpr int codec_bitdepths[] = { 10 };
-
-	std::span<const char*> prores_profile_names;
 
 	CodecProres() {
 		codec_name = "prores_ks";

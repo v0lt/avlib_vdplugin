@@ -9,18 +9,33 @@
 
 #include "VideoEnc_ProRes.h"
 #include "../resource.h"
+#include "../Helper.h"
 
-const char* prores_profile_422_names[] = {
+const char* prores_profile_names[] = {
 	"proxy",
 	"lt",
 	"standard",
 	"hq",
-};
-
-const char* prores_profile_4444_names[] = {
 	"4444",
 	"4444xq",
 };
+
+const int prores_profile_ids[] = {
+	PRORES_PROFILE_PROXY,
+	PRORES_PROFILE_LT,
+	PRORES_PROFILE_STANDARD,
+	PRORES_PROFILE_HQ,
+	PRORES_PROFILE_4444,
+	PRORES_PROFILE_4444XQ,
+};
+
+static_assert(std::size(prores_profile_names) == std::size(prores_profile_ids));
+
+const std::span<const char*> prores_profile_422_names  = std::span(&prores_profile_names[0], 4);
+const std::span<const char*> prores_profile_4444_names = std::span(&prores_profile_names[4], 2);
+
+const std::span<const int> prores_profile_422_ids  = std::span(&prores_profile_ids[0], 4);
+const std::span<const int> prores_profile_4444_ids = std::span(&prores_profile_ids[4], 2);
 
 //
 // ConfigProres
@@ -69,7 +84,7 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				LRESULT ret = SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
+				LRESULT ret = GetCurrentItemData(mhdlg, IDC_ENC_PROFILE);
 				if (ret >= 0) {
 					config->profile = (int)ret;
 				}
@@ -93,23 +108,26 @@ void ConfigProres::init_profile()
 {
 	CodecProres* prores_codec = (CodecProres*)codec;
 
+	SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+
 	if (codec->config->format == CodecBase::format_yuv422) {
-		if (prores_codec->prores_profile_names.data() != prores_profile_422_names) {
-			prores_codec->prores_profile_names = prores_profile_422_names;
-			prores_codec->codec_config.profile = 3; // "HQ"
+		if (prores_codec->codec_config.profile < PRORES_PROFILE_PROXY || prores_codec->codec_config.profile > PRORES_PROFILE_HQ) {
+			prores_codec->codec_config.profile = PRORES_PROFILE_HQ;
 		}
-	} else { // format_yuv444, format_yuva444
-		if (prores_codec->prores_profile_names.data() != prores_profile_4444_names) {
-			prores_codec->prores_profile_names = prores_profile_4444_names;
-			prores_codec->codec_config.profile = 0; // "4444"
+		for (int i = 0; i < std::size(prores_profile_422_names); i++) {
+			AddStringSetData(mhdlg, IDC_ENC_PROFILE, prores_profile_422_names[i], prores_profile_422_ids[i]);
+		}
+	}
+	else { // format_yuv444, format_yuva444
+		if (prores_codec->codec_config.profile < PRORES_PROFILE_4444 || prores_codec->codec_config.profile > PRORES_PROFILE_4444XQ) {
+			prores_codec->codec_config.profile = PRORES_PROFILE_4444;
+		}
+		for (int i = 0; i < std::size(prores_profile_4444_names); i++) {
+			AddStringSetData(mhdlg, IDC_ENC_PROFILE, prores_profile_4444_names[i], prores_profile_4444_ids[i]);
 		}
 	}
 
-	SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
-	for (const auto& profile_name : prores_codec->prores_profile_names) {
-		SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)profile_name);
-	}
-	SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, prores_codec->codec_config.profile, 0);
+	SelectByItemData(mhdlg, IDC_ENC_PROFILE, prores_codec->codec_config.profile);
 }
 
 //
@@ -123,14 +141,21 @@ void CodecProres::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
+		int index = -1;
 		if (codec_config.format == CodecBase::format_yuv422) {
-			prores_profile_names = prores_profile_422_names;
-			codec_config.profile = 3; // "HQ"
-		} else { // format_yuv444, format_yuva444
-			prores_profile_names = prores_profile_4444_names;
-			codec_config.profile = 0; // "4444"
+			codec_config.profile = PRORES_PROFILE_HQ;
+			reg.CheckString("profile", index, prores_profile_422_names);
+			if (index >= 0) {
+				codec_config.profile = prores_profile_422_ids[index];
+			}
 		}
-		reg.CheckString("profile", codec_config.profile, prores_profile_names);
+		else { // format_yuv444, format_yuva444
+			codec_config.profile = PRORES_PROFILE_4444;
+			reg.CheckString("profile", index, prores_profile_4444_names);
+			if (index >= 0) {
+				codec_config.profile = prores_profile_4444_ids[index];
+			}
+		}
 		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
 		reg.CloseKey();
 	}
