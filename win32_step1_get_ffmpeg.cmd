@@ -1,5 +1,5 @@
 @ECHO OFF
-SETLOCAL
+SETLOCAL ENABLEDELAYEDEXPANSION
 CD /D %~dp0
 
 REM -------------------------------------
@@ -15,9 +15,9 @@ IF NOT EXIST "%SEVENZIP%" (
 
 REM -------------------------------------
 
-SET "FFMPEG_DLLS=avcodec-61.dll avformat-61.dll avutil-59.dll swresample-5.dll swscale-8.dll"
+SET "FFMPEG_DLLS=avcodec-62.dll avformat-62.dll avutil-60.dll swresample-6.dll swscale-9.dll"
 SET "FFMPEG_LIBS=avcodec.lib avformat.lib avutil.lib swresample.lib swscale.lib"
-SET "FFMPEG_DEFS=avcodec-61.def avformat-61.def avutil-59.def swresample-5.def swscale-8.def"
+SET "FFMPEG_DEFS=avcodec-62.def avformat-62.def avutil-60.def swresample-6.def swscale-9.def"
 
 SET /A COUNT=0
 FOR %%D IN (%FFMPEG_DLLS%) DO IF EXIST "_bin\ffmpeg_win32\%%D" SET /A COUNT+=1
@@ -29,12 +29,12 @@ IF %COUNT% EQU 15 (
   GOTO :END
 )
 
-SET FFMPEG_ZIP=ffmpeg-n7.1-latest-win32-gpl-shared-7.1.zip
+SET FFMPEG_ZIP=ffmpeg-8.0-windows-desktop-vs2022-default.7z
 
 IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
   ECHO Downloading "%FFMPEG_ZIP%"...
   MKDIR _bin\ffmpeg_win32
-  curl -o "_bin\ffmpeg_win32\%FFMPEG_ZIP%" --insecure -L "https://github.com/yt-dlp/FFmpeg-Builds/releases/download/latest/%FFMPEG_ZIP%"
+  curl -o "_bin\ffmpeg_win32\%FFMPEG_ZIP%" --insecure -L "https://sourceforge.net/projects/avbuild/files/windows-desktop/%FFMPEG_ZIP%/download"
 )
 
 IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
@@ -42,9 +42,14 @@ IF NOT EXIST _bin\ffmpeg_win32\%FFMPEG_ZIP% (
   GOTO :END
 )
 
-"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"_bin\ffmpeg_win32\" %FFMPEG_DLLS% -r -aos
-"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %FFMPEG_LIBS% -r -aos
-"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %FFMPEG_DEFS% -r -aos
+SET PATH_DLLS=
+FOR %%D IN (%FFMPEG_DLLS%) DO SET PATH_DLLS=!PATH_DLLS! *\x86\%%D
+SET PATH_LIBS=
+FOR %%D IN (%FFMPEG_LIBS%) DO SET PATH_LIBS=!PATH_LIBS! *\x86\%%D
+FOR %%D IN (%FFMPEG_DEFS%) DO SET PATH_LIBS=!PATH_LIBS! *\x86\%%D
+
+"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"_bin\ffmpeg_win32\" %PATH_DLLS% -r -aos
+"%SEVENZIP%" e "_bin\ffmpeg_win32\%FFMPEG_ZIP%" -o"ffmpeg\lib_win32\" %PATH_LIBS% -r -aos
 
 :END
 ENDLOCAL
