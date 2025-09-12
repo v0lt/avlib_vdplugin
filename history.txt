@@ -7,6 +7,7 @@ Added saving and reading of encoder settings from the registry.
 Added hardware video encoders NVENC, QSV, AMF for H.264 and HEVC.
 Added hardware video encoders NVENC, AMF for AV1.
 FFV1 version 0 video encoding is no longer supported.
+Adjusted profile selection for ProRes encoder.
 Cosmetic changes.
 
 
