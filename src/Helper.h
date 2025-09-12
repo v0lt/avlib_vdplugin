@@ -31,3 +31,8 @@ bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], 
 std::string AVError2Str(const int errnum);
 
 const wchar_t* GetFileExt(std::wstring_view path);
+
+void AddStringSetData(HWND hDlg, const int nIDDlgItem, const char* str, const LONG_PTR data);
+void AddStringSetData(HWND hDlg, const int nIDDlgItem, const wchar_t* str, const LONG_PTR data);
+LONG_PTR GetCurrentItemData(HWND hDlg, const int nIDDlgItem);
+void SelectByItemData(HWND hDlg, const int nIDDlgItem, LONG_PTR data);

@@ -85,3 +85,40 @@ const wchar_t* GetFileExt(std::wstring_view path)
 	}
 	return nullptr;
 }
+
+void AddStringSetData(HWND hDlg, const int nIDDlgItem, const char* str, const LONG_PTR data)
+{
+	LRESULT result = SendDlgItemMessageA(hDlg, nIDDlgItem, CB_ADDSTRING, 0, (LPARAM)str);
+	if (result >= 0) {
+		SendDlgItemMessageW(hDlg, nIDDlgItem, CB_SETITEMDATA, (WPARAM)result, (LPARAM)data);
+	}
+}
+
+void AddStringSetData(HWND hDlg, const int nIDDlgItem, const wchar_t* str, const LONG_PTR data)
+{
+	LRESULT result = SendDlgItemMessageW(hDlg, nIDDlgItem, CB_ADDSTRING, 0, (LPARAM)str);
+	if (result >= 0) {
+		SendDlgItemMessageW(hDlg, nIDDlgItem, CB_SETITEMDATA, (WPARAM)result, (LPARAM)data);
+	}
+}
+
+LONG_PTR GetCurrentItemData(HWND hDlg, const int nIDDlgItem)
+{
+	LRESULT result = SendDlgItemMessageW(hDlg, nIDDlgItem, CB_GETCURSEL, 0, 0);
+	if (result >= 0) {
+		result = SendDlgItemMessageW(hDlg, nIDDlgItem, CB_GETITEMDATA, (WPARAM)result, 0);
+	}
+	return result;
+}
+
+void SelectByItemData(HWND hDlg, const int nIDDlgItem, const LONG_PTR data)
+{
+	const LRESULT count = SendDlgItemMessageW(hDlg, nIDDlgItem, CB_GETCOUNT, 0, 0);
+	for (LRESULT i = 0; i < count; i++) {
+		const LRESULT itemData = SendDlgItemMessageW(hDlg, nIDDlgItem, CB_GETITEMDATA, (WPARAM)i, 0);
+		if (itemData == data) {
+			SendDlgItemMessageW(hDlg, nIDDlgItem, CB_SETCURSEL, (WPARAM)i, 0);
+			return;
+		}
+	}
+}
