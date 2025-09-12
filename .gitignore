@@ -1,7 +1,10 @@
 _bin/
 _obj/
 .vs/
+ffmpeg/*.zip
+ffmpeg/bin_x64/
 ffmpeg/lib_x64/
+ffmpeg/bin_win32/
 ffmpeg/lib_win32/
 /revision.h
 *.aps

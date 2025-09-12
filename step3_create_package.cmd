@@ -27,11 +27,11 @@ SET PCKG_NAME=avlib_vdplugin_%FILE_VERSION%
 
 "%SEVENZIP%" a -m0=lzma -mx9 -ms=on "_bin\%PCKG_NAME%.7z" ^
 .\_bin\plugins64 ^
-.\_bin\ffmpeg\avcodec-62.dll ^
-.\_bin\ffmpeg\avformat-62.dll ^
-.\_bin\ffmpeg\avutil-60.dll ^
-.\_bin\ffmpeg\swresample-6.dll ^
-.\_bin\ffmpeg\swscale-9.dll
+.\ffmpeg\bin_x64\avcodec-62.dll ^
+.\ffmpeg\bin_x64\avformat-62.dll ^
+.\ffmpeg\bin_x64\avutil-60.dll ^
+.\ffmpeg\bin_x64\swresample-6.dll ^
+.\ffmpeg\bin_x64\swscale-9.dll
 
 IF EXIST "_bin\plugins64" RD /Q /S "_bin\plugins64"
 
