@@ -114,7 +114,7 @@ void ConfigProres::init_profile()
 		if (prores_codec->codec_config.profile < PRORES_PROFILE_PROXY || prores_codec->codec_config.profile > PRORES_PROFILE_HQ) {
 			prores_codec->codec_config.profile = PRORES_PROFILE_HQ;
 		}
-		for (int i = 0; i < std::size(prores_profile_422_names); i++) {
+		for (size_t i = 0; i < std::size(prores_profile_422_names); i++) {
 			AddStringSetData(mhdlg, IDC_ENC_PROFILE, prores_profile_422_names[i], prores_profile_422_ids[i]);
 		}
 	}
@@ -122,7 +122,7 @@ void ConfigProres::init_profile()
 		if (prores_codec->codec_config.profile < PRORES_PROFILE_4444 || prores_codec->codec_config.profile > PRORES_PROFILE_4444XQ) {
 			prores_codec->codec_config.profile = PRORES_PROFILE_4444;
 		}
-		for (int i = 0; i < std::size(prores_profile_4444_names); i++) {
+		for (size_t i = 0; i < std::size(prores_profile_4444_names); i++) {
 			AddStringSetData(mhdlg, IDC_ENC_PROFILE, prores_profile_4444_names[i], prores_profile_4444_ids[i]);
 		}
 	}
