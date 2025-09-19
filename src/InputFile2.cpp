@@ -359,11 +359,13 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 		return IVDXInputFileDriver::kDC_None;
 	}
 
+	/*
 	if (ctx->iformat == av_find_input_format("avisynth")) {
 		// ignore AviSynth scripts
 		avformat_close_input(&ctx);
 		return IVDXInputFileDriver::kDC_None;
 	}
+	*/
 
 	err = avformat_find_stream_info(ctx, nullptr);
 	if (err < 0) {
@@ -400,6 +402,7 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature2(VDXMediaInfo& info, cons
 
 int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, const void* pHeader, sint32 nHeaderSize, const void* pFooter, sint32 nFooterSize, sint64 nFileSize, const wchar_t* fileName)
 {
+	/*
 	if (fileName) {
 		const wchar_t* p = GetFileExt(fileName);
 		if (p) {
@@ -412,6 +415,7 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 			}
 		}
 	}
+	*/
 
 	if (pHeader && nHeaderSize >= 10) {
 		const unsigned char header_bom_u8[] = { 0xEF, 0xBB, 0xBF };
