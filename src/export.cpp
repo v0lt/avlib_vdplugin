@@ -93,24 +93,24 @@ bool VDXAPIENTRY VDFFInputFile::GetExportCommandName(int id, char* name, int nam
 bool exportSaveFile(HWND hwnd, wchar_t* path, int max_path) {
 	OPENFILENAMEW ofn = { 0 };
 	wchar_t szFile[MAX_PATH];
+	std::wstring ext;
 
 	if (path) {
 		wcscpy_s(szFile, path);
+		const wchar_t* p = GetFileExt(path);
+		if (p) {
+			ext = p;
+		} else {
+			ext = L".";
+		}
 	} else {
 		szFile[0] = 0;
+		ext = L".";
 	}
 
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
 	ofn.lpstrTitle = L"Export Stream Copy";
-
-	std::wstring ext;
-	const wchar_t* p = GetFileExt(path);
-	if (p) {
-		ext = p;
-	} else {
-		ext = L".";
-	}
 
 	std::wstring filter = std::format(L"Same as source (*{0})\a*{0}\a", ext.c_str());
 	filter.append(L"All files (*.*)\a*.*\a");
