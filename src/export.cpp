@@ -557,22 +557,26 @@ bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, con
 {
 	init_av();
 
-	std::string out_ff_path = ConvertWideToUtf8(path);
-
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
+
 	if (format && format[0]) {
-		oformat = av_guess_format(format, nullptr, nullptr);
+		if (strcmp(format, "mov+faststart") == 0) {
+			oformat = av_guess_format("mov", nullptr, nullptr);
+		}
+		else if (strcmp(format, "mp4+faststart") == 0) {
+			oformat = av_guess_format("mp4", nullptr, nullptr);
+		}
+		else {
+			oformat = av_guess_format(format, nullptr, nullptr);
+		}
 	}
-	if (strcmp(format, "mov+faststart") == 0) {
-		oformat = av_guess_format("mov", nullptr, nullptr);
-	}
-	if (strcmp(format, "mp4+faststart") == 0) {
-		oformat = av_guess_format("mp4", nullptr, nullptr);
-	}
+
 	if (!oformat) {
+		std::string out_ff_path = ConvertWideToUtf8(path);
 		oformat = av_guess_format(nullptr, out_ff_path.c_str(), nullptr);
 	}
+
 	if (!oformat) {
 		return false;
 	}
@@ -619,20 +623,25 @@ void FFOutputFile::Init(const wchar_t* path, const char* format)
 
 	int err = 0;
 	const AVOutputFormat* oformat = nullptr;
+
 	if (format && format[0]) {
-		oformat = av_guess_format(format, nullptr, nullptr);
+		if (strcmp(format, "mov+faststart") == 0) {
+			oformat = av_guess_format("mov", nullptr, nullptr);
+			mp4_faststart = true;
+		}
+		else if (strcmp(format, "mp4+faststart") == 0) {
+			oformat = av_guess_format("mp4", nullptr, nullptr);
+			mp4_faststart = true;
+		}
+		else {
+			oformat = av_guess_format(format, nullptr, nullptr);
+		}
 	}
-	if (strcmp(format, "mov+faststart") == 0) {
-		oformat = av_guess_format("mov", nullptr, nullptr);
-		mp4_faststart = true;
-	}
-	if (strcmp(format, "mp4+faststart") == 0) {
-		oformat = av_guess_format("mp4", nullptr, nullptr);
-		mp4_faststart = true;
-	}
+
 	if (!oformat) {
 		oformat = av_guess_format(nullptr, out_ff_path.c_str(), nullptr);
 	}
+
 	if (!oformat) {
 		mContext.mpCallbacks->SetError("Unable to find a suitable output format");
 		Finalize();
