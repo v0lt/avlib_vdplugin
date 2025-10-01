@@ -15,8 +15,6 @@ FFMpeg x64 binaries used:
 FFMpeg win32 binaries used:
 * https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-n8.0-latest-win32-gpl-shared-8.0.zip
 
-FFmpeg builds with Windows 7 support:
-* ...
 
 ## Donate
 
