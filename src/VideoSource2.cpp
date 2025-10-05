@@ -240,7 +240,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, const int streamIndex)
 		return -1;
 	}
 
-	if (pSource->is_image) {
+	if (pSource->is_image || strcmp(m_pFormatCtx->iformat->name, "avisynth") == 0) {
 		is_image_list = true;
 		trust_index = false;
 		sparse_index = false;
@@ -250,7 +250,7 @@ int VDFFVideoSource::initStream(VDFFInputFile* pSource, const int streamIndex)
 	else {
 		int nb_index_entries = avformat_index_get_entries_count(m_pStream);
 
-		if (nb_index_entries < 2 && m_pFormatCtx->iformat != av_find_input_format("avisynth")) {
+		if (nb_index_entries < 2) {
 			// try to force loading index
 			// works for FLV and MKV
 			int64_t pos = m_pStream->duration;
