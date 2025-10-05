@@ -2,6 +2,8 @@ avlib.vdplugin history
 
 1.0.2.x dev
 ----------------------
+Fixed a temporary freeze in the file open window when selecting certain .avs files. AviSynth script files are now identified by extension.
+Fixed frame navigation for Avisynth script files.
 
 
 1.0.1.393 - 2025-10-01
