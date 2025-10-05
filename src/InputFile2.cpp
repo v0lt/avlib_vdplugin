@@ -579,12 +579,6 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 	// audio will manage its own
 	m_pFormatCtx = OpenVideoFile();
 
-	if (m_pFormatCtx) {
-		if (strcmp(m_pFormatCtx->iformat->name, "avisynth") == 0) {
-			cfg_disable_cache = true;
-		}
-	}
-
 	if (auto_append) {
 		do_auto_append(szFile);
 	}
