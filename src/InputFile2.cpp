@@ -359,14 +359,6 @@ IVDXInputFileDriver::DetectionConfidence detect_ff(VDXMediaInfo& info, const voi
 		return IVDXInputFileDriver::kDC_None;
 	}
 
-	/*
-	if (ctx->iformat == av_find_input_format("avisynth")) {
-		// ignore AviSynth scripts
-		avformat_close_input(&ctx);
-		return IVDXInputFileDriver::kDC_None;
-	}
-	*/
-
 	err = avformat_find_stream_info(ctx, nullptr);
 	if (err < 0) {
 		avformat_close_input(&ctx);
@@ -586,6 +578,12 @@ void VDFFInputFile::Init(const wchar_t* szFile, IVDXInputOptions* in_opts)
 	//! this context instance is granted to video stream: wasted in audio-only mode
 	// audio will manage its own
 	m_pFormatCtx = OpenVideoFile();
+
+	if (m_pFormatCtx) {
+		if (strcmp(m_pFormatCtx->iformat->name, "avisynth") == 0) {
+			cfg_disable_cache = true;
+		}
+	}
 
 	if (auto_append) {
 		do_auto_append(szFile);
