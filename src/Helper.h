@@ -28,8 +28,6 @@ void DLog(const std::wstring_view format, Args ...args)
 
 bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], const int src_linesize[4], enum AVPixelFormat pix_fmt, int width, int height);
 
-std::string AVError2Str(const int errnum);
-
 const wchar_t* GetFileExt(std::wstring_view path);
 
 void AddStringSetData(HWND hDlg, const int nIDDlgItem, const char* str, const LONG_PTR data);

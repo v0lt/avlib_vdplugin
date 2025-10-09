@@ -10,6 +10,7 @@
 
 extern "C" {
 #include <libavutil/log.h>
+#include <libavutil/error.h>
 }
 
 
@@ -84,4 +85,10 @@ std::string get_last_av_error()
 	std::lock_guard<std::mutex> lock(ff_error_log_mutex);
 
 	return ff_error_log;
+}
+
+std::string AVError2Str(const int errnum)
+{
+	char errBuf[AV_ERROR_MAX_STRING_SIZE] = {};
+	return std::string(av_make_error_string(errBuf, sizeof(errBuf), errnum));
 }

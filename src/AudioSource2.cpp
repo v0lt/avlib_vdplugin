@@ -94,9 +94,8 @@ int VDFFAudioSource::initStream(VDFFInputFile* pSource, int streamIndex)
 
 	int ret = avcodec_open2(m_pCodecCtx, pDecoder, nullptr);
 	if (ret < 0) {
-		char errstr[AV_ERROR_MAX_STRING_SIZE];
-		av_strerror(ret, errstr, sizeof(errstr));
-		mContext.mpCallbacks->SetError("FFMPEG audio decoder error: %s.", errstr);
+		std::string errstr = AVError2Str(ret);
+		mContext.mpCallbacks->SetError("FFMPEG audio decoder error: %s.", errstr.c_str());
 		return -1;
 	}
 

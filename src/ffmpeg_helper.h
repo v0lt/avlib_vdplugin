@@ -7,3 +7,5 @@
 void init_av();
 
 std::string get_last_av_error();
+
+std::string AVError2Str(const int errnum);

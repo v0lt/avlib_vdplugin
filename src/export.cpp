@@ -514,12 +514,10 @@ bool VDXAPIENTRY VDFFInputFile::ExecuteExport(int id, VDXHWND parent, IProjectSt
 		progress.sync_state();
 
 		if (err < 0) {
-			char buf[1024];
-			char errstr[AV_ERROR_MAX_STRING_SIZE];
-			av_strerror(err, errstr, sizeof(errstr));
-			strcpy_s(buf, "Operation failed.\nInternal error (FFMPEG): ");
-			strcat_s(buf, errstr);
-			MessageBoxA(progress.getHwnd(), buf, "Stream copy", MB_ICONSTOP | MB_OK);
+			std::string errstr("Operation failed.\nInternal error (FFMPEG): ");
+			errstr.append(AVError2Str(err));
+
+			MessageBoxA(progress.getHwnd(), errstr.c_str(), "Stream copy", MB_ICONSTOP | MB_OK);
 			return false;
 		}
 		else if (!progress.abort) {
@@ -544,12 +542,9 @@ FFOutputFile::~FFOutputFile()
 
 void FFOutputFile::av_error(int err)
 {
-	char buf[1024];
-	char errstr[AV_ERROR_MAX_STRING_SIZE];
-	av_strerror(err, errstr, sizeof(errstr));
-	strcpy_s(buf, "Internal error (FFMPEG): ");
-	strcat_s(buf, errstr);
-	mContext.mpCallbacks->SetError(buf);
+	std::string errstr = AVError2Str(err);
+
+	mContext.mpCallbacks->SetError("Internal error (FFMPEG): %s", errstr.c_str());
 }
 
 bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, const char* format, VDXStreamControl& sc)

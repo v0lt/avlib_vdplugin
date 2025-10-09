@@ -10,10 +10,6 @@
 #include <vector>
 #include "Helper.h"
 
-extern "C" {
-#include <libavutil/error.h>
-}
-
 bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], const int src_linesize[4], enum AVPixelFormat pix_fmt, int width, int height)
 {
 	if (!src_data[0] || src_linesize[0] <= 0 || pix_fmt < 0 || width <= 0 || height <= 0) {
@@ -69,12 +65,6 @@ bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], 
 	fclose(fp);
 
 	return true;
-}
-
-std::string AVError2Str(const int errnum)
-{
-	char errBuf[AV_ERROR_MAX_STRING_SIZE] = {};
-	return std::string(av_make_error_string(errBuf, sizeof(errBuf), errnum));
 }
 
 const wchar_t* GetFileExt(std::wstring_view path)
