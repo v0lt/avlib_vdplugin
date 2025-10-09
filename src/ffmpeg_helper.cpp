@@ -79,15 +79,9 @@ void init_av()
 	}
 }
 
-std::string get_last_av_error(const char* prefix)
+std::string get_last_av_error()
 {
 	std::lock_guard<std::mutex> lock(ff_error_log_mutex);
 
-	std::string error_text;
-	if (prefix) {
-		error_text.assign(prefix);
-	}
-	error_text.append(ff_error_log);
-
-	return error_text;
+	return ff_error_log;
 }

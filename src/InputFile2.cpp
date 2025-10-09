@@ -723,7 +723,7 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 	int err = 0;
 	err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
 	if (err != 0) {
-		mContext.mpCallbacks->SetError(get_last_av_error("FFMPEG open failure:\n").c_str());
+		mContext.mpCallbacks->SetError("FFMPEG open failure:\n%s", get_last_av_error().c_str());
 		return nullptr;
 	}
 
