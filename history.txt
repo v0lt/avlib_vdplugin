@@ -4,6 +4,7 @@ avlib.vdplugin history
 ----------------------
 Fixed a temporary freeze in the file open window when selecting certain .avs files. AviSynth script files are now identified by extension.
 Fixed frame navigation for Avisynth script files.
+Added display of FFmpeg error text when attempting to open a file fails.
 
 
 1.0.1.393 - 2025-10-01
