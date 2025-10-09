@@ -6,4 +6,4 @@
 
 void init_av();
 
-std::string get_last_av_error();
+std::string get_last_av_error(const char* prefix = nullptr);
