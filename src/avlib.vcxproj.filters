@@ -135,6 +135,7 @@
     <ClInclude Include="pch\stdafx.h">
       <Filter>pch</Filter>
     </ClInclude>
+    <ClInclude Include="ffmpeg_helper.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -247,6 +248,7 @@
     <ClCompile Include="pch\stdafx.cpp">
       <Filter>pch</Filter>
     </ClCompile>
+    <ClCompile Include="ffmpeg_helper.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />

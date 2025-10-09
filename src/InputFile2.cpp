@@ -17,15 +17,17 @@
 #include <aviriff.h>
 #include "resource.h"
 #include "Helper.h"
+#include "ffmpeg_helper.h"
 #include "iobuffer.h"
 #include "Utils/StringUtil.h"
+extern "C" {
+#include <libavutil/error.h>
+}
 
 typedef struct AVCodecTag {
 	enum AVCodecID id;
 	unsigned int tag;
 } AVCodecTag;
-
-void init_av();
 
 extern bool config_decode_raw;
 extern bool config_decode_magic;

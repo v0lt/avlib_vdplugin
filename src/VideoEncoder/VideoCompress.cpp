@@ -12,6 +12,7 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 #include "../Helper.h"
+#include "../ffmpeg_helper.h"
 #include "../resource.h"
 
 #include "VideoEnc_FFV1.h"
@@ -30,8 +31,6 @@ extern "C" {
 #include "VideoEnc_AMF_H264.h"
 #include "VideoEnc_AMF_HEVC.h"
 #include "VideoEnc_AMF_AV1.h"
-
-void init_av();
 
 extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {

@@ -23,44 +23,6 @@ bool config_disable_cache = false;
 float config_cache_size = 0.5;
 void saveConfig();
 
-int av_initialized = 0;
-
-static int av_log_level = AV_LOG_VERBOSE;
-
-void av_log_func(void* ptr, int level, const char* fmt, va_list vl)
-{
-	const char prefix[] = "FFLog: ";
-	static size_t newline = std::size(prefix) - 1;
-
-	if (level > av_log_level) {
-		return;
-	}
-
-	char buf[1024];
-	if (newline) {
-		memcpy(buf, prefix, newline);
-	}
-	const int ret = vsprintf_s(&buf[newline], std::size(buf) - newline, fmt, vl);
-	if (ret > 0) {
-		OutputDebugStringA(buf);
-		newline = (buf[newline + (ret - 1)] == '\n') ? std::size(prefix) - 1 : 0;
-	}
-	//DebugBreak(); 
-}
-
-void init_av()
-{
-	if (!av_initialized) {
-		av_initialized = 1;
-
-#ifdef _DEBUG
-		av_log_set_callback(av_log_func);
-		av_log_set_level(av_log_level); // doesn't work for custom callback, but the path will be
-		av_log_set_flags(AV_LOG_SKIP_REPEATED);
-#endif
-	}
-}
-
 class ConfigureDialog : public VDXVideoFilterDialog {
 public:
 	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);

@@ -178,6 +178,7 @@
     <ClInclude Include="AudioSource2.h" />
     <ClInclude Include="export.h" />
     <ClInclude Include="fflayer.h" />
+    <ClInclude Include="ffmpeg_helper.h" />
     <ClInclude Include="FileInfo2.h" />
     <ClInclude Include="gopro.h" />
     <ClInclude Include="Helper.h" />
@@ -227,13 +228,14 @@
     <ClCompile Include="export.cpp" />
     <ClCompile Include="fflayer.cpp" />
     <ClCompile Include="fflayer_render.cpp" />
+    <ClCompile Include="ffmpeg_helper.cpp" />
     <ClCompile Include="FileInfo2.cpp" />
     <ClCompile Include="gopro.cpp" />
     <ClCompile Include="Helper.cpp" />
     <ClCompile Include="InputFile2.cpp" />
     <ClCompile Include="main2.cpp" />
     <ClCompile Include="mov_mp4.cpp" />
-	<ClCompile Include="pch\stdafx.cpp">
+    <ClCompile Include="pch\stdafx.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="registry.cpp" />

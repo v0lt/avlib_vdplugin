@@ -14,10 +14,10 @@ extern "C" {
 #include <libavutil/opt.h>
 }
 #include "../Helper.h"
+#include "../ffmpeg_helper.h"
 #include "../resource.h"
 #include "../iobuffer.h"
 
-void init_av();
 extern HINSTANCE hInstance;
 
 VDFFAudio::VDFFAudio(const VDXInputDriverContext& pContext)

@@ -16,6 +16,7 @@
 #include "resource.h"
 #include <vfw.h>
 #include "Helper.h"
+#include "ffmpeg_helper.h"
 #include "iobuffer.h"
 #include "Utils/StringUtil.h"
 
@@ -550,8 +551,6 @@ void FFOutputFile::av_error(int err)
 	strcat_s(buf, errstr);
 	mContext.mpCallbacks->SetError(buf);
 }
-
-void init_av();
 
 bool VDXAPIENTRY VDFFOutputFileDriver::GetStreamControl(const wchar_t* path, const char* format, VDXStreamControl& sc)
 {
