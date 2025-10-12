@@ -405,7 +405,7 @@ int VDXAPIENTRY VDFFInputFileDriver::DetectBySignature3(VDXMediaInfo& info, cons
 				// identifying AviSynth scripts by extension
 				// because avformat_open_input can take a very long time to open a file (FFmpegSource2)
 				copyCharToWchar(info.format_name, std::size(info.format_name), "avisynth");
-				return kDC_VeryLow; // "AVIFile/Avisynth input driver (internal)" should remain the default
+				return kDC_Low;
 			}
 		}
 	}
