@@ -484,12 +484,11 @@ void VDXVideoFilter::SafePrintf(char *buf, int maxbuf, const char *format, ...) 
 	if (maxbuf <= 0) {
 		return;
 	}
+	buf[0] = 0;
 
 	va_list val;
 	va_start(val, format);
-	if ((unsigned)vsprintf_s(buf, maxbuf, format, val) >= (unsigned)maxbuf) {
-		buf[maxbuf - 1] = 0;
-	}
+	_vsnprintf_s(buf, maxbuf, _TRUNCATE, format, val);
 	va_end(val);
 }
 
