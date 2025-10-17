@@ -10,17 +10,27 @@
 template <typename... Args>
 void DLog(const std::string_view format, Args ...args)
 {
-	std::string str = std::vformat(format, std::make_format_args(args...)) + '\n';
-
+	std::string str;
+	if (sizeof...(Args)) {
+		str = std::vformat(format, std::make_format_args(args...)) + '\n';
+	} else {
+		str.assign(format);
+		str += '\n';
+	}
 	OutputDebugStringA(str.c_str());
 };
 
 template <typename... Args>
 void DLog(const std::wstring_view format, Args ...args)
 {
-	std::wstring str = std::vformat(format, std::make_wformat_args(args...)) + L'\n';
-
-	OutputDebugStringW(str.c_str());
+	std::wstring wstr;
+	if (sizeof...(Args)) {
+		wstr = std::vformat(format, std::make_wformat_args(args...)) + L'\n';
+	} else {
+		wstr.assign(format);
+		wstr += L'\n';
+	}
+	OutputDebugStringW(wstr.c_str());
 };
 #else
 #define DLog(...) __noop
