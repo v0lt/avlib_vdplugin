@@ -7,31 +7,37 @@
 #pragma once
 
 #if _DEBUG
-template <typename... Args>
-void DLog(const std::string_view format, Args ...args)
+
+inline void DLog(std::string_view sv)
 {
-	std::string str;
-	if (sizeof...(Args)) {
-		str = std::vformat(format, std::make_format_args(args...)) + '\n';
-	} else {
-		str.assign(format);
-		str += '\n';
-	}
+	std::string str (sv);
+	str += '\n';
+	OutputDebugStringA(str.c_str());
+}
+
+inline void DLog(std::wstring_view sv)
+{
+	std::wstring wstr(sv);
+	wstr += L'\n';
+	OutputDebugStringW(wstr.c_str());
+}
+
+template <typename... Args>
+inline void DLog(std::format_string<Args...> fmt, Args&&... args)
+{
+	std::string str = std::format(fmt, std::forward<Args>(args)...);
+	str += '\n';
 	OutputDebugStringA(str.c_str());
 };
 
 template <typename... Args>
-void DLog(const std::wstring_view format, Args ...args)
+inline void DLog(std::wformat_string<Args...> fmt, Args&&... args)
 {
-	std::wstring wstr;
-	if (sizeof...(Args)) {
-		wstr = std::vformat(format, std::make_wformat_args(args...)) + L'\n';
-	} else {
-		wstr.assign(format);
-		wstr += L'\n';
-	}
+	std::wstring wstr = std::format(fmt, std::forward<Args>(args)...);
+	wstr += L'\n';
 	OutputDebugStringW(wstr.c_str());
 };
+
 #else
 #define DLog(...) __noop
 #endif
