@@ -260,7 +260,8 @@ bool CodecH265LS::init_ctx(VDXPixmapLayout* layout)
 
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", x265_preset_names[codec_config.preset], 0);
-	ret = av_opt_set(avctx->priv_data, "x265-params", "lossless=1", 0);
+	ret = av_opt_set(avctx->priv_data, "x265-params", "lossless=1:open-gop=0", 0);
+
 	return true;
 }
 
