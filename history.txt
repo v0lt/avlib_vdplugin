@@ -2,6 +2,7 @@ avlib.vdplugin history
 
 1.0.4.x dev
 ----------------------
+Closed GOPs is used for the "x265 - HEVC lossless" encoder.
 
 
 1.0.3.410 - 2025-10-14
