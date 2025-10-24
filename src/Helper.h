@@ -42,6 +42,8 @@ inline void DLog(std::wformat_string<Args...> fmt, Args&&... args)
 #define DLog(...) __noop
 #endif
 
+std::wstring ConvertUtf8OrAnsiLinesToWide(const std::string_view sv);
+
 bool DumpImageToFile(const wchar_t* filepath, const uint8_t* const src_data[4], const int src_linesize[4], enum AVPixelFormat pix_fmt, int width, int height);
 
 const wchar_t* GetFileExt(std::wstring_view path);
