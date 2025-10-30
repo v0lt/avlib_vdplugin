@@ -388,7 +388,7 @@ BEGIN
     COMBOBOX        IDC_ENC_PROFILE,35,38,70,71,CBS_DROPDOWNLIST | WS_VSCROLL | WS_TABSTOP
     LTEXT           "Profile",IDC_STATIC,7,40,21,8
     CONTROL         "",IDC_ENC_QUALITY,"msctls_trackbar32",TBS_BOTH | TBS_NOTICKS | WS_TABSTOP,7,59,139,12
-    LTEXT           "Quality (high-low)",IDC_STATIC,14,73,60,8
+    LTEXT           "Quality (high-low)",IDC_ENC_QUALITY_LABEL,14,73,60,8
     LTEXT           "15",IDC_ENC_QUALITY_VALUE,117,73,25,11
 END
 

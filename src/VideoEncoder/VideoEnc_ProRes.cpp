@@ -11,6 +11,8 @@
 #include "../resource.h"
 #include "../Helper.h"
 
+#define ENABLE_PRORES_QSCALE 0
+
 const char* prores_profile_names[] = {
 	"proxy",
 	"lt",
@@ -59,11 +61,18 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		init_profile();
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 2);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 31);
+#if ENABLE_PRORES_QSCALE
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+#else
+		ShowWindow(GetDlgItem(mhdlg, IDC_ENC_QUALITY), SW_HIDE);
+		ShowWindow(GetDlgItem(mhdlg, IDC_ENC_QUALITY_LABEL), SW_HIDE);
+		ShowWindow(GetDlgItem(mhdlg, IDC_ENC_QUALITY_VALUE), SW_HIDE);
+#endif
 		break;
 	}
 
+#if ENABLE_PRORES_QSCALE
 	case WM_HSCROLL:
 		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
 			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
@@ -71,6 +80,7 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		return FALSE;
+#endif
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
@@ -79,8 +89,10 @@ INT_PTR ConfigProres::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_format();
 			init_bits();
 			init_profile();
+#if ENABLE_PRORES_QSCALE
 			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->qscale);
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+#endif
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
@@ -156,7 +168,9 @@ void CodecProres::load_config()
 				codec_config.profile = prores_profile_4444_ids[index];
 			}
 		}
+#if ENABLE_PRORES_QSCALE
 		reg.ReadInt("qscale", codec_config.qscale, 2, 31);
+#endif
 		reg.CloseKey();
 	}
 }
@@ -167,7 +181,9 @@ void CodecProres::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		save_format_bitdepth(reg);
 		reg.WriteString("profile", prores_profile_names[codec_config.profile]);
+#if ENABLE_PRORES_QSCALE
 		reg.WriteInt("qscale", codec_config.qscale);
+#endif
 		reg.CloseKey();
 	}
 }
@@ -190,8 +206,10 @@ bool CodecProres::init_ctx(VDXPixmapLayout* layout)
 	if (codec_config.format == format_yuva444) {
 		ret = av_opt_set_int(avctx->priv_data, "alpha_bits", 16, 0);
 	}
+#if ENABLE_PRORES_QSCALE
 	avctx->flags |= AV_CODEC_FLAG_QSCALE;
 	avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
+#endif
 	return true;
 }
 
