@@ -109,11 +109,11 @@ bool VDXAPIENTRY ff_create_aacenc(const VDXInputDriverContext* pContext, IVDXAud
 	return true;
 }
 
-VDXAudioEncDefinition ff_aacenc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_aacenc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg AAC",
-	"ffmpeg_aac",
+	L"ffmpeg_aac",
 	ff_create_aacenc
 };
 

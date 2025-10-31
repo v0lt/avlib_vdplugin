@@ -158,11 +158,11 @@ bool VDXAPIENTRY ff_create_vorbisenc(const VDXInputDriverContext* pContext, IVDX
 	return true;
 }
 
-VDXAudioEncDefinition ff_vorbisenc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_vorbisenc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg Vorbis (libvorbis)",
-	"ffmpeg_vorbis",
+	L"ffmpeg_vorbis",
 	ff_create_vorbisenc
 };
 

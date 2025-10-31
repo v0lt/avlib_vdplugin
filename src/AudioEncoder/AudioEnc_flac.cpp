@@ -109,11 +109,11 @@ bool VDXAPIENTRY ff_create_flacenc(const VDXInputDriverContext* pContext, IVDXAu
 	return true;
 }
 
-VDXAudioEncDefinition ff_flacenc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_flacenc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg FLAC lossless",
-	"ffmpeg_flac",
+	L"ffmpeg_flac",
 	ff_create_flacenc
 };
 

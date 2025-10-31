@@ -154,11 +154,11 @@ bool VDXAPIENTRY ff_create_opusenc(const VDXInputDriverContext* pContext, IVDXAu
 	return true;
 }
 
-VDXAudioEncDefinition ff_opusenc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_opusenc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg Opus (libopus)",
-	"ffmpeg_opus",
+	L"ffmpeg_opus",
 	ff_create_opusenc
 };
 

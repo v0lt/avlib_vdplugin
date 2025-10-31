@@ -106,11 +106,11 @@ bool VDXAPIENTRY ff_create_alacenc(const VDXInputDriverContext* pContext, IVDXAu
 	return true;
 }
 
-VDXAudioEncDefinition ff_alacenc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_alacenc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg ALAC (Apple Lossless)",
-	"ffmpeg_alac",
+	L"ffmpeg_alac",
 	ff_create_alacenc
 };
 

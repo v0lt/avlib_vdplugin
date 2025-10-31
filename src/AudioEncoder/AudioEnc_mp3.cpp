@@ -163,11 +163,11 @@ bool VDXAPIENTRY ff_create_mp3enc(const VDXInputDriverContext* pContext, IVDXAud
 	return true;
 }
 
-VDXAudioEncDefinition ff_mp3enc = {
-	sizeof(VDXAudioEncDefinition),
+VDXAudioEncDefinition2 ff_mp3enc = {
+	sizeof(VDXAudioEncDefinition2),
 	0, //flags
 	L"FFmpeg Lame MP3",
-	"ffmpeg_mp3",
+	L"ffmpeg_mp3",
 	ff_create_mp3enc
 };
 
