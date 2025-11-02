@@ -1,6 +1,6 @@
 avlib.vdplugin history
 
-1.0.4.x dev
+1.1.0.x dev
 ----------------------
 Closed GOPs is used for the "x265 - HEVC lossless" encoder.
 The "Quality" parameter for the "ProRes" video encoder is disabled.
