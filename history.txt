@@ -3,14 +3,14 @@ avlib.vdplugin history
 1.0.4.x dev
 ----------------------
 Closed GOPs is used for the "x265 - HEVC lossless" encoder.
-
+The "Quality" parameter for the "ProRes" video encoder is disabled.
+API change: The mpDriverTagName field for audio encoders now contains a wide string (see VDXAudioEncDefinition2 in VirtualDub2 v2.5).
 
 1.0.3.410 - 2025-10-14
 ----------------------
 Fixed a temporary freeze in the file open window when selecting certain .avs files. AviSynth script files are now identified by extension.
 Fixed frame navigation for Avisynth script files.
 Added display of FFmpeg error text when attempting to open a file fails.
-
 
 1.0.1.393 - 2025-10-01
 ----------------------
@@ -24,7 +24,6 @@ Adjusted profile selection for ProRes encoder.
 Allowed opening AviSynth scripts.
 Cosmetic changes.
 
-
 0.7.1.264 - 2025-04-16
 ----------------------
 FFmpeg 7.1.1 is now supported.
@@ -36,12 +35,10 @@ Fixed frame retrieval for some HEVC streams.
 Added video encoder SVT-AV1.
 Minor optimizations.
 
-
 0.7.1.220 - 2025-02-03
 ----------------------
 Video files with incorrect (or unrecognized) frame rates are not supported. This fixes the plugin crash.
 Code refactoring for modern compilers.
-
 
 0.7.1.200 - 2024-12-03
 ----------------------
@@ -50,12 +47,10 @@ Fixed the operation of x264 and x265 encoders.
 Fixed the operation of Vorbis encoder.
 Cosmetic changes to codec dialogs.
 
-
 0.7.1.170 - 2024-11-10
 ----------------------
 FFmpeg 7.1 is now supported.
 Fixed freezing after early interruption of writing to a file when using some codecs.
-
 
 0.7.0.123 - 2024-08-30
 ----------------------
@@ -67,7 +62,6 @@ More default formats for the "FFMpeg : video" and "FFMpeg : images" groups.
 Changed the display of the "Metadata" field in "File Information".
 Fixed the use of audio encoders.
 Improved ignoring of AviSynth scripts to prevent VirtualDub 2 interface from freezing in some situations.
-
 
 0.6.1.70 - 2024-04-06
 ----------------------
