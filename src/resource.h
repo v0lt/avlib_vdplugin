@@ -124,7 +124,7 @@
 #define IDC_ENC_CODER1                  1086
 #define IDC_ENC_CONTEXT                 1087
 #define IDC_ENC_MESSAGE                 1088
-
+#define IDC_ENC_RATECONTROL             1089
 #define IDC_ENC_QUALITY_LABEL           1090
 #define IDC_ENC_JOINT_STEREO            1091
 #define IDC_ENC_CBR                     1092

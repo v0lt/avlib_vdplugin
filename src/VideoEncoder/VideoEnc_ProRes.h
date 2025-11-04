@@ -19,19 +19,26 @@ enum {
 	PRORES_PROFILE_4444XQ,
 };
 
+enum {
+	PRORES_RC_AUTO = 0,
+	PRORES_RC_QSCALE,
+};
+
 struct CodecProres : public CodecBase {
 	enum { id_tag = CODEC_PRORES };
 
 	struct Config : public CodecBase::Config {
 		int profile; // 0-5
+		int rc;
 		int qscale;  // 2-31
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv422;
 			bits    = 10; // only 10 bit
 			profile = PRORES_PROFILE_HQ;
+			rc      = PRORES_RC_AUTO;
 			qscale  = 4;
 		}
 	} codec_config;
