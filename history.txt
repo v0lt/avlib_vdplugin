@@ -3,8 +3,8 @@ avlib.vdplugin history
 1.1.0.x dev
 ----------------------
 Closed GOPs is used for the "x265 - HEVC lossless" encoder.
-The "Quality" parameter for the "ProRes" video encoder is disabled.
 API change: The mpDriverTagName field for audio encoders now contains a wide string (see VDXAudioEncDefinition2 in VirtualDub2 v2.5).
+Added "Rate control" parameter for ProRes video encoder.
 
 1.0.3.410 - 2025-10-14
 ----------------------
