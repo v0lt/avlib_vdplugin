@@ -1,7 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
-#include "Version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -831,7 +830,7 @@ END
 
 3 TEXTINCLUDE 
 BEGIN
-    "#include ""res\\MpcVideoRenderer.rc2""\r\n"
+    "#include ""res\\avlib.rc2""\r\n"
     "\0"
 END
 
