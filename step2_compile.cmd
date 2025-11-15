@@ -11,3 +11,4 @@ ECHO Building the avlib_vdplugin Release x64.
 
 ENDLOCAL
 TIMEOUT /T 5
+EXIT /B
