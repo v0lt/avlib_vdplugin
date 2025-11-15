@@ -725,7 +725,7 @@ AVFormatContext* VDFFInputFile::OpenVideoFile()
 		err = avformat_open_input(&fmt, ff_path.c_str(), nullptr, nullptr);
 	}
 	catch (const std::system_error& e) {
-		mContext.mpCallbacks->SetError("FFMPEG caught std::system_error: %s\n Code: %u", e.what(), e.code());
+		mContext.mpCallbacks->SetError("FFMPEG caught std::system_error: %s\nCode: %d", e.what(), e.code().value());
 		return nullptr;
 	}
 	catch (const std::exception& e) {
