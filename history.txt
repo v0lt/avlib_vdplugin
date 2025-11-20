@@ -2,6 +2,7 @@ avlib.vdplugin history
 
 1.1.0.x dev
 ----------------------
+Updated FFmpeg 8.0.1.
 Closed GOPs is used for the "x265 - HEVC lossless" encoder.
 API change: The mpDriverTagName field for audio encoders now contains a wide string (see VDXAudioEncDefinition2 in VirtualDub2 v2.5).
 Added "Rate control" parameter for ProRes video encoder.
