@@ -82,10 +82,11 @@ INT_PTR CALLBACK VDXVideoFilterDialog::StaticDlgProc(HWND hdlg, UINT msg, WPARAM
 
 	if (msg == WM_INITDIALOG) {
 		pThis = (VDXVideoFilterDialog *)lParam;
-		SetWindowLongPtr(hdlg, DWLP_USER, (LONG_PTR)pThis);
+		SetWindowLongPtrW(hdlg, DWLP_USER, (LONG_PTR)pThis);
 		pThis->mhdlg = hdlg;
-	} else
-		pThis = (VDXVideoFilterDialog *)GetWindowLongPtr(hdlg, DWLP_USER);
+	} else {
+		pThis = (VDXVideoFilterDialog*)GetWindowLongPtrW(hdlg, DWLP_USER);
+	}
 
 	return pThis ? pThis->DlgProc(msg, wParam, lParam) : FALSE;
 }
