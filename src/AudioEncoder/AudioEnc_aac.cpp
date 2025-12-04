@@ -56,6 +56,14 @@ INT_PTR AConfigAAC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		return FALSE;
+
+	case WM_COMMAND:
+		switch (LOWORD(wParam)) {
+		case IDC_BUTTON_DEFAULT:
+			codec->reset_config();
+			init_quality();
+			break;
+		}
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);
 }
