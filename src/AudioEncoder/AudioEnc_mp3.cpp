@@ -96,6 +96,12 @@ INT_PTR AConfigMp3::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			codec_config->constant_rate = IsDlgButtonChecked(mhdlg, IDC_ENC_CBR) ? true : false;
 			init_quality();
 			break;
+		case IDC_BUTTON_DEFAULT:
+			codec->reset_config();
+			init_quality();
+			CheckDlgButton(mhdlg, IDC_ENC_JOINT_STEREO, codec_config->jointstereo ? BST_CHECKED : BST_UNCHECKED);
+			CheckDlgButton(mhdlg, IDC_ENC_CBR, codec_config->constant_rate ? BST_CHECKED : BST_UNCHECKED);
+			break;
 		}
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);

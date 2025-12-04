@@ -95,6 +95,11 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			codec_config->bitrate_mode = IsDlgButtonChecked(mhdlg, IDC_ENC_ABR) ? 2 : 1;
 			init_rate();
 			break;
+		case IDC_BUTTON_DEFAULT:
+			codec->reset_config();
+			init_quality();
+			init_rate();
+			break;
 		}
 	}
 	return AConfigBase::DlgProc(msg, wParam, lParam);
