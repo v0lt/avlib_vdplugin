@@ -136,7 +136,7 @@ cleanup:
 		WAVEFORMATEX_VDFF* ff = (WAVEFORMATEX_VDFF*)out_format;
 		ff->codec_id = avctx->codec_id;
 		if (avctx->extradata_size) {
-			char* p = (char*)(ff + 1);
+			uint8_t* p = (uint8_t*)(ff + 1);
 			memcpy(p, avctx->extradata, avctx->extradata_size);
 		}
 	}

@@ -12,8 +12,8 @@
 MovParser::MovParser(const void* _buf, int _buf_size, int64_t _fileSize)
 	: buf(_buf)
 	, buf_size(_buf_size)
+	, p((const uint8_t*)_buf)
 	, fileSize(_fileSize)
-	, p((const char*)_buf)
 {
 }
 
@@ -72,7 +72,8 @@ void MovParser::read(MovAtom& a, std::unique_ptr<char[]>& buf, int& size, const 
 		ReadFile(hfile, buf.get(), size, &w, 0);
 	}
 	else {
-		memcpy(buf.get(), p, size); p += size;
+		memcpy(buf.get(), p, size);
+		p += size;
 	}
 	offset += size;
 }
@@ -85,7 +86,8 @@ uint32_t MovParser::read4()
 		ReadFile(hfile, &r, 4, &w, 0);
 	}
 	else {
-		r = *(uint32_t*)p; p += 4;
+		r = *(uint32_t*)p;
+		p += 4;
 	}
 	offset += 4;
 	r = _byteswap_ulong(r);
@@ -100,7 +102,8 @@ int64_t MovParser::read8()
 		ReadFile(hfile, &r, 8, &w, 0);
 	}
 	else {
-		r = *(int64_t*)p; p += 8;
+		r = *(int64_t*)p;
+		p += 8;
 	}
 	offset += 8;
 	r = _byteswap_uint64(r);

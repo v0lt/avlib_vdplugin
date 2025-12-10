@@ -15,13 +15,13 @@ struct MovAtom {
 };
 
 struct MovParser {
-	const void* buf  = nullptr;
-	int     buf_size = 0;
+	const void*    buf      = nullptr;
+	int            buf_size = 0;
 
-	const   char* p  = nullptr;
-	int64_t offset   = 0;
-	int64_t fileSize = 0;
-	HANDLE  hfile    = NULL;
+	const uint8_t* p        = nullptr;
+	int64_t        offset   = 0;
+	int64_t        fileSize = 0;
+	HANDLE         hfile    = NULL;
 
 	MovParser(const void* _buf, int _buf_size, int64_t _fileSize);
 	MovParser(const std::wstring& name);
