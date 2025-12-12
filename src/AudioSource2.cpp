@@ -516,7 +516,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 		if (start == 0 && first_sample > 0) {
 			// some crappy padding
 			// it seems aac discards first frame and vorbis too
-			if (m_pCodecCtx->codec_id != AV_CODEC_ID_OPUS) { // but don't use this for Opus
+			if (m_pCodecCtx->codec_id == AV_CODEC_ID_AAC || m_pCodecCtx->codec_id == AV_CODEC_ID_VORBIS) {
 				insert_silence(start, (int)first_sample);
 			}
 		}
