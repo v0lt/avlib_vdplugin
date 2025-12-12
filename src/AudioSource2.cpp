@@ -513,6 +513,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 			continue;
 		}
 
+		/* disabled because it seems no longer needed
 		if (start == 0 && first_sample > 0) {
 			// some crappy padding
 			// it seems aac discards first frame and vorbis too
@@ -520,6 +521,7 @@ bool VDFFAudioSource::Read(int64_t start, uint32_t count, void* lpBuffer, uint32
 				insert_silence(start, (int)first_sample);
 			}
 		}
+		*/
 
 		n = buffer[px].copy(s0, count, lpBuffer, mRawFormat.Format.nBlockAlign);
 		if (n > 0) {
