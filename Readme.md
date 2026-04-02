@@ -10,10 +10,10 @@ Copy FFMpeg 8.0 DLLs to 'VirtualDub2' folder.
 * swscale-9.dll 
 
 FFMpeg x64 binaries used:
-* https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.0-latest-win64-gpl-shared-8.0.zip
+* https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-n8.1-latest-win64-gpl-shared-8.1.zip
 
 FFMpeg win32 binaries used:
-* https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-n8.0-latest-win32-gpl-shared-8.0.zip
+* https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/ffmpeg-n8.1-latest-win32-gpl-shared-8.1.zip
 
 
 ## Donate

@@ -29,7 +29,7 @@ IF %COUNT% EQU 15 (
   GOTO :END
 )
 
-SET FFMPEG_ZIP=ffmpeg-n8.0-latest-win32-gpl-shared-8.0.zip
+SET FFMPEG_ZIP=ffmpeg-n8.1-latest-win32-gpl-shared-8.1.zip
 
 IF NOT EXIST ffmpeg\%FFMPEG_ZIP% (
   ECHO Downloading "%FFMPEG_ZIP%"...
