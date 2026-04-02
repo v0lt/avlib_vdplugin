@@ -2,7 +2,7 @@
 
 Copy 'avlib-1.vdplugin' to 'VirtualDub2\plugins64' folder.
 
-Copy FFMpeg 8.0 DLLs to 'VirtualDub2' folder.
+Copy FFMpeg 8.1 DLLs to 'VirtualDub2' folder.
 * avcodec-62.dll
 * avformat-62.dll
 * avutil-60.dll
