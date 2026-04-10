@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -55,7 +55,7 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		switch (icopen->fccHandler) {
 		case 0:
 		case CodecFFV1::id_tag:       new_codec = new CodecFFV1;       break;
-		case CodecFFVHuff::id_tag:       new_codec = new CodecFFVHuff;       break;
+		case CodecFFVHuff::id_tag:    new_codec = new CodecFFVHuff;    break;
 		case CodecProres::id_tag:     new_codec = new CodecProres;     break;
 		case CodecVP8::id_tag:        new_codec = new CodecVP8;        break;
 		case CodecVP9::id_tag:        new_codec = new CodecVP9;        break;
@@ -155,7 +155,7 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 	case VDICM_ENUMFORMATS:
 		if (lParam1 == 0) return CodecFFV1::id_tag;
 		if (lParam1 == CodecFFV1::id_tag)       return CodecFFVHuff::id_tag;
-		if (lParam1 == CodecFFVHuff::id_tag)       return CodecProres::id_tag;
+		if (lParam1 == CodecFFVHuff::id_tag)    return CodecProres::id_tag;
 		if (lParam1 == CodecProres::id_tag)     return CodecVP8::id_tag;
 		if (lParam1 == CodecVP8::id_tag)        return CodecVP9::id_tag;
 		if (lParam1 == CodecVP9::id_tag)        return CodecSVT_AV1::id_tag;

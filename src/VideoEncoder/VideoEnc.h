@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -22,7 +22,8 @@ extern "C" {
 #include "../registry.h"
 
 enum VCodecID {
-	CODEC_FFV1 = 0xFF01,
+	CODEC_NONE = 0xFF00,
+	CODEC_FFV1,
 	CODEC_FFVHUFF,
 	CODEC_PRORES,
 	CODEC_VP8,
@@ -39,6 +40,7 @@ enum VCodecID {
 	CODEC_AMF_H264,
 	CODEC_AMF_HEVC,
 	CODEC_AMF_AV1,
+	CODEC_COUNT
 };
 
 struct CodecClass {
