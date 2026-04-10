@@ -147,30 +147,49 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 	return ICERR_UNSUPPORTED;
 }
 
+static const char* codec_names[] = {
+	nullptr,
+	"ffv1",
+	"ffvhuff",
+	"prores_ks",
+	"libvpx",
+	"libvpx-vp9",
+	"libsvtav1",
+	"libx264",
+	"libx265",
+	"libx265",
+	"h264_nvenc",
+	"hevc_nvenc",
+	"av1_nvenc",
+	"h264_qsv",
+	"hevc_qsv",
+	"h264_amf",
+	"hevc_amf",
+	"av1_amf",
+};
+
+static_assert(std::size(codec_names) == CODEC_COUNT - CODEC_NONE);
+
 extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT uMsg, LPARAM lParam1, LPARAM lParam2)
 {
 	CodecBase* codec = (CodecBase*)dwDriverId;
 
 	switch (uMsg) {
 	case VDICM_ENUMFORMATS:
-		if (lParam1 == 0) return CodecFFV1::id_tag;
-		if (lParam1 == CodecFFV1::id_tag)       return CodecFFVHuff::id_tag;
-		if (lParam1 == CodecFFVHuff::id_tag)    return CodecProres::id_tag;
-		if (lParam1 == CodecProres::id_tag)     return CodecVP8::id_tag;
-		if (lParam1 == CodecVP8::id_tag)        return CodecVP9::id_tag;
-		if (lParam1 == CodecVP9::id_tag)        return CodecSVT_AV1::id_tag;
-		if (lParam1 == CodecSVT_AV1::id_tag)    return CodecX264::id_tag;
-		if (lParam1 == CodecX264::id_tag)       return CodecX265::id_tag;
-		if (lParam1 == CodecX265::id_tag)       return CodecH265LS::id_tag;
-		if (lParam1 == CodecH265LS::id_tag)     return CodecNVENC_H264::id_tag;
-		if (lParam1 == CodecNVENC_H264::id_tag) return CodecNVENC_HEVC::id_tag;
-		if (lParam1 == CodecNVENC_HEVC::id_tag) return CodecNVENC_AV1::id_tag;
-		if (lParam1 == CodecNVENC_AV1::id_tag)  return CodecQSV_H264::id_tag;
-		if (lParam1 == CodecQSV_H264::id_tag)   return CodecQSV_HEVC::id_tag;
-		if (lParam1 == CodecQSV_HEVC::id_tag)   return CodecAMF_H264::id_tag;
-		if (lParam1 == CodecAMF_H264::id_tag)   return CodecAMF_HEVC::id_tag;
-		if (lParam1 == CodecAMF_HEVC::id_tag)   return CodecAMF_AV1::id_tag;
+	{
+		UINT next_codec_id = UINT((lParam1 == 0) ? CODEC_NONE : lParam1) + 1;
+
+		if (next_codec_id > CODEC_NONE) {
+			while (next_codec_id < CODEC_COUNT) {
+				const AVCodec* codec = avcodec_find_encoder_by_name(codec_names[next_codec_id - CODEC_NONE]);
+				if (codec) {
+					return next_codec_id;
+				}
+				next_codec_id++;
+			}
+		}
 		return 0;
+	}
 
 	case VDICM_GETHANDLER:
 		if (codec) return codec->codec_tag;
