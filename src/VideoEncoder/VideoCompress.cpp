@@ -215,8 +215,11 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 						DLog("WARNING: Initialization of video encoder '{}' failed: {}.", codec_name, AVError2Str(ret));
 					}
 					else {
-						DLog("WARNING: Video encoder '{}' is not available.", codec_name);
+						DLog("WARNING: Failed to create AVCodecContext for '{}' video encoder.", codec_name);
 					}
+				}
+				else {
+					DLog("WARNING: '{}' video encoder is not available.", codec_name);
 				}
 				next_codec_id++;
 			}
