@@ -181,9 +181,42 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 
 		if (next_codec_id > CODEC_NONE) {
 			while (next_codec_id < CODEC_COUNT) {
-				const AVCodec* codec = avcodec_find_encoder_by_name(codec_names[next_codec_id - CODEC_NONE]);
+				const char* codec_name = codec_names[next_codec_id - CODEC_NONE];
+				DLog("Test '{}' video encoder", codec_name);
+
+				const AVCodec* codec = avcodec_find_encoder_by_name(codec_name);
 				if (codec) {
-					return next_codec_id;
+					AVCodecContext* avctx = avcodec_alloc_context3(codec);
+					assert(avctx);
+					if (avctx) {
+						avctx->time_base = {30, 1};
+						switch (next_codec_id) {
+						case CODEC_PRORES:
+							avctx->pix_fmt = AV_PIX_FMT_YUV422P10LE;
+							break;
+						case CODEC_QSV_H264:
+						case CODEC_QSV_HEVC:
+							avctx->pix_fmt = AV_PIX_FMT_NV12;
+							break;
+						default:
+							avctx->pix_fmt = AV_PIX_FMT_YUV420P;
+						}
+						avctx->width = 640;
+						avctx->height = 480;
+
+						int ret = avcodec_open2(avctx, codec, nullptr);
+						av_freep(&avctx->extradata);
+						avcodec_free_context(&avctx);
+
+						if (ret == 0) {
+							DLog("SUCCESS: The '{}' video encoder is supported.", codec_name);
+							return next_codec_id;
+						}
+						DLog("WARNING: Initialization of video encoder '{}' failed: {}.", codec_name, AVError2Str(ret));
+					}
+					else {
+						DLog("WARNING: Video encoder '{}' is not available.", codec_name);
+					}
 				}
 				next_codec_id++;
 			}
