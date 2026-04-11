@@ -4,6 +4,8 @@ avlib.vdplugin history
 ----------------------
 The FFmpeg 8.1 x64 build from BtbN is used.
 The FFmpeg 8.1 win32 build from Defisym is used.
+Fixed enumeration of video encoders when some video encoders were not available in the used FFmpeg build.
+Video encoders that cannot be used due to missing hardware or an unsupported driver will not be available for selection and configuration.
 
 1.1.1.438 - 2025-12-12
 ----------------------
