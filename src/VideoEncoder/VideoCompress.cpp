@@ -189,7 +189,6 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 					AVCodecContext* avctx = avcodec_alloc_context3(codec);
 					assert(avctx);
 					if (avctx) {
-						avctx->time_base = {30, 1};
 						switch (next_codec_id) {
 						case CODEC_PRORES:
 							avctx->pix_fmt = AV_PIX_FMT_YUV422P10LE;
@@ -203,6 +202,8 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 						}
 						avctx->width = 640;
 						avctx->height = 480;
+						avctx->time_base = { 1, 25 };
+						avctx->framerate = { 25, 1 };
 
 						int ret = avcodec_open2(avctx, codec, nullptr);
 						av_freep(&avctx->extradata);
