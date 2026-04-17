@@ -136,6 +136,12 @@
       <Filter>pch</Filter>
     </ClInclude>
     <ClInclude Include="ffmpeg_helper.h" />
+    <ClInclude Include="VideoEncoder\VideoEnc_QSV_VP9.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="VideoEncoder\VideoEnc_QSV_AV1.h">
+      <Filter>VideoEncoder</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="fflayer.cpp">
@@ -249,6 +255,12 @@
       <Filter>pch</Filter>
     </ClCompile>
     <ClCompile Include="ffmpeg_helper.cpp" />
+    <ClCompile Include="VideoEncoder\VideoEnc_QSV_VP9.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoEncoder\VideoEnc_QSV_AV1.cpp">
+      <Filter>VideoEncoder</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />

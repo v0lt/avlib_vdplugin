@@ -28,6 +28,8 @@ extern "C" {
 #include "VideoEnc_NVENC_AV1.h"
 #include "VideoEnc_QSV_H264.h"
 #include "VideoEnc_QSV_HEVC.h"
+#include "VideoEnc_QSV_VP9.h"
+#include "VideoEnc_QSV_AV1.h"
 #include "VideoEnc_AMF_H264.h"
 #include "VideoEnc_AMF_HEVC.h"
 #include "VideoEnc_AMF_AV1.h"
@@ -68,6 +70,8 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		case CodecNVENC_AV1::id_tag:  new_codec = new CodecNVENC_AV1;  break;
 		case CodecQSV_H264::id_tag:   new_codec = new CodecQSV_H264;   break;
 		case CodecQSV_HEVC::id_tag:   new_codec = new CodecQSV_HEVC;   break;
+		case CodecQSV_VP9::id_tag:    new_codec = new CodecQSV_VP9;    break;
+		case CodecQSV_AV1::id_tag:    new_codec = new CodecQSV_AV1;    break;
 		case CodecAMF_H264::id_tag:   new_codec = new CodecAMF_H264;   break;
 		case CodecAMF_HEVC::id_tag:   new_codec = new CodecAMF_HEVC;   break;
 		case CodecAMF_AV1::id_tag:    new_codec = new CodecAMF_AV1;    break;
@@ -166,6 +170,8 @@ static const char* codec_names[] = {
 	"h264_amf",
 	"hevc_amf",
 	"av1_amf",
+	"vp9_qsv",
+	"av1_qsv",
 };
 
 static_assert(std::size(codec_names) == CODEC_COUNT - CODEC_NONE);
@@ -195,6 +201,8 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 							break;
 						case CODEC_QSV_H264:
 						case CODEC_QSV_HEVC:
+						case CODEC_QSV_VP9:
+						case CODEC_QSV_AV1:
 							avctx->pix_fmt = AV_PIX_FMT_NV12;
 							break;
 						default:
