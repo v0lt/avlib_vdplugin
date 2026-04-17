@@ -187,6 +187,9 @@ extern "C" LRESULT WINAPI VDDriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT
 
 		if (next_codec_id > CODEC_NONE) {
 			while (next_codec_id < CODEC_COUNT) {
+#if 0
+				return next_codec_id; // for debugging
+#endif
 				const char* codec_name = codec_names[next_codec_id - CODEC_NONE];
 				DLog("Test '{}' video encoder", codec_name);
 
