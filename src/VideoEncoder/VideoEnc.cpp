@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -780,6 +780,8 @@ LRESULT CodecBase::compress_frames_info(ICCOMPRESSFRAMES* icf)
 
 LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layout)
 {
+	DLog(L"CodecBase::compress_begin: start");
+
 	if (compress_query(lpbiOutput, layout) != ICERR_OK) {
 		return ICERR_BADFORMAT;
 	}
@@ -837,6 +839,7 @@ LRESULT CodecBase::compress_begin(BITMAPINFO* lpbiOutput, VDXPixmapLayout* layou
 		return ICERR_MEMORY;
 	}
 
+	DLog(L"CodecBase::compress_begin: completed successfully");
 	return ICERR_OK;
 }
 
