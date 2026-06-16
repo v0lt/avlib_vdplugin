@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -28,15 +28,15 @@ public:
 
 void AConfigFlac::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 12);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->compression_level);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 12);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, codec_config->compression_level);
 	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, FALSE);
 }
 
 void AConfigFlac::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
 	codec_config->compression_level = x;
 	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->compression_level, FALSE);
 }
@@ -52,7 +52,7 @@ INT_PTR AConfigFlac::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY_SLIDER)) {
 			change_quality();
 			break;
 		}

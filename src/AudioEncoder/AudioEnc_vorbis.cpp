@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -27,17 +27,17 @@ void AConfigVorbis::init_quality()
 {
 	if (codec_config->constant_rate) {
 		//! WTF is valid bitrate range? neither ffmpeg nor xiph tell anything but it will fail with error otherwise
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 32);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 240);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 32);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 240);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
 		auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_VALUE, str.c_str());
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Bitrate per channel");
 	}
 	else {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, -1);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, -1);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 10);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, codec_config->quality);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, TRUE);
 		SetDlgItemTextW(mhdlg, IDC_ENC_QUALITY_LABEL, L"Quality");
 	}
@@ -45,7 +45,7 @@ void AConfigVorbis::init_quality()
 
 void AConfigVorbis::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
 	if (codec_config->constant_rate) {
 		codec_config->bitrate_per_channel = x;
 		auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
@@ -69,7 +69,7 @@ INT_PTR AConfigVorbis::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY_SLIDER)) {
 			change_quality();
 			break;
 		}

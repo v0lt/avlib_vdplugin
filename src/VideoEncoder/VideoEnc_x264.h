@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,21 +12,28 @@
 struct CodecX264 : public CodecBase {
 	enum { id_tag = CODEC_X264 };
 
+	enum {
+		X264_RC_CRF = 0,
+		X264_RC_ABR,
+	};
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
+		int rc;
 		int crf; // 0-51
-		int flags; // reserved
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format = format_yuv420;
 			bits = 8;
 			preset = 5;
 			tune = 0;
+			rc = 0;
 			crf = 23;
-			flags = 0;
+			bitrate = 3000;
 		}
 	} codec_config;
 

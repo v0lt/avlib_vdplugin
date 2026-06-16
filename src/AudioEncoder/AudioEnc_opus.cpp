@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -30,28 +30,28 @@ public:
 
 void AConfigOpus::init_quality()
 {
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMIN, FALSE, 6);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETRANGEMAX, TRUE, 256);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETRANGEMIN, FALSE, 6);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETRANGEMAX, TRUE, 256);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
 	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 10);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, codec_config->quality);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 10);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, codec_config->quality);
 	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, FALSE);
 }
 
 void AConfigOpus::change_quality()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
 	codec_config->quality = x;
 	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, FALSE);
 }
 
 void AConfigOpus::change_bitrate()
 {
-	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE, TBM_GETPOS, 0, 0);
+	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_GETPOS, 0, 0);
 	codec_config->bitrate_per_channel = x;
 	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
@@ -75,11 +75,11 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY_SLIDER)) {
 			change_quality();
 			break;
 		}
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_BITRATE)) {
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_BITRATE_SLIDER)) {
 			change_bitrate();
 			break;
 		}

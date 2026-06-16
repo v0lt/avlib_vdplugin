@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -10,6 +10,9 @@
 #include "VideoEnc_x264.h"
 #include "../Helper.h"
 #include "../resource.h"
+
+#define MIN_BITRATE 100
+#define MAX_BITRATE 100'000
 
 const char* x264_preset_names[] = {
 	"ultrafast",
@@ -40,15 +43,33 @@ const char* x264_tune_names[] = {
 class ConfigX264 : public ConfigBase {
 public:
 	ConfigX264() { dialog_id = IDD_ENC_X264; }
+	void ChangeRateControl(CodecX264::Config* config);
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
+
+void ConfigX264::ChangeRateControl(CodecX264::Config* pConfig)
+{
+	if (pConfig->rc == CodecX264::X264_RC_ABR) {
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_BITRATE);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_BITRATE));
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, scale2pos(pConfig->bitrate));
+		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Bitrate (kbit/s)");
+		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->bitrate, FALSE);
+	}
+	else {
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, pConfig->crf);
+		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Quality (high-low)");
+		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->crf, FALSE);
+	}
+}
 
 INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
 	CodecX264::Config* config = (CodecX264::Config*)codec->config;
 	switch (msg) {
-	case WM_INITDIALOG:
-	{
+	case WM_INITDIALOG: {
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
 		for (const auto& preset_name : x264_preset_names) {
 			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
@@ -61,17 +82,24 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETRANGEMAX, TRUE, 51);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Constant Rate Factor (CRF)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Average bitrate (ABR)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->rc, 0);
+
+		ChangeRateControl(config);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
+			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
+			if (config->rc == 1) {
+				config->bitrate = pos2scale(value);
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
+			} else {
+				config->crf = value;
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->crf, FALSE);
+			}
 			break;
 		}
 		return FALSE;
@@ -84,8 +112,8 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
-			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY, TBM_SETPOS, TRUE, config->crf);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, config->rc, 0);
+			ChangeRateControl(config);
 			break;
 		case IDC_ENC_PROFILE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
@@ -96,6 +124,13 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_ENC_TUNE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				config->tune = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_GETCURSEL, 0, 0);
+				return TRUE;
+			}
+			break;
+		case IDC_ENC_RATECONTROL:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->rc = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_GETCURSEL, 0, 0);
+				ChangeRateControl(config);
 				return TRUE;
 			}
 			break;
@@ -117,7 +152,9 @@ void CodecX264::load_config()
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, x264_preset_names);
 		reg.CheckString("tune", codec_config.tune, x264_tune_names);
+		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
+		reg.ReadInt("bitrate", codec_config.bitrate, MIN_BITRATE, MAX_BITRATE);
 		reg.CloseKey();
 	}
 }
@@ -129,7 +166,9 @@ void CodecX264::save_config()
 		save_format_bitdepth(reg);
 		reg.WriteString("preset", x264_preset_names[codec_config.preset]);
 		reg.WriteString("tune", x264_tune_names[codec_config.tune]);
+		reg.WriteInt("rate_control", codec_config.rc);
 		reg.WriteInt("crf", codec_config.crf);
+		reg.WriteInt("bitrate", codec_config.bitrate);
 		reg.CloseKey();
 	}
 }
@@ -158,8 +197,12 @@ bool CodecX264::init_ctx(VDXPixmapLayout* layout)
 	if (codec_config.tune) {
 		ret = av_opt_set(avctx->priv_data, "tune", x264_tune_names[codec_config.tune], 0);
 	}
-	ret = av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
-	ret = av_opt_set(avctx->priv_data, "level", "3", 0);
+	if (codec_config.rc == X264_RC_ABR) {
+		avctx->bit_rate = codec_config.bitrate * 1000;
+	} else {
+		ret = av_opt_set_double(avctx->priv_data, "crf", codec_config.crf, 0);
+	}
+
 	return true;
 }
 

@@ -180,4 +180,43 @@ public:
 		}
 		return "";
 	}
+
+	static int pos2scale(int i_pos)
+	{
+		int res;
+		if (i_pos <= 100) {
+			res = i_pos;
+		}
+		else {
+			int i = 1;
+			i_pos -= 10;
+			while (i_pos > 90) {
+				i_pos -= 90;
+				i *= 10;
+			}
+			res = (i_pos + 10) * i;
+		}
+		return res;
+	}
+
+	static int scale2pos(int i_scale)
+	{
+		int res;
+		if (i_scale <= 100) {
+			res = i_scale;
+		}
+		else {
+			int i = 900;
+			res = 100;
+			i_scale -= 100;
+			while (i_scale > i) {
+				res += 90;
+				i_scale -= i;
+				i *= 10;
+			}
+			i /= 90;
+			res += (i_scale + (i >> 1)) / i;
+		}
+		return res;
+	}
 };
