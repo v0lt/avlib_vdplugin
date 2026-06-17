@@ -21,6 +21,9 @@ extern "C" {
 
 #include "../registry.h"
 
+#define MIN_VIDEO_BITRATE 100
+#define MAX_VIDEO_BITRATE 100'000
+
 enum VCodecID {
 	CODEC_NONE = 0xFF00,
 	CODEC_FFV1,

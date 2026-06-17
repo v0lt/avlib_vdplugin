@@ -11,9 +11,6 @@
 #include "../Helper.h"
 #include "../resource.h"
 
-#define MIN_BITRATE 100
-#define MAX_BITRATE 100'000
-
 const char* x264_preset_names[] = {
 	"ultrafast",
 	"superfast",
@@ -50,8 +47,8 @@ public:
 void ConfigX264::ChangeRateControl(CodecX264::Config* pConfig)
 {
 	if (pConfig->rc == CodecX264::X264_RC_ABR) {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_BITRATE);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_BITRATE));
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_BITRATE);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_VIDEO_BITRATE));
 		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, scale2pos(pConfig->bitrate));
 		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Bitrate (kbit/s)");
 		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->bitrate, FALSE);
@@ -93,7 +90,7 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
 			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
-			if (config->rc == 1) {
+			if (config->rc == CodecX264::X264_RC_ABR) {
 				config->bitrate = pos2scale(value);
 				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
 			} else {
@@ -154,7 +151,7 @@ void CodecX264::load_config()
 		reg.CheckString("tune", codec_config.tune, x264_tune_names);
 		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
 		reg.ReadInt("crf", codec_config.crf, 0, 51);
-		reg.ReadInt("bitrate", codec_config.bitrate, MIN_BITRATE, MAX_BITRATE);
+		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}
 }
