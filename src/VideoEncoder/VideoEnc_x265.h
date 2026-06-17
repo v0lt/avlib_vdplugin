@@ -16,19 +16,28 @@
 struct CodecX265 : public CodecBase {
 	enum { id_tag = CODEC_X265 };
 
+	enum {
+		X265_RC_CRF = 0,
+		X265_RC_ABR,
+	};
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
+		int rc;
 		int crf; // 0-51
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
-			version = 2;
+			version = 3;
 			format = format_yuv420;
 			bits = 8;
-			preset = 4;
+			preset = 5;
 			tune = 0;
+			rc = 0;
 			crf = 28;
+			bitrate = 2500;
 		}
 	} codec_config;
 
