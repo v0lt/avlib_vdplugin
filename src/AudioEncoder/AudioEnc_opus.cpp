@@ -18,11 +18,10 @@ extern "C" {
 class AConfigOpus : public AConfigBase
 {
 public:
-	VDFFAudio_opus::Config* codec_config = nullptr;
+	VDFFAudio_opus::Config* config = nullptr;
 
 	AConfigOpus() { dialog_id = IDD_ENC_OPUS; }
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
-	void init_rate();
 	void init_quality();
 	void change_quality();
 	void change_bitrate();
@@ -32,35 +31,29 @@ void AConfigOpus::init_quality()
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETRANGEMIN, FALSE, 6);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETRANGEMAX, TRUE, 256);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETPOS, TRUE, codec_config->bitrate_per_channel);
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_SETPOS, TRUE, config->bitrate_per_channel);
+	auto str = std::format(L"{} kbit/s", config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
 
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 10);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, codec_config->quality);
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, FALSE);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->quality);
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->quality, FALSE);
 }
 
 void AConfigOpus::change_quality()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
-	codec_config->quality = x;
-	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, codec_config->quality, FALSE);
+	config->quality = x;
+	SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->quality, FALSE);
 }
 
 void AConfigOpus::change_bitrate()
 {
 	int x = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_BITRATE_SLIDER, TBM_GETPOS, 0, 0);
-	codec_config->bitrate_per_channel = x;
-	auto str = std::format(L"{} kbit/s", codec_config->bitrate_per_channel);
+	config->bitrate_per_channel = x;
+	auto str = std::format(L"{} kbit/s", config->bitrate_per_channel);
 	SetDlgItemTextW(mhdlg, IDC_ENC_BITRATE_VALUE, str.c_str());
-}
-
-void AConfigOpus::init_rate()
-{
-	CheckDlgButton(mhdlg, IDC_ENC_CBR, (codec_config->bitrate_mode == 0) ? BST_CHECKED : BST_UNCHECKED);
-	CheckDlgButton(mhdlg, IDC_ENC_ABR, (codec_config->bitrate_mode == 2) ? BST_CHECKED : BST_UNCHECKED);
 }
 
 INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
@@ -68,9 +61,12 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		codec_config = (VDFFAudio_opus::Config*)codec->config;
+		config = (VDFFAudio_opus::Config*)codec->config;
 		init_quality();
-		init_rate();
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Constant bitrate");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Variable bitrate");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Constrained variable bitrate");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->bitrate_mode, 0);
 		break;
 	}
 
@@ -87,18 +83,16 @@ INT_PTR AConfigOpus::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 
 	case WM_COMMAND:
 		switch (LOWORD(wParam)) {
-		case IDC_ENC_CBR:
-			codec_config->bitrate_mode = IsDlgButtonChecked(mhdlg, IDC_ENC_CBR) ? 0 : 1;
-			init_rate();
-			break;
-		case IDC_ENC_ABR:
-			codec_config->bitrate_mode = IsDlgButtonChecked(mhdlg, IDC_ENC_ABR) ? 2 : 1;
-			init_rate();
-			break;
 		case IDC_BUTTON_DEFAULT:
 			codec->reset_config();
 			init_quality();
-			init_rate();
+			SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->bitrate_mode, 0);
+			break;
+		case IDC_ENC_RATECONTROL:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->bitrate_mode = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_GETCURSEL, 0, 0);
+				return TRUE;
+			}
 			break;
 		}
 	}
