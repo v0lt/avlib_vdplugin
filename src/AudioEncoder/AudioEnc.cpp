@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -188,6 +188,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 
 	init_av();
 	CreateCodec();
+	assert(codec);
 
 	avctx = avcodec_alloc_context3(codec);
 

@@ -27,12 +27,12 @@ struct CodecX264 : public CodecBase {
 		Config() { reset(); }
 		void reset() {
 			version = 2;
-			format = format_yuv420;
-			bits = 8;
-			preset = 5;
-			tune = 0;
-			rc = 0;
-			crf = 23;
+			format  = format_yuv420;
+			bits    = 8;
+			preset  = 5;
+			tune    = 0;
+			rc      = X264_RC_CRF;
+			crf     = 23;
 			bitrate = 3000;
 		}
 	} codec_config;

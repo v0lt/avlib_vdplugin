@@ -31,12 +31,12 @@ struct CodecX265 : public CodecBase {
 		Config() { reset(); }
 		void reset() {
 			version = 3;
-			format = format_yuv420;
-			bits = 8;
-			preset = 5;
-			tune = 0;
-			rc = 0;
-			crf = 28;
+			format  = format_yuv420;
+			bits    = 8;
+			preset  = 5;
+			tune    = 0;
+			rc      = X265_RC_CRF;
+			crf     = 28;
 			bitrate = 2500;
 		}
 	} codec_config;
