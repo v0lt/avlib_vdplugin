@@ -42,7 +42,7 @@ INT_PTR ConfigQSV_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->qscale);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
@@ -90,7 +90,7 @@ void CodecQSV_AV1::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, av1_qsv_preset_names);
-		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
+		reg.ReadInt("qscale", codec_config.qscale, 1, 51);
 		reg.CloseKey();
 	}
 }

@@ -56,7 +56,7 @@ INT_PTR ConfigNVENC_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_SETCURSEL, config->tune, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 1);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->qscale);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
@@ -112,7 +112,7 @@ void CodecNVENC_HEVC::load_config()
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, hevc_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, hevc_nvenc_tune_names);
-		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
+		reg.ReadInt("qscale", codec_config.qscale, 1, 51);
 		reg.CloseKey();
 	}
 }
