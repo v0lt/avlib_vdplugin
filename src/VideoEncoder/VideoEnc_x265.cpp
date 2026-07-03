@@ -45,18 +45,9 @@ public:
 void ConfigX265::ChangeRateControl(CodecX265::Config* pConfig)
 {
 	if (pConfig->rc == CodecX265::X265_RC_ABR) {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_BITRATE);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_VIDEO_BITRATE));
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, scale2pos(pConfig->bitrate));
-		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Bitrate (kbit/s)");
-		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->bitrate, FALSE);
-	}
-	else {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, pConfig->crf);
-		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Quality (high-low)");
-		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->crf, FALSE);
+		SetBitrate(pConfig->bitrate);
+	} else {
+		SetQuality(pConfig->crf);
 	}
 }
 

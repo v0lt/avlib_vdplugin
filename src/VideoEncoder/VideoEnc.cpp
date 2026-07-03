@@ -549,7 +549,23 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
+void ConfigBase::SetBitrate(const int bitrate)
+{
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_BITRATE);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_VIDEO_BITRATE));
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, scale2pos(bitrate));
+	SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Bitrate (kbit/s)");
+	SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, bitrate, FALSE);
+}
 
+void ConfigBase::SetQuality(const int quality)
+{
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, quality);
+	SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Quality (high-low)");
+	SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, quality, FALSE);
+}
 
 //---------------------------------------------------------------------------
 

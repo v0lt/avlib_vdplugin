@@ -34,18 +34,9 @@ public:
 void ConfigQSV_H264::ChangeRateControl(CodecQSV_H264::Config* pConfig)
 {
 	if (pConfig->rc == CodecQSV_H264::QSV_H264_RC_VBR) {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_BITRATE);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, scale2pos(MAX_VIDEO_BITRATE));
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, scale2pos(pConfig->bitrate));
-		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Bitrate (kbit/s)");
-		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->bitrate, FALSE);
-	}
-	else {
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, pConfig->qscale);
-		SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Quality (high-low)");
-		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, pConfig->qscale, FALSE);
+		SetBitrate(pConfig->bitrate);
+	} else {
+		SetQuality(pConfig->qscale);
 	}
 }
 
