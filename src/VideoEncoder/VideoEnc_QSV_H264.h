@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,10 +11,16 @@
 struct CodecQSV_H264 : public CodecBase {
 	enum { id_tag = CODEC_QSV_H264 };
 
+	enum {
+		QSV_H264_RC_CRF = 0,
+		QSV_H264_RC_VBR,
+	};
+
 	struct Config : public CodecBase::Config {
 		int preset;
-		int tune;
+		int rc;
 		int qscale;
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
@@ -22,8 +28,9 @@ struct CodecQSV_H264 : public CodecBase {
 			format  = format_yuv420;
 			bits    = 8; // only 8 bit
 			preset  = 3;
-			tune    = 0;
+			rc      = QSV_H264_RC_CRF;
 			qscale  = 25;
+			bitrate = 3000;
 		}
 	} codec_config;
 
