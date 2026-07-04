@@ -12,7 +12,7 @@ struct CodecQSV_H264 : public CodecBase {
 	enum { id_tag = CODEC_QSV_H264 };
 
 	enum {
-		QSV_H264_RC_CRF = 0,
+		QSV_H264_RC_ICQ = 0,
 		QSV_H264_RC_VBR,
 	};
 
@@ -28,7 +28,7 @@ struct CodecQSV_H264 : public CodecBase {
 			format  = format_yuv420;
 			bits    = 8; // only 8 bit
 			preset  = 3;
-			rc      = QSV_H264_RC_CRF;
+			rc      = QSV_H264_RC_ICQ;
 			qscale  = 25;
 			bitrate = 3000;
 		}
