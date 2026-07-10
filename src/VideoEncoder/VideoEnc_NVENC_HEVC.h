@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,10 +11,17 @@
 struct CodecNVENC_HEVC : public CodecBase {
 	enum { id_tag = CODEC_NVENC_HEVC };
 
+	enum {
+		NVENC_HEVC_RC_CQP = 0,
+		NVENC_HEVC_RC_VBR,
+	};
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
-		int qscale;
+		int rc;
+		int qscale;  // 1-51
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
@@ -23,7 +30,9 @@ struct CodecNVENC_HEVC : public CodecBase {
 			bits    = 8;
 			preset  = 5;
 			tune    = 0;
+			rc      = NVENC_HEVC_RC_CQP;
 			qscale  = 30;
+			bitrate = 3000;
 		}
 	} codec_config;
 
