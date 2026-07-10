@@ -268,6 +268,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />
+    <None Include="res\avlib.rc2" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="avlib.rc" />

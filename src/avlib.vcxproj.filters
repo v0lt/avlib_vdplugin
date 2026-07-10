@@ -19,6 +19,9 @@
     <Filter Include="pch">
       <UniqueIdentifier>{fbbe1ec7-099b-4585-a1af-0d81f9a9de42}</UniqueIdentifier>
     </Filter>
+    <Filter Include="res">
+      <UniqueIdentifier>{13855e75-2ab6-4b3f-a20a-feaca66db063}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fflayer.h">
@@ -30,7 +33,6 @@
     <ClInclude Include="gopro.h" />
     <ClInclude Include="InputFile2.h" />
     <ClInclude Include="mov_mp4.h" />
-    <ClInclude Include="resource.h" />
     <ClInclude Include="VideoSource2.h" />
     <ClInclude Include="Version.h" />
     <ClInclude Include="..\vd2\h\vd2\plugin\vdinputdriver.h">
@@ -141,6 +143,9 @@
     </ClInclude>
     <ClInclude Include="VideoEncoder\VideoEnc_QSV_AV1.h">
       <Filter>VideoEncoder</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>res</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -264,11 +269,18 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="avlib.def" />
+    <None Include="res\avlib.rc2">
+      <Filter>res</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="avlib.rc" />
+    <ResourceCompile Include="avlib.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="ffmpeg.bmp" />
+    <Image Include="ffmpeg.bmp">
+      <Filter>res</Filter>
+    </Image>
   </ItemGroup>
 </Project>
