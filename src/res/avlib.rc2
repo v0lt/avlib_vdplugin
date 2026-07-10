@@ -48,7 +48,7 @@ BEGIN
             VALUE "FileDescription", "Plugin for VirtualDub2"
             VALUE "FileVersion", VERSION_STR
             VALUE "InternalName", "CachingInputDriver"
-            VALUE "LegalCopyright", "Copyright (C) 2015-2025 Anton Shekhovtsov, v0lt"
+            VALUE "LegalCopyright", "Copyright (C) 2015-2026 Anton Shekhovtsov, v0lt"
             VALUE "OriginalFilename", "avlib-1.vdplugin"
             VALUE "ProductName", "CachingInputDriver"
             VALUE "ProductVersion", VERSION_STR
