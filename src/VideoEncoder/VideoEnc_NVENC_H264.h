@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,19 +11,28 @@
 struct CodecNVENC_H264 : public CodecBase {
 	enum { id_tag = CODEC_NVENC_H264 };
 
+	enum {
+		NVENC_H264_RC_CQP = 0,
+		NVENC_H264_RC_VBR,
+	};
+
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
-		int qscale;
+		int rc;
+		int qscale;  // 1-51
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv420;
 			bits    = 8; // only 8 bit
 			preset  = 5;
 			tune    = 0;
+			rc      = NVENC_H264_RC_CQP;
 			qscale  = 25;
+			bitrate = 3000;
 		}
 	} codec_config;
 
