@@ -11,11 +11,6 @@
 struct CodecQSV_HEVC : public CodecBase {
 	enum { id_tag = CODEC_QSV_HEVC };
 
-	enum {
-		QSV_HEVC_RC_ICQ = 0,
-		QSV_HEVC_RC_VBR,
-	};
-
 	struct Config : public CodecBase::Config {
 		int preset;
 		int rc;
@@ -28,7 +23,7 @@ struct CodecQSV_HEVC : public CodecBase {
 			format  = format_yuv420;
 			bits    = 8;
 			preset  = 3;
-			rc      = QSV_HEVC_RC_ICQ;
+			rc      = CODEC_RC_CQP;
 			qscale  = 30;
 			bitrate = 3000;
 		}

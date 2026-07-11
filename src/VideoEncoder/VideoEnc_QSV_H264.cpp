@@ -33,7 +33,7 @@ public:
 
 void ConfigQSV_H264::ChangeRateControl(CodecQSV_H264::Config* pConfig)
 {
-	if (pConfig->rc == CodecQSV_H264::QSV_H264_RC_VBR) {
+	if (pConfig->rc == CODEC_RC_VBR) {
 		SetBitrate(pConfig->bitrate);
 	} else {
 		SetQuality(pConfig->qscale);
@@ -63,7 +63,7 @@ INT_PTR ConfigQSV_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
 			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
-			if (config->rc == CodecQSV_H264::QSV_H264_RC_VBR) {
+			if (config->rc == CODEC_RC_VBR) {
 				config->bitrate = pos2scale(value);
 				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
 			} else {
@@ -168,7 +168,7 @@ bool CodecQSV_H264::init_ctx(VDXPixmapLayout* layout)
 
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", h264_qsv_preset_names[codec_config.preset], 0);
-	if (codec_config.rc == QSV_H264_RC_VBR) {
+	if (codec_config.rc == CODEC_RC_VBR) {
 		avctx->bit_rate = codec_config.bitrate * 1000;
 	} else {
 		avctx->flags |= AV_CODEC_FLAG_QSCALE;

@@ -11,11 +11,6 @@
 struct CodecNVENC_HEVC : public CodecBase {
 	enum { id_tag = CODEC_NVENC_HEVC };
 
-	enum {
-		NVENC_HEVC_RC_CQP = 0,
-		NVENC_HEVC_RC_VBR,
-	};
-
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
@@ -30,7 +25,7 @@ struct CodecNVENC_HEVC : public CodecBase {
 			bits    = 8;
 			preset  = 5;
 			tune    = 0;
-			rc      = NVENC_HEVC_RC_CQP;
+			rc      = CODEC_RC_CQP;
 			qscale  = 30;
 			bitrate = 3000;
 		}

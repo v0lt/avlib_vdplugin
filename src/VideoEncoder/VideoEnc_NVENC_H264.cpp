@@ -40,7 +40,7 @@ public:
 
 void ConfigNVENC_H264::ChangeRateControl(CodecNVENC_H264::Config* pConfig)
 {
-	if (pConfig->rc == CodecNVENC_H264::NVENC_H264_RC_VBR) {
+	if (pConfig->rc == CODEC_RC_VBR) {
 		SetBitrate(pConfig->bitrate);
 	} else {
 		SetQuality(pConfig->qscale);
@@ -76,7 +76,7 @@ INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	case WM_HSCROLL:
 		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
 			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
-			if (config->rc == CodecNVENC_H264::NVENC_H264_RC_VBR) {
+			if (config->rc == CODEC_RC_VBR) {
 				config->bitrate = pos2scale(value);
 				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
 			} else {
@@ -176,7 +176,7 @@ bool CodecNVENC_H264::init_ctx(VDXPixmapLayout* layout)
 	ret = av_opt_set(avctx->priv_data, "preset", h264_nvenc_preset_names[codec_config.preset], 0);
 	ret = av_opt_set(avctx->priv_data, "tune", h264_nvenc_tune_names[codec_config.tune], 0);
 
-	if (codec_config.rc == NVENC_H264_RC_VBR) {
+	if (codec_config.rc == CODEC_RC_VBR) {
 		ret = av_opt_set(avctx->priv_data, "rc", "vbr", 0);
 		avctx->bit_rate = codec_config.bitrate * 1000;
 	} else {

@@ -11,11 +11,6 @@
 struct CodecNVENC_H264 : public CodecBase {
 	enum { id_tag = CODEC_NVENC_H264 };
 
-	enum {
-		NVENC_H264_RC_CQP = 0,
-		NVENC_H264_RC_VBR,
-	};
-
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
@@ -30,7 +25,7 @@ struct CodecNVENC_H264 : public CodecBase {
 			bits    = 8; // only 8 bit
 			preset  = 5;
 			tune    = 0;
-			rc      = NVENC_H264_RC_CQP;
+			rc      = CODEC_RC_CQP;
 			qscale  = 25;
 			bitrate = 3000;
 		}
