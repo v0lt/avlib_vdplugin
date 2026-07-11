@@ -14,7 +14,9 @@ struct CodecNVENC_AV1 : public CodecBase {
 	struct Config : public CodecBase::Config {
 		int preset;
 		int tune;
-		int qscale;
+		int rc;
+		int qscale;  // 1-51
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
@@ -23,7 +25,9 @@ struct CodecNVENC_AV1 : public CodecBase {
 			bits    = 8;
 			preset  = 5;
 			tune    = 0;
+			rc      = CODEC_RC_CQP;
 			qscale  = 25;
+			bitrate = 3000;
 		}
 	} codec_config;
 
