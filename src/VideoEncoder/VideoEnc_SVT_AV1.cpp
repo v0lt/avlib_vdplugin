@@ -42,11 +42,11 @@ INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_RESETCONTENT, 0, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_RESETCONTENT, 0, 0);
 		for (const auto& preset_name : stv_av1_preset_names) {
-			SendDlgItemMessageA(mhdlg, IDC_ENC_PROFILE, CB_ADDSTRING, 0, (LPARAM)preset_name);
+			SendDlgItemMessageA(mhdlg, IDC_ENC_PRESET, CB_ADDSTRING, 0, (LPARAM)preset_name);
 		}
-		SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_SETCURSEL, config->preset, 0);
 
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 63);
@@ -69,13 +69,13 @@ INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			codec->reset_config();
 			init_format();
 			init_bits();
-			SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_SETCURSEL, config->preset, 0);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_SETCURSEL, config->preset, 0);
 			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->crf);
 			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
 			break;
-		case IDC_ENC_PROFILE:
+		case IDC_ENC_PRESET:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
-				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PROFILE, CB_GETCURSEL, 0, 0);
+				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_GETCURSEL, 0, 0);
 				return TRUE;
 			}
 			break;
