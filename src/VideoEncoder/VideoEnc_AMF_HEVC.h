@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,17 +13,19 @@ struct CodecAMF_HEVC : public CodecBase {
 
 	struct Config : public CodecBase::Config {
 		int preset;
-		int tune;
+		int rc;
 		int qscale;
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv420;
 			bits    = 8;
 			preset  = 2; // "balanced"
-			tune    = 0;
-			qscale  = 30;
+			rc      = CODEC_RC_CQP;
+			qscale  = 25;
+			bitrate = 3000;
 		}
 	} codec_config;
 
