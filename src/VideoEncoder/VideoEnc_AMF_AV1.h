@@ -15,7 +15,7 @@ struct CodecAMF_AV1 : public CodecBase {
 		int preset;
 		int rc;
 		int qscale;
-		int bitrate; // 100-100'000
+		int bitrate;
 
 		Config() { reset(); }
 		void reset() {

@@ -20,7 +20,7 @@ struct CodecSVT_AV1 : public CodecBase {
 		int preset;  // 0-13
 		int rc;
 		int crf;
-		int bitrate; // 100-100'000
+		int bitrate;
 
 		Config() { reset(); }
 		void reset() {

@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -26,7 +26,7 @@ struct CodecX265 : public CodecBase {
 		int tune;
 		int rc;
 		int crf;
-		int bitrate; // 100-100'000
+		int bitrate;
 
 		Config() { reset(); }
 		void reset() {
