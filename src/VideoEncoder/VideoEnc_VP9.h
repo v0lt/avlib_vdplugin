@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -12,15 +12,24 @@
 struct CodecVP9 : public CodecBase {
 	enum { id_tag = CODEC_VP9 };
 
+	enum {
+		VP9_RC_CRF = 0,
+		VP9_RC_VBR,
+	};
+
 	struct Config : public CodecBase::Config {
-		int crf; // 0-63
+		int rc;
+		int crf;
+		int bitrate;
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
-			format = format_yuv420;
-			bits = 8;
-			crf = 15;
+			version = 2;
+			format  = format_yuv420;
+			bits    = 8;
+			rc      = VP9_RC_CRF;
+			crf     = 15;
+			bitrate = 3000;
 		}
 	} codec_config;
 

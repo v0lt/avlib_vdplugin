@@ -17,8 +17,18 @@
 class ConfigVP9 : public ConfigBase {
 public:
 	ConfigVP9() { dialog_id = IDD_ENC_VP9; }
+	void ChangeRateControl(CodecVP9::Config* config);
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
+
+void ConfigVP9::ChangeRateControl(CodecVP9::Config* pConfig)
+{
+	if (pConfig->rc == CodecVP9::VP9_RC_VBR) {
+		SetBitrate(pConfig->bitrate);
+	} else {
+		SetQuality(pConfig->crf);
+	}
+}
 
 INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -26,17 +36,24 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 0);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 63);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->crf);
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Constant Rate Factor (CRF)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Variable bitrate (VBR)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->rc, 0);
+
+		ChangeRateControl(config);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY_SLIDER)) {
-			config->crf = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
+			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
+			if (config->rc == CodecVP9::VP9_RC_VBR) {
+				config->bitrate = pos2scale(value);
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
+			} else {
+				config->crf = value;
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->crf, FALSE);
+			}
 			break;
 		}
 		return FALSE;
@@ -47,8 +64,15 @@ INT_PTR ConfigVP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			codec->reset_config();
 			init_format();
 			init_bits();
-			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->crf);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->crf, FALSE);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, config->rc, 0);
+			ChangeRateControl(config);
+			break;
+		case IDC_ENC_RATECONTROL:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->rc = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_GETCURSEL, 0, 0);
+				ChangeRateControl(config);
+				return TRUE;
+			}
 			break;
 		}
 	}
@@ -66,7 +90,9 @@ void CodecVP9::load_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
-		reg.ReadInt("crf", codec_config.crf, 0, 63);
+		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
+		reg.ReadInt("crf", codec_config.crf, MIN_VIDEO_QP, MAX_VIDEO_QP);
+		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}
 }
@@ -76,7 +102,9 @@ void CodecVP9::save_config()
 	RegistryPrefs reg(REG_KEY_APP);
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		save_format_bitdepth(reg);
+		reg.WriteInt("rate_control", codec_config.rc);
 		reg.WriteInt("crf", codec_config.crf);
+		reg.WriteInt("bitrate", codec_config.bitrate);
 		reg.CloseKey();
 	}
 }
@@ -103,10 +131,13 @@ bool CodecVP9::init_ctx(VDXPixmapLayout* layout)
 	avctx->max_b_frames = -1;
 
 	[[maybe_unused]] int ret = 0;
-	ret = av_opt_set_int(avctx->priv_data, "crf", codec_config.crf, 0);
-	ret = av_opt_set_int(avctx->priv_data, "max-intra-rate", 0, 0);
-	avctx->qmin = codec_config.crf;
-	avctx->qmax = codec_config.crf;
+	if (codec_config.rc == VP9_RC_VBR) {
+		avctx->bit_rate = codec_config.bitrate * 1000;
+	} else {
+		ret = av_opt_set_int(avctx->priv_data, "crf", codec_config.crf, 0);
+		avctx->bit_rate = 0; // MUST be 0 https://trac.ffmpeg.org/wiki/Encode/VP9#constantq
+	}
+
 	return true;
 }
 
