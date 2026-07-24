@@ -140,7 +140,7 @@ void CodecX265::load_config()
 		reg.CheckString("preset", codec_config.preset, x265_preset_names);
 		reg.CheckString("tune", codec_config.tune, x265_tune_names);
 		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
-		reg.ReadInt("crf", codec_config.crf, 1, 51);
+		reg.ReadInt("crf", codec_config.crf, MIN_VIDEO_QP, MAX_VIDEO_QP);
 		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}

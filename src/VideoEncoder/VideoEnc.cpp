@@ -560,8 +560,8 @@ void ConfigBase::SetBitrate(const int bitrate)
 
 void ConfigBase::SetQuality(const int quality)
 {
-	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, 1);
-	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_QP);
+	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMAX, TRUE, MAX_VIDEO_QP);
 	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, quality);
 	SetWindowTextW(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), L"Quality (high-low)");
 	SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, quality, FALSE);

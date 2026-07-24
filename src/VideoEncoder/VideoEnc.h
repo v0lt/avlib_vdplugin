@@ -21,6 +21,9 @@ extern "C" {
 
 #include "../registry.h"
 
+#define MIN_VIDEO_QP 1
+#define MAX_VIDEO_QP 51
+
 #define MIN_VIDEO_BITRATE 100
 #define MAX_VIDEO_BITRATE 100'000
 

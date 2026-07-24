@@ -21,7 +21,7 @@ struct CodecX264 : public CodecBase {
 		int preset;
 		int tune;
 		int rc;
-		int crf; // 1-51
+		int crf;
 		int bitrate; // 100-100'000
 
 		Config() { reset(); }

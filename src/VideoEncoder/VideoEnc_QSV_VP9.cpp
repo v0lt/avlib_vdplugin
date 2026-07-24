@@ -42,8 +42,8 @@ INT_PTR ConfigQSV_VP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_SETCURSEL, config->preset, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, 1);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, 51);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_QP);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, MAX_VIDEO_QP);
 		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->qscale);
 		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
 		break;
@@ -90,7 +90,7 @@ void CodecQSV_VP9::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, vp9_qsv_preset_names);
-		reg.ReadInt("qscale", codec_config.qscale, 1, 51);
+		reg.ReadInt("qscale", codec_config.qscale, MIN_VIDEO_QP, MAX_VIDEO_QP);
 		reg.CloseKey();
 	}
 }

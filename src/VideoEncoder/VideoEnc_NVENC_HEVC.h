@@ -15,7 +15,7 @@ struct CodecNVENC_HEVC : public CodecBase {
 		int preset;
 		int tune;
 		int rc;
-		int qscale;  // 1-51
+		int qscale;
 		int bitrate; // 100-100'000
 
 		Config() { reset(); }

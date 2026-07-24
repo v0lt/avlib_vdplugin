@@ -112,7 +112,7 @@ void CodecAMF_HEVC::load_config()
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, hevc_amf_preset_names);
 		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
-		reg.ReadInt("qscale", codec_config.qscale, 0, 51);
+		reg.ReadInt("qscale", codec_config.qscale, MIN_VIDEO_QP, MAX_VIDEO_QP);
 		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}

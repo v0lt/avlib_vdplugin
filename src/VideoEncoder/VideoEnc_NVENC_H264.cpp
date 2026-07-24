@@ -136,7 +136,7 @@ void CodecNVENC_H264::load_config()
 		reg.CheckString("preset", codec_config.preset, h264_nvenc_preset_names);
 		reg.CheckString("tune", codec_config.tune, h264_nvenc_tune_names);
 		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
-		reg.ReadInt("qscale", codec_config.qscale, 1, 51);
+		reg.ReadInt("qscale", codec_config.qscale, MIN_VIDEO_QP, MAX_VIDEO_QP);
 		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}

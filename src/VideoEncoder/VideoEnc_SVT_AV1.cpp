@@ -121,7 +121,7 @@ void CodecSVT_AV1::load_config()
 		load_format_bitdepth(reg);
 		reg.ReadInt("preset", codec_config.preset, 0, 13);
 		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
-		reg.ReadInt("crf", codec_config.crf, 1, 51);
+		reg.ReadInt("crf", codec_config.crf, MIN_VIDEO_QP, MAX_VIDEO_QP);
 		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}
