@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,17 +11,26 @@
 struct CodecSVT_AV1 : public CodecBase {
 	enum { id_tag = CODEC_SVT_AV1 };
 
+	enum {
+		SVT_AV1_RC_CRF = 0,
+		SVT_AV1_RC_ABR,
+	};
+
 	struct Config : public CodecBase::Config {
-		int preset; // 0-13
-		int crf;    // 0-63
+		int preset;  // 0-13
+		int rc;
+		int crf;
+		int bitrate; // 100-100'000
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv420;
 			bits    = 8;
 			preset  = 5;
+			rc      = SVT_AV1_RC_CRF;
 			crf     = 35;
+			bitrate = 3000;
 		}
 	} codec_config;
 
