@@ -549,6 +549,14 @@ INT_PTR ConfigBase::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	return FALSE;
 }
 
+void ConfigBase::EnableRateControl(const BOOL enable)
+{
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL), enable);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER), enable);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_DESC), enable);
+	EnableWindow(GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_VALUE), enable);
+}
+
 void ConfigBase::SetBitrate(const int bitrate)
 {
 	SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_BITRATE);

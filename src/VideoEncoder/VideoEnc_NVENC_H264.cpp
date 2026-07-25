@@ -70,6 +70,7 @@ INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->rc, 0);
 
 		ChangeRateControl(config);
+		EnableRateControl(h264_nvenc_tune_names[config->tune] != "lossless");
 		break;
 	}
 
@@ -107,6 +108,7 @@ INT_PTR ConfigNVENC_H264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_ENC_TUNE:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				config->tune = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_TUNE, CB_GETCURSEL, 0, 0);
+				EnableRateControl(h264_nvenc_tune_names[config->tune] != "lossless");
 				return TRUE;
 			}
 			break;

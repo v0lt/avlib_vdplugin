@@ -176,6 +176,7 @@ public:
 	void notify_bits_change(int bits_new, int bits_old);
 	void notify_hide();
 
+	void EnableRateControl(const BOOL enable);
 	void SetBitrate(const int bitrate);
 	void SetQuality(const int quality);
 
