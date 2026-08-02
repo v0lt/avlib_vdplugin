@@ -6,6 +6,8 @@
 
 #include "stdafx.h"
 
+#if ENABLE_QSV_AV1
+
 #include "VideoEnc_QSV_AV1.h"
 #include "../Helper.h"
 #include "../resource.h"
@@ -151,3 +153,5 @@ LRESULT CodecQSV_AV1::configure(HWND parent)
 	dlg.Show(parent, this);
 	return ICERR_OK;
 }
+
+#endif

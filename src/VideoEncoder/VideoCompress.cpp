@@ -7,6 +7,8 @@
 
 #include "stdafx.h"
 
+#define ENABLE_QSV_AV1 0
+
 #pragma once
 extern "C" {
 #include <libavutil/opt.h>
@@ -29,7 +31,9 @@ extern "C" {
 #include "VideoEnc_QSV_H264.h"
 #include "VideoEnc_QSV_HEVC.h"
 #include "VideoEnc_QSV_VP9.h"
+#if ENABLE_QSV_AV1
 #include "VideoEnc_QSV_AV1.h"
+#endif
 #include "VideoEnc_AMF_H264.h"
 #include "VideoEnc_AMF_HEVC.h"
 #include "VideoEnc_AMF_AV1.h"
@@ -71,7 +75,9 @@ extern "C" LRESULT WINAPI DriverProc(DWORD_PTR dwDriverId, HDRVR hDriver, UINT u
 		case CodecQSV_H264::id_tag:   new_codec = new CodecQSV_H264;   break;
 		case CodecQSV_HEVC::id_tag:   new_codec = new CodecQSV_HEVC;   break;
 		case CodecQSV_VP9::id_tag:    new_codec = new CodecQSV_VP9;    break;
+#if ENABLE_QSV_AV1
 		case CodecQSV_AV1::id_tag:    new_codec = new CodecQSV_AV1;    break;
+#endif
 		case CodecAMF_H264::id_tag:   new_codec = new CodecAMF_H264;   break;
 		case CodecAMF_HEVC::id_tag:   new_codec = new CodecAMF_HEVC;   break;
 		case CodecAMF_AV1::id_tag:    new_codec = new CodecAMF_AV1;    break;
