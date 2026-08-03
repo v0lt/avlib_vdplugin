@@ -7,8 +7,6 @@
 
 #include "stdafx.h"
 
-#define ENABLE_QSV_AV1 0
-
 #pragma once
 extern "C" {
 #include <libavutil/opt.h>

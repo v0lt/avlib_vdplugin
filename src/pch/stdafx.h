@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2025 v0lt
+ * Copyright (C) 2025-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -14,3 +14,5 @@
 #include <windows.h>
 #include <commctrl.h>
 #include <commdlg.h>
+
+#define ENABLE_QSV_AV1 0
