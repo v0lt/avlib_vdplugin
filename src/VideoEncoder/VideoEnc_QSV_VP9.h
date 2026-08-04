@@ -13,7 +13,9 @@ struct CodecQSV_VP9 : public CodecBase {
 
 	struct Config : public CodecBase::Config {
 		int preset;
+		int rc;
 		int qscale;
+		int bitrate;
 
 		Config() { reset(); }
 		void reset() {
@@ -21,7 +23,9 @@ struct CodecQSV_VP9 : public CodecBase {
 			format  = format_yuv420;
 			bits    = 8; // only 8 bit
 			preset  = 3;
+			rc      = CODEC_RC_CQP;
 			qscale  = 25;
+			bitrate = 3000;
 		}
 	} codec_config;
 

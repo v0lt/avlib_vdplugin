@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2026-2026 v0lt
+ * Copyright (C) 2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -27,8 +27,18 @@ const char* vp9_qsv_preset_names[] = {
 class ConfigQSV_VP9 : public ConfigBase {
 public:
 	ConfigQSV_VP9() { dialog_id = IDD_ENC_QSV_VP9; }
+	void ChangeRateControl(CodecQSV_VP9::Config* config);
 	INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
 };
+
+void ConfigQSV_VP9::ChangeRateControl(CodecQSV_VP9::Config* pConfig)
+{
+	if (pConfig->rc == CODEC_RC_VBR) {
+		SetBitrate(pConfig->bitrate);
+	} else {
+		SetQuality(pConfig->qscale);
+	}
+}
 
 INT_PTR ConfigQSV_VP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 {
@@ -42,17 +52,24 @@ INT_PTR ConfigQSV_VP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		}
 		SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_SETCURSEL, config->preset, 0);
 
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMIN, FALSE, MIN_VIDEO_QP);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETRANGEMAX, TRUE, MAX_VIDEO_QP);
-		SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->qscale);
-		SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Constant QP");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_ADDSTRING, 0, (LPARAM)L"Variable bitrate (VBR)");
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, (WPARAM)config->rc, 0);
+
+		ChangeRateControl(config);
 		break;
 	}
 
 	case WM_HSCROLL:
-		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_QUALITY_SLIDER)) {
-			config->qscale = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_GETPOS, 0, 0);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+		if ((HWND)lParam == GetDlgItem(mhdlg, IDC_ENC_RATECONTROL_SLIDER)) {
+			int value = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_GETPOS, 0, 0);
+			if (config->rc == CODEC_RC_VBR) {
+				config->bitrate = pos2scale(value);
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->bitrate, FALSE);
+			} else {
+				config->qscale = value;
+				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, config->qscale, FALSE);
+			}
 			break;
 		}
 		return FALSE;
@@ -64,12 +81,19 @@ INT_PTR ConfigQSV_VP9::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			init_format();
 			init_bits();
 			SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_SETCURSEL, config->preset, 0);
-			SendDlgItemMessageW(mhdlg, IDC_ENC_QUALITY_SLIDER, TBM_SETPOS, TRUE, config->qscale);
-			SetDlgItemInt(mhdlg, IDC_ENC_QUALITY_VALUE, config->qscale, FALSE);
+			SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_SETCURSEL, config->rc, 0);
+			ChangeRateControl(config);
 			break;
 		case IDC_ENC_PRESET:
 			if (HIWORD(wParam) == LBN_SELCHANGE) {
 				config->preset = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_PRESET, CB_GETCURSEL, 0, 0);
+				return TRUE;
+			}
+			break;
+		case IDC_ENC_RATECONTROL:
+			if (HIWORD(wParam) == LBN_SELCHANGE) {
+				config->rc = (int)SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL, CB_GETCURSEL, 0, 0);
+				ChangeRateControl(config);
 				return TRUE;
 			}
 			break;
@@ -90,7 +114,9 @@ void CodecQSV_VP9::load_config()
 	if (reg.OpenKeyRead() == ERROR_SUCCESS) {
 		load_format_bitdepth(reg);
 		reg.CheckString("preset", codec_config.preset, vp9_qsv_preset_names);
+		reg.ReadInt("rate_control", codec_config.rc, 0, 1);
 		reg.ReadInt("qscale", codec_config.qscale, MIN_VIDEO_QP, MAX_VIDEO_QP);
+		reg.ReadInt("bitrate", codec_config.bitrate, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
 		reg.CloseKey();
 	}
 }
@@ -101,7 +127,9 @@ void CodecQSV_VP9::save_config()
 	if (reg.CreateKeyWrite() == ERROR_SUCCESS) {
 		save_format_bitdepth(reg);
 		reg.WriteString("preset", vp9_qsv_preset_names[codec_config.preset]);
+		reg.WriteInt("rate_control", codec_config.rc);
 		reg.WriteInt("qscale", codec_config.qscale);
+		reg.WriteInt("bitrate", codec_config.bitrate);
 		reg.CloseKey();
 	}
 }
@@ -140,8 +168,12 @@ bool CodecQSV_VP9::init_ctx(VDXPixmapLayout* layout)
 
 	[[maybe_unused]] int ret = 0;
 	ret = av_opt_set(avctx->priv_data, "preset", vp9_qsv_preset_names[codec_config.preset], 0);
-	avctx->flags |= AV_CODEC_FLAG_QSCALE;
-	avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
+	if (codec_config.rc == CODEC_RC_VBR) {
+		avctx->bit_rate = codec_config.bitrate * 1000;
+	} else {
+		avctx->flags |= AV_CODEC_FLAG_QSCALE;
+		avctx->global_quality = FF_QP2LAMBDA * codec_config.qscale;
+	}
 	return true;
 }
 
