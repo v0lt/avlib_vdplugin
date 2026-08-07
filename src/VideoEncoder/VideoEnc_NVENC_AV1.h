@@ -20,7 +20,7 @@ struct CodecNVENC_AV1 : public CodecBase {
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv420;
 			bits    = 8;
 			preset  = 5;

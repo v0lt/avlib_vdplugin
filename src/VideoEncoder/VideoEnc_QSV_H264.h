@@ -19,7 +19,7 @@ struct CodecQSV_H264 : public CodecBase {
 
 		Config() { reset(); }
 		void reset() {
-			version = 1;
+			version = 2;
 			format  = format_yuv420;
 			bits    = 8; // only 8 bit
 			preset  = 3;
