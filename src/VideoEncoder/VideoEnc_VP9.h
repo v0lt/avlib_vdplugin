@@ -29,7 +29,7 @@ struct CodecVP9 : public CodecBase {
 			bits    = 8;
 			rc      = VP9_RC_CRF;
 			crf     = 15;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

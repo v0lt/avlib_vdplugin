@@ -27,7 +27,7 @@ struct CodecNVENC_H264 : public CodecBase {
 			tune    = 0;
 			rc      = CODEC_RC_CQP;
 			qscale  = 25;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

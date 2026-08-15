@@ -25,7 +25,7 @@ struct CodecQSV_HEVC : public CodecBase {
 			preset  = 3;
 			rc      = CODEC_RC_CQP;
 			qscale  = 30;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

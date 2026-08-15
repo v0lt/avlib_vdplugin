@@ -30,7 +30,7 @@ struct CodecSVT_AV1 : public CodecBase {
 			preset  = 5;
 			rc      = SVT_AV1_RC_CRF;
 			crf     = 35;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

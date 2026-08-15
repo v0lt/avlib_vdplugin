@@ -33,7 +33,7 @@ struct CodecX264 : public CodecBase {
 			tune    = 0;
 			rc      = X264_RC_CRF;
 			crf     = 23;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

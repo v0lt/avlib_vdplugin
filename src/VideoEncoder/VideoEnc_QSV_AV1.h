@@ -24,7 +24,7 @@ struct CodecQSV_AV1 : public CodecBase {
 			bits    = 8; // only 8 bit
 			rc      = CODEC_RC_CQP;
 			qscale  = 25;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

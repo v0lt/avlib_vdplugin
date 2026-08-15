@@ -27,7 +27,7 @@ struct CodecNVENC_HEVC : public CodecBase {
 			tune    = 0;
 			rc      = CODEC_RC_CQP;
 			qscale  = 30;
-			bitrate = 3000;
+			bitrate = DEF_VIDEO_BITRATE;
 		}
 	} codec_config;
 

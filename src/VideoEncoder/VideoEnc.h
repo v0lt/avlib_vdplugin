@@ -24,7 +24,8 @@ extern "C" {
 #define MIN_VIDEO_QP 1
 #define MAX_VIDEO_QP 51
 
-#define MIN_VIDEO_BITRATE 100
+#define MIN_VIDEO_BITRATE     100
+#define DEF_VIDEO_BITRATE   3'000
 #define MAX_VIDEO_BITRATE 100'000
 
 enum {
