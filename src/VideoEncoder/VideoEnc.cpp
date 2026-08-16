@@ -575,6 +575,36 @@ void ConfigBase::SetQuality(const int quality)
 	SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, quality, FALSE);
 }
 
+void ConfigBase::OnRCValueProc(const WORD notification, const bool isBitrate, int& rcvalue)
+{
+	if (notification == EN_CHANGE) {
+		BOOL translated = FALSE;
+		int dlgvalue = GetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, &translated, FALSE);
+		if (translated) {
+			int pos;
+			if (isBitrate) {
+				pos = scale2pos(std::clamp(dlgvalue, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE));
+			} else {
+				pos = std::clamp(dlgvalue, MIN_VIDEO_QP, MAX_VIDEO_QP);
+			}
+			SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, pos);
+		}
+	}
+	else if (notification == EN_KILLFOCUS) {
+		BOOL translated = FALSE;
+		int dlgvalue = GetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, &translated, FALSE);
+		if (translated) {
+			if (isBitrate) {
+				rcvalue = std::clamp(dlgvalue, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
+			} else {
+				rcvalue = std::clamp(dlgvalue, MIN_VIDEO_QP, MAX_VIDEO_QP);
+			}
+		}
+		SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, rcvalue, FALSE);
+	}
+}
+
+
 void ConfigBase::OnRCValueChange(const bool isBitrate)
 {
 	BOOL translated = FALSE;
