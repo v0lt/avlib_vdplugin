@@ -575,6 +575,21 @@ void ConfigBase::SetQuality(const int quality)
 	SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, quality, FALSE);
 }
 
+void ConfigBase::OnRCValueChange(const bool isBitrate)
+{
+	BOOL translated = FALSE;
+	int value = GetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, &translated, FALSE);
+	if (translated) {
+		if (isBitrate) {
+			value = std::clamp(value, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
+			value = scale2pos(value);
+		} else {
+			value = std::clamp(value, MIN_VIDEO_QP, MAX_VIDEO_QP);
+		}
+		SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, value);
+	}
+}
+
 //---------------------------------------------------------------------------
 
 int CodecBase::compress_input_format(FilterModPixmapInfo* info)

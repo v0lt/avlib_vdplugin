@@ -124,30 +124,26 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			break;
 		case IDC_ENC_RATECONTROL_VALUE:
 			if (HIWORD(wParam) == EN_CHANGE) {
+				OnRCValueChange(config->rc == CodecX264::X264_RC_ABR);
+			}
+			else if (HIWORD(wParam) == EN_KILLFOCUS) {
 				BOOL translated = FALSE;
 				int value = GetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, &translated, FALSE);
 				if (translated) {
 					if (config->rc == CodecX264::X264_RC_ABR) {
 						value = std::clamp(value, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
-						value = scale2pos(value);
+						config->bitrate = value;
 					} else {
 						value = std::clamp(value, MIN_VIDEO_QP, MAX_VIDEO_QP);
+						config->crf = value;
 					}
-					SendDlgItemMessageW(mhdlg, IDC_ENC_RATECONTROL_SLIDER, TBM_SETPOS, TRUE, value);
 				}
-			}
-			else if (HIWORD(wParam) == EN_KILLFOCUS) {
-				BOOL translated = FALSE;
-				int value = GetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, &translated, FALSE);
-				if (!translated) {
-					value = DEF_VIDEO_BITRATE;
-				}
-				if (config->rc == CodecX264::X264_RC_ABR) {
-					value = std::clamp(value, MIN_VIDEO_BITRATE, MAX_VIDEO_BITRATE);
-					config->bitrate = value;
-				} else {
-					value = std::clamp(value, MIN_VIDEO_QP, MAX_VIDEO_QP);
-					config->crf = value;
+				else {
+					if (config->rc == CodecX264::X264_RC_ABR) {
+						value = config->bitrate;
+					} else {
+						value = config->crf;
+					}
 				}
 				SetDlgItemInt(mhdlg, IDC_ENC_RATECONTROL_VALUE, value, FALSE);
 			}

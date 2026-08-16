@@ -180,6 +180,7 @@ public:
 	void EnableRateControl(const BOOL enable);
 	void SetBitrate(const int bitrate);
 	void SetQuality(const int quality);
+	void OnRCValueChange(const bool isBitrate);
 
 	static const char* GetFormatName(const int format)
 	{
