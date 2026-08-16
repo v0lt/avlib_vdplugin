@@ -103,6 +103,13 @@ INT_PTR ConfigSVT_AV1::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 			break;
+		case IDC_ENC_RATECONTROL_VALUE:
+			if (config->rc == CodecSVT_AV1::SVT_AV1_RC_ABR) {
+				OnRCValueProc(HIWORD(wParam), true, config->bitrate);
+			} else {
+				OnRCValueProc(HIWORD(wParam), false, config->crf);
+			}
+			break;
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);

@@ -128,6 +128,7 @@ INT_PTR ConfigX264::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 			} else {
 				OnRCValueProc(HIWORD(wParam), false, config->crf);
 			}
+			break;
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);

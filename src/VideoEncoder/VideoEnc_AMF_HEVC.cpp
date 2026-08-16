@@ -94,6 +94,14 @@ INT_PTR ConfigAMF_HEVC::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 			break;
+		case IDC_ENC_RATECONTROL_VALUE:
+			if (config->rc == CODEC_RC_VBR) {
+				OnRCValueProc(HIWORD(wParam), true, config->bitrate);
+			}
+			else {
+				OnRCValueProc(HIWORD(wParam), false, config->qscale);
+			}
+			break;
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);

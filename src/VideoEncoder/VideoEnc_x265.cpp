@@ -121,6 +121,13 @@ INT_PTR ConfigX265::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 				return TRUE;
 			}
 			break;
+		case IDC_ENC_RATECONTROL_VALUE:
+			if (config->rc == CodecX265::X265_RC_ABR) {
+				OnRCValueProc(HIWORD(wParam), true, config->bitrate);
+			} else {
+				OnRCValueProc(HIWORD(wParam), false, config->crf);
+			}
+			break;
 		}
 	}
 	return ConfigBase::DlgProc(msg, wParam, lParam);
