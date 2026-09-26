@@ -29,11 +29,13 @@ IF %COUNT% EQU 15 (
   GOTO :END
 )
 
-SET FFMPEG_ZIP=ffmpeg-n8.1-latest-win32-gpl-shared-8.1.zip
+rem SET FFMPEG_ZIP=ffmpeg-n8.1-latest-win32-gpl-shared-8.1.zip
+SET FFMPEG_ZIP=ffmpeg-n8.1.3-win32-gpl-shared-8.1.zip
 
 IF NOT EXIST ffmpeg\%FFMPEG_ZIP% (
   ECHO Downloading "%FFMPEG_ZIP%"...
-  curl -o "ffmpeg\%FFMPEG_ZIP%" --insecure -L "https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/%FFMPEG_ZIP%"
+  rem curl -o "ffmpeg\%FFMPEG_ZIP%" --insecure -L "https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/latest/%FFMPEG_ZIP%"
+  curl -o "ffmpeg\%FFMPEG_ZIP%" --insecure -L "https://github.com/defisym/FFmpeg-Builds-Win32/releases/download/autobuild-2026-09-25-16-50/%FFMPEG_ZIP%"
 )
 
 IF NOT EXIST ffmpeg\%FFMPEG_ZIP% (
