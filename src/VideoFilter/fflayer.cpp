@@ -10,20 +10,9 @@
 #include "fflayer.h"
 #include "../resource.h"
 #include "../Helper.h"
+#include "../Utils/StringUtil.h"
 
 extern HINSTANCE hInstance;
-
-void widechar_to_utf8(char* dst, int max_dst, const wchar_t* src)
-{
-	*dst = 0;
-	WideCharToMultiByte(CP_UTF8, 0, src, -1, dst, max_dst, 0, 0);
-}
-
-void utf8_to_widechar(wchar_t* dst, int max_dst, const char* src)
-{
-	*dst = 0;
-	MultiByteToWideChar(CP_UTF8, 0, src, -1, dst, max_dst);
-}
 
 //-------------------------------------------------------------------------------------------------
 
@@ -372,29 +361,23 @@ void LogoDialog::redo_frame()
 
 //-------------------------------------------------------------------------------------------------
 
-void LogoFilter::GetSettingString(char* buf, int maxlen) {
-	char path[MAX_PATH];
-	widechar_to_utf8(path, MAX_PATH, param.path);
+void LogoFilter::GetSettingString(char* buf, int maxlen)
+{
+	std::string path_utf8 = ConvertWideToUtf8(param.path);
 
-	SafePrintf(buf, maxlen, " %s", path);
+	SafePrintf(buf, maxlen, " %s", path_utf8.c_str());
 }
 
-void LogoFilter::GetScriptString(char* buf, int maxlen) {
-	char path[MAX_PATH * 2];
-	widechar_to_utf8(path + MAX_PATH, MAX_PATH, param.path);
-	char* s0 = path + MAX_PATH;
-	char* s1 = path;
-	while (1) {
-		int v = *s0; s0++;
-		*s1 = v; s1++;
-		if (v == '\\') { *s1 = v; s1++; }
-		if (v == 0) break;
-	}
+void LogoFilter::GetScriptString(char* buf, int maxlen)
+{
+	std::string path_utf8 = ConvertWideToUtf8(param.path);
+	str_replace(path_utf8, "\\", "\\\\");
 
-	SafePrintf(buf, maxlen, "Config(%d,%d,%d,\"%s\",%d,%d,%g)", param.pos_x, param.pos_y, param.blendMode, path, param.animMode | param.loopMode, param.refFrame, param.rate);
+	SafePrintf(buf, maxlen, "Config(%d,%d,%d,\"%s\",%d,%d,%g)", param.pos_x, param.pos_y, param.blendMode, path_utf8.c_str(), param.animMode | param.loopMode, param.refFrame, param.rate);
 }
 
-void LogoFilter::ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* argv, int argc) {
+void LogoFilter::ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* argv, int argc)
+{
 	param.pos_x = argv[0].asInt();
 	param.pos_y = argv[1].asInt();
 	param.blendMode = argv[2].asInt();
@@ -405,10 +388,9 @@ void LogoFilter::ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* 
 	param.animMode = anim & LogoParam::anim_follow;
 	param.loopMode = anim & LogoParam::loop_saw;
 
-	wchar_t buf[MAX_PATH];
-	utf8_to_widechar(buf, MAX_PATH, *argv[3].asString());
-	if (wcscmp(buf, param.path) != 0) {
-		wcscpy_s(param.path, buf);
+	std::wstring path = ConvertUtf8ToWide(*argv[3].asString());
+	if (path.compare(param.path) != 0) {
+		wcscpy_s(param.path, path.c_str());
 		file_dirty = true;
 	}
 }
