@@ -41,14 +41,16 @@ LRESULT CALLBACK EditWndProc(HWND wnd, UINT msg, WPARAM wparam, LPARAM lparam)
 extern std::wstring option_image;
 extern std::wstring option_video;
 
-bool logoOpenImage(HWND hwnd, wchar_t* path, int max_path) {
+bool logoOpenImage(HWND hwnd, wchar_t* path, int max_path)
+{
 	OPENFILENAMEW ofn = { 0 };
 	wchar_t szFile[MAX_PATH];
 
-	if (path)
+	if (path) {
 		wcscpy_s(szFile, path);
-	else
+	} else {
 		szFile[0] = 0;
+	}
 
 	ofn.lStructSize = sizeof(ofn);
 	ofn.hwndOwner = hwnd;
@@ -112,11 +114,13 @@ static void __cdecl PreviewZoomCallback(PreviewZoomInfo& info, void* pData)
 
 //-------------------------------------------------------------------------------------------------
 
-bool LogoDialog::Show(HWND parent) {
+bool LogoDialog::Show(HWND parent)
+{
 	return 0 != VDXVideoFilterDialog::Show(hInstance, MAKEINTRESOURCEW(IDD_FFLAYER), parent);
 }
 
-INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
+INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
+{
 	switch (msg) {
 	case WM_INITDIALOG:
 	{
@@ -247,7 +251,9 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) {
 			}
 		}
 
-		if (changed) redo_frame();
+		if (changed) {
+			redo_frame();
+		}
 		return TRUE;
 	}
 	}
@@ -466,7 +472,8 @@ bool LogoFilter::Configure(VDXHWND hwnd)
 	return dlg.Show((HWND)hwnd);
 }
 
-uint32 LogoFilter::GetParams() {
+uint32 LogoFilter::GetParams()
+{
 	kPixFormat_XRGB64 = 0;
 	if (fma && fma->fmpixmap) kPixFormat_XRGB64 = fma->fmpixmap->GetFormat_XRGB64();
 
@@ -489,7 +496,9 @@ uint32 LogoFilter::GetParams() {
 
 void LogoFilter::Start()
 {
-	if (file_dirty) update_file();
+	if (file_dirty) {
+		update_file();
+	}
 }
 
 int64 LogoFilter::currentFrame(int64 r)
@@ -512,8 +521,7 @@ int LogoFilter::currentRFrame(int64 r)
 	if (param.loopMode == LogoParam::loop_saw) {
 		if (rframe >= 0) {
 			rframe = rframe % frame_count;
-		}
-		else {
+		} else {
 			rframe = frame_count - ((-rframe - 1) % frame_count) - 1;
 		}
 	}
@@ -523,12 +531,17 @@ int LogoFilter::currentRFrame(int64 r)
 
 void LogoFilter::Run()
 {
-	if (sAPIVersion < 12) return;
-	if (!video) return;
+	if (sAPIVersion < 12) {
+		return;
+	}
+	if (!video) {
+		return;
+	}
 
-	int rframe = currentRFrame();
-	if (rframe < 0) return;
-	if (rframe >= frame_count) return;
+	const int rframe = currentRFrame();
+	if (rframe < 0 || rframe >= frame_count) {
+		return;
+	}
 
 	if (rframe != last_frame) {
 		last_frame = rframe;
