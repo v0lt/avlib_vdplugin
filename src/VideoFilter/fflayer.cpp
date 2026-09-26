@@ -8,8 +8,8 @@
 #include "stdafx.h"
 
 #include "fflayer.h"
-#include "resource.h"
-#include "Helper.h"
+#include "../resource.h"
+#include "../Helper.h"
 
 extern HINSTANCE hInstance;
 

@@ -9,8 +9,8 @@
 
 #include <vd2/VDXFrame/VideoFilter.h>
 #include <vd2/VDXFrame/VideoFilterDialog.h>
-#include "InputFile2.h"
-#include "VideoSource2.h"
+#include "../InputFile2.h"
+#include "../VideoSource2.h"
 
 struct LogoParam {
 	wchar_t path[MAX_PATH];

@@ -177,7 +177,7 @@
     <ClInclude Include="AudioEncoder\AudioEnc_vorbis.h" />
     <ClInclude Include="AudioSource2.h" />
     <ClInclude Include="export.h" />
-    <ClInclude Include="fflayer.h" />
+    <ClInclude Include="VideoFilter\fflayer.h" />
     <ClInclude Include="ffmpeg_helper.h" />
     <ClInclude Include="FileInfo2.h" />
     <ClInclude Include="gopro.h" />
@@ -228,8 +228,8 @@
     <ClCompile Include="AudioEncoder\AudioEnc_vorbis.cpp" />
     <ClCompile Include="AudioSource2.cpp" />
     <ClCompile Include="export.cpp" />
-    <ClCompile Include="fflayer.cpp" />
-    <ClCompile Include="fflayer_render.cpp" />
+    <ClCompile Include="VideoFilter\fflayer.cpp" />
+    <ClCompile Include="VideoFilter\fflayer_render.cpp" />
     <ClCompile Include="ffmpeg_helper.cpp" />
     <ClCompile Include="FileInfo2.cpp" />
     <ClCompile Include="gopro.cpp" />
@@ -242,7 +242,7 @@
     </ClCompile>
     <ClCompile Include="registry.cpp" />
     <ClCompile Include="Utils\StringUtil.cpp" />
-    <ClCompile Include="vfmain.cpp" />
+    <ClCompile Include="VideoFilter\vfmain.cpp" />
     <ClCompile Include="VideoEncoder\VideoCompress.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc.cpp" />
     <ClCompile Include="VideoEncoder\VideoEnc_AMF_AV1.cpp" />

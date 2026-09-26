@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="videoFilter">
+    <Filter Include="VideoFilter">
       <UniqueIdentifier>{65a3815f-6028-45d7-8975-78c179f3d824}</UniqueIdentifier>
     </Filter>
     <Filter Include="VirtualDub2">
@@ -24,8 +24,8 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="fflayer.h">
-      <Filter>videoFilter</Filter>
+    <ClInclude Include="VideoFilter\fflayer.h">
+      <Filter>VideoFilter</Filter>
     </ClInclude>
     <ClInclude Include="AudioSource2.h" />
     <ClInclude Include="export.h" />
@@ -149,14 +149,11 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="fflayer.cpp">
-      <Filter>videoFilter</Filter>
+    <ClCompile Include="VideoFilter\fflayer.cpp">
+      <Filter>VideoFilter</Filter>
     </ClCompile>
-    <ClCompile Include="fflayer_render.cpp">
-      <Filter>videoFilter</Filter>
-    </ClCompile>
-    <ClCompile Include="vfmain.cpp">
-      <Filter>videoFilter</Filter>
+    <ClCompile Include="VideoFilter\fflayer_render.cpp">
+      <Filter>VideoFilter</Filter>
     </ClCompile>
     <ClCompile Include="AudioSource2.cpp" />
     <ClCompile Include="export.cpp" />
@@ -265,6 +262,9 @@
     </ClCompile>
     <ClCompile Include="VideoEncoder\VideoEnc_QSV_AV1.cpp">
       <Filter>VideoEncoder</Filter>
+    </ClCompile>
+    <ClCompile Include="VideoFilter\vfmain.cpp">
+      <Filter>VideoFilter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
