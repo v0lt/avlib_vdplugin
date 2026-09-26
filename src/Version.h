@@ -1,9 +1,3 @@
-/*
- * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
- *
- * SPDX-License-Identifier: BSD-3-Clause
- */
 
 #pragma once
 
@@ -30,7 +24,7 @@
 
 #define VER_MAJOR      1
 #define VER_MINOR      1
-#define VER_BUILD      5
+#define VER_BUILD      6
 
 #define VERSION_NUM    VER_MAJOR,VER_MINOR,VER_BUILD,REV_NUM
 #define VERSION_STR    MAKE_STR(VER_MAJOR) "." MAKE_STR(VER_MINOR) "." MAKE_STR(VER_BUILD) "." MAKE_STR(REV_NUM)

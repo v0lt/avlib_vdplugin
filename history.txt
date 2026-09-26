@@ -1,5 +1,8 @@
 avlib.vdplugin history
 
+1.1.6.x dev
+----------------------
+
 1.1.5.506 - 2026-09-13
 ----------------------
 Improved support for interlaced videos (now uses kPixFormat_YUV420i_Planar).
