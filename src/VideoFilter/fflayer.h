@@ -49,7 +49,10 @@ public:
 
 	LogoDialog(IVDXFilterPreview* ifp) : ifp(ifp) {}
 	bool Show(HWND parent);
-	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam);
+
+	// VDXVideoFilterDialog
+	virtual INT_PTR DlgProc(UINT msg, WPARAM wParam, LPARAM lParam) override;
+
 	void init_edit(int id);
 	void init_path();
 	void init_pos();
@@ -89,12 +92,15 @@ public:
 	void init();
 	void clear();
 	void update_file();
-	virtual uint32 GetParams();
-	virtual void Start();
-	virtual void Run();
-	virtual bool Configure(VDXHWND hwnd);
-	virtual void GetSettingString(char* buf, int maxlen);
-	virtual void GetScriptString(char* buf, int maxlen);
+
+	// VDXVideoFilter
+	virtual uint32 GetParams() override;
+	virtual void Start() override;
+	virtual void Run() override;
+	virtual bool Configure(VDXHWND hwnd) override;
+	virtual void GetSettingString(char* buf, int maxlen) override;
+	virtual void GetScriptString(char* buf, int maxlen) override;
+
 	VDXVF_DECLARE_SCRIPT_METHODS();
 	void ScriptConfig(IVDXScriptInterpreter* isi, const VDXScriptValue* argv, int argc);
 
