@@ -153,8 +153,9 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 					const FilterModPixmapInfo& layerInfo = filter->video->GetFrameBufferInfo();
 					if (layerInfo.alpha_type) {
 						filter->param.blendMode = LogoParam::blend_alpha;
-						if (layerInfo.alpha_type == FilterModPixmapInfo::kAlphaOpacity_pm)
+						if (layerInfo.alpha_type == FilterModPixmapInfo::kAlphaOpacity_pm) {
 							filter->param.blendMode = LogoParam::blend_alpha_pm;
+						}
 					}
 				}
 				init_buttons();
@@ -186,8 +187,11 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_ALPHABLEND:
 		{
 			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
-			if (v) filter->param.blendMode = LogoParam::blend_alpha;
-			if (!v) filter->param.blendMode = LogoParam::blend_replace;
+			if (v) {
+				filter->param.blendMode = LogoParam::blend_alpha;
+			} else {
+				filter->param.blendMode = LogoParam::blend_replace;
+			}
 			init_buttons();
 			redo_frame();
 		}
@@ -196,8 +200,11 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_PREMULTALPHA:
 		{
 			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
-			if (v) filter->param.blendMode = LogoParam::blend_alpha_pm;
-			if (!v) filter->param.blendMode = LogoParam::blend_alpha;
+			if (v) {
+				filter->param.blendMode = LogoParam::blend_alpha_pm;
+			} else {
+				filter->param.blendMode = LogoParam::blend_alpha;
+			}
 			init_buttons();
 			redo_frame();
 		}
@@ -206,8 +213,11 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 		case IDC_LOOP:
 		{
 			bool v = SendMessageW((HWND)lParam, BM_GETCHECK, 0, 0) == BST_CHECKED;
-			if (v) filter->param.loopMode = LogoParam::loop_saw;
-			if (!v) filter->param.loopMode = 0;
+			if (v) {
+				filter->param.loopMode = LogoParam::loop_saw;
+			} else {
+				filter->param.loopMode = 0;
+			}
 			redo_frame();
 		}
 		return TRUE;
@@ -238,17 +248,29 @@ INT_PTR LogoDialog::DlgProc(UINT msg, WPARAM wParam, LPARAM lParam)
 	{
 		HWND item = (HWND)lParam;
 		bool changed = false;
-		if (wParam == IDC_XPOS) if (modify_value(item, filter->param.pos_x)) changed = true;
-		if (wParam == IDC_YPOS) if (modify_value(item, filter->param.pos_y)) changed = true;
-		if (wParam == IDC_REF_SINGLE) if (modify_value(item, filter->param.refFrame)) changed = true;
-		if (wParam == IDC_REF_FOLLOW) if (modify_value(item, filter->param.refFrame)) changed = true;
-		if (wParam == IDC_FOLLOW_RATE) if (modify_value(item, filter->param.rate)) changed = true;
-		if (wParam == IDC_LOGOFILE) {
+		switch (wParam) {
+		case IDC_XPOS:
+			if (modify_value(item, filter->param.pos_x)) { changed = true; }
+			break;
+		case IDC_YPOS:
+			if (modify_value(item, filter->param.pos_y)) { changed = true; }
+			break;
+		case IDC_REF_SINGLE:
+			if (modify_value(item, filter->param.refFrame)) { changed = true; }
+			break;
+		case IDC_REF_FOLLOW:
+			if (modify_value(item, filter->param.refFrame)) { changed = true; }
+			break;
+		case IDC_FOLLOW_RATE:
+			if (modify_value(item, filter->param.rate)) { changed = true; }
+			break;
+		case IDC_LOGOFILE:
 			if (modify_path()) {
 				filter->update_file();
 				init_buttons();
 				changed = true;
 			}
+			break;
 		}
 
 		if (changed) {
@@ -267,10 +289,16 @@ void LogoDialog::init_buttons()
 {
 	bool enable_info = filter->video != 0;
 	EnableWindow(GetDlgItem(mhdlg, IDC_FILE_INFO), enable_info);
+
 	bool use_alpha = false;
 	bool use_alpha_pm = false;
-	if (filter->param.blendMode == LogoParam::blend_alpha) use_alpha = true;
-	if (filter->param.blendMode == LogoParam::blend_alpha_pm) { use_alpha = true; use_alpha_pm = true; }
+	if (filter->param.blendMode == LogoParam::blend_alpha) {
+		use_alpha = true;
+	}
+	else if (filter->param.blendMode == LogoParam::blend_alpha_pm) {
+		use_alpha = true;
+		use_alpha_pm = true;
+	}
 	SendDlgItemMessageW(mhdlg, IDC_ALPHABLEND, BM_SETCHECK, use_alpha ? BST_CHECKED : BST_UNCHECKED, 0);
 	SendDlgItemMessageW(mhdlg, IDC_PREMULTALPHA, BM_SETCHECK, use_alpha_pm ? BST_CHECKED : BST_UNCHECKED, 0);
 
@@ -279,7 +307,7 @@ void LogoDialog::init_buttons()
 	EnableWindow(GetDlgItem(mhdlg, IDC_FOLLOW_RATE), filter->param.animMode == LogoParam::anim_follow);
 	SendDlgItemMessageW(mhdlg, IDC_ANIM_SINGLE, BM_SETCHECK, filter->param.animMode == LogoParam::anim_single ? BST_CHECKED : BST_UNCHECKED, 0);
 	SendDlgItemMessageW(mhdlg, IDC_ANIM_FOLLOW, BM_SETCHECK, filter->param.animMode == LogoParam::anim_follow ? BST_CHECKED : BST_UNCHECKED, 0);
-	bool loop = filter->param.loopMode == LogoParam::loop_saw;
+	const bool loop = (filter->param.loopMode == LogoParam::loop_saw);
 	SendDlgItemMessageW(mhdlg, IDC_LOOP, BM_SETCHECK, loop ? BST_CHECKED : BST_UNCHECKED, 0);
 }
 
