@@ -19,7 +19,7 @@ extern "C" {
 #include <libavutil/imgutils.h>
 }
 
-const int line_align = 16; // should be ok with any usable filter down the pipeline
+constexpr int line_align = 32; // should be ok with any usable filter down the pipeline
 extern bool config_force_thread;
 extern float config_cache_size;
 
