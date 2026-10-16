@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -661,7 +661,7 @@ uint32 FFOutputFile::CreateStream(int type)
 }
 
 typedef struct AVCodecTag {
-	enum AVCodecID id;
+	AVCodecID id;
 	unsigned int tag;
 } AVCodecTag;
 

@@ -295,8 +295,9 @@ AVPixelFormat CodecBase::match_av_format(int vd_format)
 	return AV_PIX_FMT_NONE;
 }
 
-bool CodecBase::test_av_format(AVPixelFormat format) {
-	const enum AVPixelFormat* pix_fmts = nullptr;
+bool CodecBase::test_av_format(AVPixelFormat format)
+{
+	const AVPixelFormat* pix_fmts = nullptr;
 	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_PIX_FORMAT, 0, (const void**)&pix_fmts, nullptr);
 	if (ret < 0) {
 		return false;

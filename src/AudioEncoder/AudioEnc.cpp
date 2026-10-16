@@ -146,7 +146,7 @@ void VDFFAudio::select_fmt(const AVSampleFormat* list)
 {
 	int best_pos = -1;
 
-	const enum AVSampleFormat* sample_fmts = nullptr;
+	const AVSampleFormat* sample_fmts = nullptr;
 	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
 	if (ret < 0) {
 		return;
@@ -195,7 +195,7 @@ void VDFFAudio::SetInputFormat(VDXWAVEFORMATEX* format)
 	av_channel_layout_default(&avctx->ch_layout, format->mChannels);
 	avctx->sample_rate = format->mSamplesPerSec;
 
-	const enum AVSampleFormat* sample_fmts = nullptr;
+	const AVSampleFormat* sample_fmts = nullptr;
 	int ret = avcodec_get_supported_config(avctx, codec, AV_CODEC_CONFIG_SAMPLE_FORMAT, 0, (const void**)&sample_fmts, nullptr);
 	if (ret < 0) {
 		return;

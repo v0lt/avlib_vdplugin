@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -20,7 +20,7 @@ extern "C" {
 }
 
 struct WAVEFORMATEX_VDFF : public WAVEFORMATEXTENSIBLE {
-	enum AVCodecID codec_id;
+	AVCodecID codec_id;
 };
 
 const GUID KSDATAFORMAT_SUBTYPE_VDFF = { 0x54939996, 0xF549, 0x42d7, 0xA8, 0x73, 0xBD, 0xB0, 0x63, 0x85, 0xE5, 0x9F };

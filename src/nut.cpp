@@ -1,6 +1,6 @@
 /*
  * Copyright (C) 2015-2020 Anton Shekhovtsov
- * Copyright (C) 2023-2025 v0lt
+ * Copyright (C) 2023-2026 v0lt
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -15,7 +15,7 @@ extern "C"
 // copied from libavformat/nut.c because it is not exported
 
 typedef struct AVCodecTag {
-	enum AVCodecID id;
+	AVCodecID id;
 	unsigned int tag;
 } AVCodecTag;
 
