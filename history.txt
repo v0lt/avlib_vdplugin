@@ -1,6 +1,6 @@
 avlib.vdplugin history
 
-1.1.6.x dev
+1.1.7.517 - 2026-10-17
 ----------------------
 The FFmpeg 8.1.3 x64 build from BtbN is used.
 The FFmpeg 8.1.3 win32 build from Defisym is used.
